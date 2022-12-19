@@ -1,0 +1,45 @@
+﻿<Application
+    x:Class="OpenFrp.Launcher.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OpenFrp.Launcher"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    StartupUri="WpfSurface.xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:XamlControlsResources />
+                <ui:ThemeResources />
+
+
+                <ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
+                <ResourceDictionary Source="/ModernWpf;component/ThemeResources/Light.xaml" />
+                <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+            <!--  NavigationView Margin  -->
+            <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+            <!--  当链接被点击时  -->
+            <Style BasedOn="{StaticResource DefaultHyperlinkStyle}" TargetType="Hyperlink">
+                <EventSetter Event="Click" Handler="Hyperlink_Click" />
+            </Style>
+            <!--  窗口选项  -->
+            <WindowChrome
+                x:Key="DefaultWindowChrome"
+                x:Shared="False"
+                CaptionHeight="48"
+                NonClientFrameEdges="None"
+                ResizeBorderThickness="4"
+                UseAeroCaptionButtons="False" />
+            <WindowChrome
+                x:Key="AeroWindowChrome"
+                x:Shared="False"
+                CaptionHeight="48"
+                GlassFrameThickness="-1"
+                NonClientFrameEdges="None"
+                ResizeBorderThickness="4"
+                UseAeroCaptionButtons="False" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

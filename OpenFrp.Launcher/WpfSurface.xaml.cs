@@ -23,5 +23,16 @@ namespace OpenFrp.Launcher
         {
             InitializeComponent();
         }
-    }
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e); 
+            if (isSupportDarkMode2)
+            {
+                //Launcher.Properties.UxTheme.SetPreferredAppMode(Launcher.Properties.UxTheme.PreferredAppMode.Default);
+            }
+        }
+        private bool isSupportDarkMode2 = Environment.OSVersion.Version.Major == 10 && Environment.OSVersion.Version.Build >= 18362;
+
+
+}
 }

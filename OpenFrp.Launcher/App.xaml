@@ -14,7 +14,7 @@
 
 
                 <ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
-                <ResourceDictionary Source="/ModernWpf;component/ThemeResources/Light.xaml" />
+                <ResourceDictionary Source="/ModernWpf;component/ThemeResources/Dark.xaml" />
                 <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
@@ -40,6 +40,9 @@
                 NonClientFrameEdges="None"
                 ResizeBorderThickness="4"
                 UseAeroCaptionButtons="False" />
+            <!--  基本动画  -->
+            <CubicEase x:Key="BaseEase" EasingMode="EaseOut" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
+

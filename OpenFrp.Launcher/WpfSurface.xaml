@@ -9,7 +9,62 @@
     Title="WpfSurface"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
+    ui:ThemeManager.RequestedTheme="Default"
+    ui:TitleBar.ExtendViewIntoTitleBar="True"
     ui:WindowHelper.UseModernWindowStyle="True"
     mc:Ignorable="d">
-    <Grid />
+    <Grid>
+        <ui:NavigationView
+            x:Name="OfApp_NavigationView"
+            IsTitleBarAutoPaddingEnabled="False"
+            OpenPaneLength="225" />
+        <Grid Height="48" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding CompactPaneLength, ElementName=OfApp_NavigationView}" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="{Binding (ui:TitleBar.SystemOverlayRightInset), RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
+                <!--  Animation Setting  -->
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DisplayMode, Mode=OneWay, ElementName=OfApp_NavigationView}" Value="Minimal">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation
+                                                Storyboard.TargetProperty="Margin"
+                                                To="36,0,0,0"
+                                                Duration="0:0:0.15">
+                                                <ThicknessAnimation.EasingFunction>
+                                                    <QuarticEase EasingMode="EaseOut" />
+                                                </ThicknessAnimation.EasingFunction>
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,0,0,0"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    SnapsToDevicePixels="True"
+                    Text="Title Align" />
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>

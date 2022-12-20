@@ -8,18 +8,30 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Interop;
+using System.Windows.Navigation;
 
 namespace OpenFrp.Launcher
 {
     public partial class App : Application
     {
+        private bool isSupportDarkMode = Environment.OSVersion.Version.Major == 10 && 
+            Environment.OSVersion.Version.Build >= 17763;
+       
         /// <summary>
         /// 应用启动时
         /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
+            Console.WriteLine();
+            if (isSupportDarkMode)
+            {
+                Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
+                Launcher.Properties.UxTheme.ShouldSystemUseDarkMode();
+            }
             
         }
+
         /// <summary>
         /// 链接被点击
         /// </summary>

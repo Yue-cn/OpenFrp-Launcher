@@ -14,9 +14,10 @@
 		<ApplicationManifest>./Properties/App.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="ModernWpfUI" Version="10.1.60" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+	  <PackageReference Include="ModernWpfUI" Version="10.1.63" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Views\" />
+	  <ProjectReference Include="..\OpenFrp.Core\OpenFrp.Core.csproj" />
 	</ItemGroup>
 </Project>

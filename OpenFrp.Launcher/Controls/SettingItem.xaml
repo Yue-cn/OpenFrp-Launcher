@@ -1,0 +1,64 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ui="http://schemas.modernwpf.com/2019">
+    <sys:Double x:Key="ItemMinHeight">65</sys:Double>
+    <Style x:Key="SettingItemStyle" TargetType="of:SettingItem">
+        <Setter Property="Background" Value="{DynamicResource ExpanderHeaderBackground}" />
+        <Setter Property="MinWidth" Value="{DynamicResource FlyoutThemeMinWidth}" />
+        <Setter Property="MinHeight" Value="{DynamicResource ItemMinHeight}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource ExpanderHeaderBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
+        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=FrameworkElement}}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="ui:ControlHelper.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Icon">
+            <Setter.Value>
+                <ui:SymbolIcon FontSize="24"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border
+                        Background="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        CornerRadius="{Binding (ui:ControlHelper.CornerRadius), RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                        <Grid Margin="20,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter
+                                Grid.Column="0"
+                                Width="24"
+                                Height="24"
+                                VerticalAlignment="Center"
+                                Content="{Binding Icon, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            <Border Grid.Column="1" Padding="10,16,8,16">
+                                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">
+                                    <Run Text="{Binding Title, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                    <LineBreak />
+
+                                    <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="{Binding Message, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                </TextBlock>
+                            </Border>
+                            <ui:SimpleStackPanel
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                                <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            </ui:SimpleStackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style BasedOn="{StaticResource SettingItemStyle}" TargetType="of:SettingItem" />
+</ResourceDictionary>

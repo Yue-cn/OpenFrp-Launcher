@@ -1,0 +1,41 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
+    xmlns:ui="http://schemas.modernwpf.com/2019">
+    <Style TargetType="of:BaseView">
+        <Setter Property="Title" Value="默认文本" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="of:BaseView">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid
+                            Grid.Row="0"
+                            MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
+                            Margin="40,36,40,4">
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                FontWeight="Bold"
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Text="{TemplateBinding Title}" />
+                        </Grid>
+
+                        <ui:ScrollViewerEx Grid.Row="2">
+                            <Grid
+                                MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
+                                Margin="40,8,40,32"
+                                VerticalAlignment="Top">
+                                <ContentPresenter />
+                            </Grid>
+                        </ui:ScrollViewerEx>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

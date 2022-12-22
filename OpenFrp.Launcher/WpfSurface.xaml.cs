@@ -26,13 +26,16 @@ namespace OpenFrp.Launcher
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e); 
-            if (isSupportDarkMode2)
+            OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
-                //Launcher.Properties.UxTheme.SetPreferredAppMode(Launcher.Properties.UxTheme.PreferredAppMode.Default);
-            }
+                Type page;
+                if (!e.IsSettingsInvoked)
+                {
+
+                }
+                page = typeof(Views.Setting);
+                OfApp_RootFrame.Navigate(page);
+            };
         }
-        private bool isSupportDarkMode2 = Environment.OSVersion.Version.Major == 10 && Environment.OSVersion.Version.Build >= 18362;
-
-
-}
+    }
 }

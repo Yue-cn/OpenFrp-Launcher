@@ -5,7 +5,16 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Launcher", "Launcher", "{E7C5E695-12EB-42B3-B4A6-FAEBFD1E13CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenFrp.Launcher", "OpenFrp.Launcher\OpenFrp.Launcher.csproj", "{0AA13295-1937-4388-83BC-65386AA8D6D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFrp.Launcher", "OpenFrp.Launcher\OpenFrp.Launcher.csproj", "{0AA13295-1937-4388-83BC-65386AA8D6D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Addon", "Addon", "{D7BD01B9-6FB6-4D2E-9B2D-F8E1DB022D4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFrp.Core", "OpenFrp.Core\OpenFrp.Core.csproj", "{21B46251-AA4F-423D-B354-E16D2F22CB15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36305EAE-888D-4371-AA24-F6E91B412DE3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +26,17 @@ Global
 		{0AA13295-1937-4388-83BC-65386AA8D6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AA13295-1937-4388-83BC-65386AA8D6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AA13295-1937-4388-83BC-65386AA8D6D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21B46251-AA4F-423D-B354-E16D2F22CB15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21B46251-AA4F-423D-B354-E16D2F22CB15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21B46251-AA4F-423D-B354-E16D2F22CB15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21B46251-AA4F-423D-B354-E16D2F22CB15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0AA13295-1937-4388-83BC-65386AA8D6D9} = {E7C5E695-12EB-42B3-B4A6-FAEBFD1E13CA}
+		{21B46251-AA4F-423D-B354-E16D2F22CB15} = {E7C5E695-12EB-42B3-B4A6-FAEBFD1E13CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C707EE8D-15D5-471F-B6EF-15BF9EE3B4FA}

@@ -14,7 +14,7 @@
     <ui:Page.DataContext>
         <model:SettingModel />
     </ui:Page.DataContext>
-    <of:BaseView>
+    <of:BaseView Title="设置">
         <ui:SimpleStackPanel Spacing="8">
             <of:SettingItem Title="一个一个一个" Message="渔成拓宏窝猫亡距铬柴亡啬咐燥。">
                 <of:SettingItem.Icon>
@@ -30,10 +30,18 @@
                 <of:SettingItem.Icon>
                     <ui:SymbolIcon FontSize="24" Symbol="Account" />
                 </of:SettingItem.Icon>
-                <Button
-                    Command="{Binding LoginCommand}"
-                    Content="{Binding LoginState}"
-                    Style="{StaticResource AccentButtonStyle}" />
+                <Button Command="{Binding LoginCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource AccentButtonStyle}" TargetType="Button">
+                            <Setter Property="Content" Value="登录" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LoginState}" Value="True">
+                                    <Setter Property="Content" Value="个人信息" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </of:SettingItem>
 
         </ui:SimpleStackPanel>

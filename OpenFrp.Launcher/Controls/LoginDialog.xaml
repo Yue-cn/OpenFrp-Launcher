@@ -6,9 +6,10 @@
     xmlns:local="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    Title="Dialog"
+    Title="登录"
     d:DesignHeight="620.267"
     d:DesignWidth="947.636"
+    CloseButtonClick="ContentDialog_CloseButtonClick"
     CloseButtonText="取消"
     DefaultButton="Primary"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
@@ -20,8 +21,8 @@
             Title="登录失败"
             VerticalAlignment="Bottom"
             IsClosable="False"
-            IsOpen="True"
             IsEnabled="False"
+            IsOpen="True"
             Message="非法密码 / 账户"
             Severity="Error">
             <ui:InfoBar.Style>
@@ -76,12 +77,16 @@
                 Grid.Column="0"
                 ProgressRingSize="75">
                 <ui:SimpleStackPanel Spacing="8">
-                    <TextBox ui:ControlHelper.Header="我们跑路了" />
-                    <PasswordBox ui:ControlHelper.Header="我们跑路了" />
-                    <TextBlock
-                        Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                        Text="非法密码 / 账户"
-                        Visibility="Hidden" />
+                    <TextBox
+                        x:Name="Of_Ld_Username"
+                        ui:ControlHelper.Header="邮箱"
+                        ui:TextBoxHelper.IsDeleteButtonVisible="True" />
+                    <PasswordBox
+                        x:Name="Of_Ld_Password"
+                        ui:ControlHelper.Header="密码"
+                        ui:PasswordBoxHelper.IsEnabled="True"
+                        ui:PasswordBoxHelper.PasswordRevealMode="Peek" />
+
                 </ui:SimpleStackPanel>
             </local:ElementLoader>
 

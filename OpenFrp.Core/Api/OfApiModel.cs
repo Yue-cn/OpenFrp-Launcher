@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OpenFrp.Core.Api.OfApiModel.Response;
 
 namespace OpenFrp.Core.Api
 {
@@ -11,15 +12,53 @@ namespace OpenFrp.Core.Api
     {
         public class Request
         {
+            public class LoginData : MessagePraser<BaseModel>
+            {
+                public LoginData(string? userName, string? password)
+                {
+                    UserName = userName;
+                    Password = password;
+                }
 
+                [JsonProperty("user")]
+                public string? UserName { get; set; }
+
+                [JsonProperty("password")]
+                public string? Password { get; set; } 
+            }
+
+            public class SessionData : MessagePraser<SessionData>
+            {
+                public SessionData(string? session)
+                {
+                    Session = session;
+                }
+
+                [JsonProperty("session")]
+                public string? Session { get; set; }
+            }
         }
         public class Response
         {
+            public class UserInfoModel : BaseModel
+            {
+                /// <summary>
+                /// 个人的用户信息
+                /// </summary>
+                [JsonProperty("data")]
+                public new UserInfoDataModel Data { get; set; } = new();
+
+                public class UserInfoDataModel
+                {
+                    [JsonProperty("email")]
+                    public string Email { get; set; } = "TestMail@OpenFrp.cn";
+                    [JsonProperty("username")]
+                    public string UserName { get; set; } = "OpenFrp.App";
+                }
+            }
+
             public class BaseModel : MessagePraser<BaseModel>
             {
-
-
-
                 /// <summary>
                 /// API 返回的数据内容
                 /// </summary>
@@ -58,6 +97,14 @@ namespace OpenFrp.Core.Api
             public override string ToString()
             {
                 return JsonConvert.SerializeObject(this);
+            }
+            /// <summary>
+            /// 返回该对象的 <see cref="StringContent"/>
+            /// </summary>
+            /// <returns></returns>
+            public StringContent ToStringContent()
+            {
+                return new(ToString(), Encoding.UTF8, "application/json");
             }
         }
 

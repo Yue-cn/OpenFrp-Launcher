@@ -16,6 +16,7 @@
                                     <Setter Property="Opacity" Value="0" />
                                     <Setter Property="IsHitTestVisible" Value="False" />
                                     <Setter Property="IsEnabled" Value="False" />
+
                                     <Style.Triggers>
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
@@ -56,7 +57,10 @@
                                     </Style.Triggers>
                                 </Style>
                             </Grid.Style>
-                            <ui:ProgressRing Width="{Binding ProgressRingSize, RelativeSource={RelativeSource Mode=TemplatedParent}}" Height="{Binding ProgressRingSize, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            <ui:ProgressRing
+                                Width="{Binding ProgressRingSize, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                Height="{Binding ProgressRingSize, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                IsActive="{TemplateBinding IsLoading}" />
                         </Grid>
                         <!--  失败时  -->
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">

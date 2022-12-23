@@ -37,7 +37,12 @@ namespace OpenFrp.Launcher
         /// </summary>
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(((Hyperlink)sender).NavigateUri.ToString());
+            var h = (Hyperlink)sender;
+            if (h.NavigateUri is not null)
+            {
+                Process.Start(h.NavigateUri.ToString());
+            }
+            
         }
     }
 }

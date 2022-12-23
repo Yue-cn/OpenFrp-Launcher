@@ -26,16 +26,40 @@ namespace OpenFrp.Launcher.Controls
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 取消令牌
+        /// </summary>
+        private CancellationTokenSource _sourec { get; set; } = new();
+
+        /// <summary>
+        /// 点击了"确定"按钮后开始登录。
+        /// </summary>
         private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             
             args.Cancel = true;
             Of_Ld_ErrorInfo.IsEnabled = false;
             Of_Ld_ELoader1.ShowLoader();
-            await Task.Delay(2000);
-            var res = await OfApi.POST<OpenFrp.Core.Api.OfApiModel.Response.BaseModel>(OfApiUrl.Login, new System.Net.Http.StringContent("w"));
+            // 由于在内网模式下 延迟≈0 所以延迟一下。
+            await Task.Delay(500);
+            var res = await OfApi.Login(Of_Ld_Username.Text, Of_Ld_Password.Password);
+            if (res.Flag)
+            {
+                if (_sourec.IsCancellationRequested)
+                {
+                    OfApi.ClearAccount();
+                }
+                Hide();
+                return;
+            }
+            Of_Ld_ErrorInfo.Message = res.Message;
             Of_Ld_ELoader1.ShowContent();
             Of_Ld_ErrorInfo.IsEnabled = true;
         }
+
+        /// <summary>
+        /// 点击"取消"按钮后取消令牌。
+        /// </summary>
+        private void ContentDialog_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args) => _sourec.Cancel();
     }
 }

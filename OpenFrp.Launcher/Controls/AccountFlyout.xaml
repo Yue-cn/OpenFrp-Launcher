@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="OpenFrp.Launcher.Controls.AccountFlyout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:OpenFrp.Launcher.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    mc:Ignorable="d">
+    <UserControl.DataContext>
+        <model:SettingModel />
+    </UserControl.DataContext>
+
+
+
+    <Grid Width="250">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid
+            Height="64"
+            Margin="8"
+            VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ui:PersonPicture
+                Grid.Column="0"
+                Height="64"
+                VerticalAlignment="Top"
+                ProfilePicture="e:\Win10\Photo\B199E64C4A427EF485ECA7FC739AD50A.jpg" />
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                FontSize="16"
+                TextWrapping="Wrap">
+                <Run Text="{Binding UserInfoData.UserName}" />
+                <LineBreak />
+                <Run
+                    FontSize="12"
+                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                    Text="{Binding UserInfoData.Email}" />
+            </TextBlock>
+        </Grid>
+        <ui:SimpleStackPanel
+            Grid.Row="1"
+            Margin="0,8,0,0"
+            Orientation="Horizontal">
+            <ui:HyperlinkButton
+                Height="35"
+                Command="{Binding LogoutCommand}"
+                Content="登出账户" />
+            <ui:HyperlinkButton
+                Height="35"
+                Content="网页后台"
+                NavigateUri="https://www.openfrp.net/home/dashboard" />
+        </ui:SimpleStackPanel>
+    </Grid>
+</UserControl>

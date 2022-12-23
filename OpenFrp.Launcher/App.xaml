@@ -23,6 +23,7 @@
 
                 <ResourceDictionary Source="./Controls/BaseView.xaml" />
                 <ResourceDictionary Source="./Controls/SettingItem.xaml" />
+                <ResourceDictionary Source="./Controls/ElementLoader.xaml" />
 
 
             </ResourceDictionary.MergedDictionaries>

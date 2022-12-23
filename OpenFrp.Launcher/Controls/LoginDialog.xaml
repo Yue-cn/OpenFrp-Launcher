@@ -10,6 +10,86 @@
     d:DesignHeight="620.267"
     d:DesignWidth="947.636"
     CloseButtonText="取消"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    PrimaryButtonText="www"
     mc:Ignorable="d">
-    <Grid Width="498" Height="300" />
+    <Grid Width="498" Height="300">
+        <ui:InfoBar
+            x:Name="Of_Ld_ErrorInfo"
+            Title="登录失败"
+            VerticalAlignment="Bottom"
+            IsClosable="False"
+            IsOpen="True"
+            IsEnabled="False"
+            Message="非法密码 / 账户"
+            Severity="Error">
+            <ui:InfoBar.Style>
+                <Style TargetType="ui:InfoBar">
+                    <Setter Property="Opacity" Value="0" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Opacity, RelativeSource={RelativeSource Mode=Self}}" Value="0">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ui:InfoBar.Style>
+        </ui:InfoBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <local:ElementLoader
+                x:Name="Of_Ld_ELoader1"
+                Grid.Column="0"
+                ProgressRingSize="75">
+                <ui:SimpleStackPanel Spacing="8">
+                    <TextBox ui:ControlHelper.Header="我们跑路了" />
+                    <PasswordBox ui:ControlHelper.Header="我们跑路了" />
+                    <TextBlock
+                        Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                        Text="非法密码 / 账户"
+                        Visibility="Hidden" />
+                </ui:SimpleStackPanel>
+            </local:ElementLoader>
+
+            <Grid Grid.Column="2">
+                <TextBlock TextWrapping="Wrap">
+                    扑催汉尘疆虎眉饿丙钛拉获践下皮缺熄肩强禹守常斧吕野力滞耘逐钛罩骤绑傲辑室轻邱傻辆篮卸举秩俗抚虑锋野码居豹狗娘讲渠结盾捞巍蒂周匀肚激！责键帝归氧肝畔改，坡引铁骂昔淆衫践泵旅爬速虚塑幕绥唐哗瓷弥胶该免冕柬千？姿饮鬼襄沿颌娃饱导谎钉台隘聚阵籽池声劣训楔防鞘让怒哟讨繁厉卖层限辈衔取蛾蚁小洋垛，耳捞棚帐金昏戒愈敏诫珍境卑卖些垛正英里世著宋实返俘限颇软钛牌海奉垮近嚷避察括唇？畅蓬宝厢责偷往右达灸叶丧辆伤却声、
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </Grid>
 </ui:ContentDialog>

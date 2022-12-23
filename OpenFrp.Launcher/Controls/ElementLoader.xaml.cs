@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+
+namespace OpenFrp.Launcher.Controls
+{
+    public partial class ElementLoader : UserControl
+    {
+
+
+        public bool IsLoading
+        {
+            get { return (bool)GetValue(IsLoadingProperty); }
+            set { SetValue(IsLoadingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsLoading.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsLoadingProperty =
+            DependencyProperty.Register("IsLoading", typeof(bool), typeof(ElementLoader), new PropertyMetadata(false));
+
+        public bool IsErrored
+        {
+            get { return (bool)GetValue(IsErroredProperty); }
+            set { SetValue(IsErroredProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsErrored.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsErroredProperty =
+            DependencyProperty.Register("IsErrored", typeof(bool), typeof(ElementLoader), new PropertyMetadata(false));
+
+        public int ProgressRingSize
+        {
+            get { return (int)GetValue(ProgressRingSizeProperty); }
+            set { SetValue(ProgressRingSizeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ProgressRingSize.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProgressRingSizeProperty =
+            DependencyProperty.Register("ProgressRingSize", typeof(int), typeof(ElementLoader), new PropertyMetadata(100));
+
+        public void PushMessage(Action worker,string title = "",string buttonContent = "")
+        {
+            ((TextBlock)FindName("Loader_ErrorMessage")).Text = title;
+            ((Button)FindName("Loader_ErrorRefresh")).Content = buttonContent;
+            bool isClicked = false;
+            ((Button)FindName("Loader_ErrorRefresh")).Click += (sender,args) =>
+            {
+                if (!isClicked)
+                {
+                    isClicked = true;
+                    // 开始加载
+                    ShowLoader();
+                    // 设置消息
+                    PushMessage(worker: () => { });
+                }
+            };
+        }
+        /// <summary>
+        /// 显示内容
+        /// </summary>
+        public void ShowContent() => IsErrored = IsLoading = false;
+
+        /// <summary>
+        /// 显示加载器
+        /// </summary>
+        public void ShowLoader() => IsLoading = !(IsErrored = false);
+
+        /// <summary>
+        /// 显示错误，
+        /// 显示之前请调用 <see cref="PushMessage(Action,string, string)"/>
+        /// </summary>
+        public void ShowError() => IsErrored = !(IsLoading = false);
+
+
+
+    }
+}

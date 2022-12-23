@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenFrp.Core.Api;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,18 @@ namespace OpenFrp.Launcher.Controls
         public LoginDialog()
         {
             InitializeComponent();
+        }
+
+        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            
+            args.Cancel = true;
+            Of_Ld_ErrorInfo.IsEnabled = false;
+            Of_Ld_ELoader1.ShowLoader();
+            await Task.Delay(2000);
+            var res = await OfApi.POST<OpenFrp.Core.Api.OfApiModel.Response.BaseModel>(OfApiUrl.Login, new System.Net.Http.StringContent("w"));
+            Of_Ld_ELoader1.ShowContent();
+            Of_Ld_ErrorInfo.IsEnabled = true;
         }
     }
 }

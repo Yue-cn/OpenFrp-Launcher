@@ -35,6 +35,7 @@
                     Content="{Binding LoginState}"
                     Style="{StaticResource AccentButtonStyle}" />
             </of:SettingItem>
+
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

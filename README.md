@@ -1,1 +1,7 @@
-# OpenFrp Projects
+# OpenFrp Laucher
+
+本软件为 GPL3 协议，如需修改且分发，请在 Github / Gitee(不推荐) 上公开你修改过的版本。
+
+对了,Beta 版本的存档已经没有了，想要的话自己找个然后反编译吧。
+
+(小心点，云默安的脾气不太好。)

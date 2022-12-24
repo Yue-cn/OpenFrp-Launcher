@@ -8,6 +8,11 @@ namespace OpenFrp.Launcher
 {
     public class OfAppHelper
     {
+        public static ViewModels.LauncherModel? LauncherViewModel
+        {
+            get => (ViewModels.LauncherModel?)App.Current?.MainWindow.DataContext;
+            set => App.Current.MainWindow.DataContext = value;
+        }
         /// <summary>
         /// 设置页面 - 模型
         /// </summary>

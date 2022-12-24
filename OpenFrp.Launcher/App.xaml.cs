@@ -40,7 +40,8 @@ namespace OpenFrp.Launcher
         {
             
             var h = (Hyperlink)sender;
-            if (h.NavigateUri is not null && h.Parent.GetType() != typeof(ModernWpf.Controls.HyperlinkButton))
+            if (h.NavigateUri is not null && 
+                h.Parent.GetType() != typeof(HyperlinkButton))
             {
                 Process.Start(h!.NavigateUri.ToString());
             }

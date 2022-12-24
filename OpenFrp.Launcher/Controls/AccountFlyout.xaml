@@ -53,7 +53,8 @@
             <ui:HyperlinkButton
                 Height="35"
                 Command="{Binding LogoutCommand}"
-                Content="登出账户" />
+                Content="登出账户"
+                IsEnabled="{Binding PipeRunningState}" />
             <ui:HyperlinkButton
                 Height="35"
                 Content="网页后台"

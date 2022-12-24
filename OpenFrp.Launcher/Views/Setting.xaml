@@ -30,7 +30,10 @@
                 <of:SettingItem.Icon>
                     <ui:SymbolIcon FontSize="24" Symbol="Account" />
                 </of:SettingItem.Icon>
-                <Button Command="{Binding LoginCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}">
+                <Button
+                    Command="{Binding LoginCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+                    IsEnabled="{Binding PipeRunningState, Mode=OneWay}">
                     <Button.Style>
                         <Style BasedOn="{StaticResource AccentButtonStyle}" TargetType="Button">
                             <Setter Property="Content" Value="登录" />

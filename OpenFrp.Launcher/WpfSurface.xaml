@@ -1,9 +1,15 @@
-﻿<Window
+﻿<!--
+    OpenFrp Launcher App
+    Author: @Yue-cn (越)
+    Github: https://github.com/Yue-cn/OpenFrp-Launcher
+-->
+<Window
     x:Class="OpenFrp.Launcher.WpfSurface"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="WpfSurface"
     d:DesignHeight="732.24"
@@ -12,7 +18,11 @@
     ui:TitleBar.ExtendViewIntoTitleBar="True"
     ui:WindowHelper.UseModernWindowStyle="True"
     mc:Ignorable="d">
+    <Window.DataContext>
+        <model:LauncherModel />
+    </Window.DataContext>
     <Grid>
+        <!--  主 View  -->
         <ui:NavigationView
             xmlns:pages="clr-namespace:OpenFrp.Launcher.Views"
             x:Name="OfApp_NavigationView"
@@ -80,7 +90,11 @@
                 </ui:Frame.Style>
             </ui:Frame>
         </ui:NavigationView>
-        <Grid Height="48" VerticalAlignment="Top">
+        <!--  TitleBar & FastAction  -->
+        <Grid
+            Height="48"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{Binding CompactPaneLength, ElementName=OfApp_NavigationView}" />
                 <ColumnDefinition />
@@ -126,7 +140,80 @@
                     FontSize="13"
                     SnapsToDevicePixels="True"
                     Text="Title Align" />
+
             </Grid>
         </Grid>
+        <ui:SimpleStackPanel
+            Margin="0,64,16,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Panel.ZIndex="100"
+            Orientation="Horizontal"
+            Spacing="8">
+            <Button Command="{Binding GC_ColletCommand}" Content="GC.Collet()" />
+            <ui:ToggleSwitch
+                Header="PipeRunningState"
+                IsEnabled="True"
+                IsOn="{Binding PipeRunningState}" />
+        </ui:SimpleStackPanel>
+
+        <!--  InfoBar  -->
+        <ui:SimpleStackPanel
+            Margin="0,0,0,12"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Spacing="8">
+            <ui:InfoBar
+                Title="Launcher"
+                IsClosable="False"
+                IsOpen="True"
+                Message="未连接到守护进程,大部分功能无法正常使用。"
+                Severity="Warning">
+                <ui:InfoBar.Style>
+                    <Style TargetType="ui:InfoBar">
+
+                        <Setter Property="IsHitTestVisible" Value="True" />
+                        <Setter Property="Margin" Value="0,0,0,12" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PipeRunningState}" Value="True">
+                                <Setter Property="IsHitTestVisible" Value="False" />
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:.2" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,-48,0,0"
+                                                Duration="0:0:.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:.2" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,0,0,12"
+                                                Duration="0:0:.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:InfoBar.Style>
+            </ui:InfoBar>
+        </ui:SimpleStackPanel>
     </Grid>
 </Window>

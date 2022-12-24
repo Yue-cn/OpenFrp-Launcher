@@ -16,21 +16,43 @@ namespace OpenFrp.Launcher.ViewModels
 {
     public partial class SettingModel : ObservableObject
     {
+        public SettingModel()
+        {
+            if (OfAppHelper.LauncherViewModel is not null)
+            {
+                OfAppHelper.LauncherViewModel.PropertyChanged += (sender, e) =>
+                {
+                    OnPropertyChanged("PipeRunningState");
+                };
+            }
+        }
+
         public int ApplicationTheme
         {
             get => (int)OpenFrp.Core.App.OfSettings.Instance.Theme;
             set => OpenFrp.Core.App.OfSettings.Instance.Theme = (ElementTheme)value;
         }
 
-
+        /// <summary>
+        /// 登录状态 (实际使用请改为<see cref="LoginState"/>)
+        /// </summary>
         [ObservableProperty]
         public bool _LoginState;
-
+        /// <summary>
+        /// 用户信息 (Model Refer Form: <see cref="OfAppHelper.UserInfoModel"/>)
+        /// </summary>
         public OpenFrp.Core.Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel UserInfoData
         {
             get => OfAppHelper.UserInfoModel;
             set => OfAppHelper.UserInfoModel = value;
         }
+
+        
+        public bool PipeRunningState
+        {
+            get => OfAppHelper.LauncherViewModel?.PipeRunningState ?? false;
+        }
+
 
         private bool _hasDialog { get; set; }
 

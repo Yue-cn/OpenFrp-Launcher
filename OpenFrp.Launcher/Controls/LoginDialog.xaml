@@ -13,7 +13,7 @@
     CloseButtonText="取消"
     DefaultButton="Primary"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-    PrimaryButtonText="www"
+    PrimaryButtonText="登录"
     mc:Ignorable="d">
     <Grid Width="498" Height="300">
         <ui:InfoBar

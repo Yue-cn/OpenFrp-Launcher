@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenFrp.Core.App;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Configuration;
@@ -22,7 +23,7 @@ namespace OpenFrp.Launcher
         /// <summary>
         /// 应用启动时
         /// </summary>
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             Console.WriteLine();
             if (isSupportDarkMode)
@@ -30,7 +31,13 @@ namespace OpenFrp.Launcher
                 Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
                 Launcher.Properties.UxTheme.ShouldSystemUseDarkMode();
             }
-            
+            await OfSettings.ReadConfig();
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            await OfSettings.Instance.WriteConfig();
         }
 
         /// <summary>

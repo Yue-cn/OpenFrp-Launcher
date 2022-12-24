@@ -32,7 +32,7 @@ namespace OpenFrp.Launcher
             set => DataContext = value;
         }
 
-        protected override async void OnInitialized(EventArgs e)
+        protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e); 
             OfApp_NavigationView.ItemInvoked += (s, e) =>

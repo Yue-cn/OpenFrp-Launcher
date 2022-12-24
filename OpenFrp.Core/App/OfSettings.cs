@@ -21,11 +21,11 @@ namespace OpenFrp.Core.App
         /// <summary>
         /// 应用的主题 (Private to Set)
         /// </summary>
-        [JsonProperty("theme")]
         private ElementTheme _Theme { get; set; }
         /// <summary>
         /// 应用的主题
         /// </summary>
+        [JsonProperty("theme")]
         public ElementTheme Theme
         {
             get => _Theme;
@@ -45,16 +45,40 @@ namespace OpenFrp.Core.App
         /// </summary>
         public static async ValueTask ReadConfig()
         {
-            await Task.Yield();
-            
+            if (File.Exists(Utils.ApplicationConfigPath))
+            {
+                try
+                {
+                    using var reader = new StreamReader(Utils.ApplicationConfigPath);
+                    JsonConvert.DefaultSettings = () => new() { NullValueHandling = NullValueHandling.Ignore };
+                    var json = JsonConvert.DeserializeObject<OfSettings>(await reader.ReadToEndAsync());
+                    if (json is not null)
+                    {
+                        Instance = json;
+                        return;
+                    }
+                    throw new NullReferenceException("JSON 解析得到 NULL。");
+                }
+                catch(Exception ex)
+                {
+                    Utils.WriteLog(ex.ToString());
+                }
+            }
         }
         /// <summary>
         /// 写出配置
         /// </summary>
         public async ValueTask WriteConfig()
         {
-            await Task.Yield();
-            Instance = new(); 
+            try
+            {
+                using var writer = new StreamWriter(Utils.ApplicationConfigPath);
+                await writer.WriteLineAsync(JsonConvert.SerializeObject(Instance));
+            }
+            catch(Exception ex)
+            {
+                Utils.WriteLog(ex.ToString());
+            }
         }
 
 

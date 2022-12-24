@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -52,9 +53,14 @@ namespace OpenFrp.Core
         /// 管道的昵称
         /// </summary>
         public static string PipeRouteName { get; } = $"OfApp_{ApplicationPath.GetMD5()}";
+        /// <summary>
+        /// 配置文件的文件目录
+        /// </summary>
+        public static string ApplicationConfigPath { get; } = Path.Combine(ApplicationPath,"config.json");
 
         internal static void Debug(string s) => Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
         
+        public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");
 
     }
 }

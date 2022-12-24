@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -37,10 +38,11 @@ namespace OpenFrp.Launcher
         /// </summary>
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
+            
             var h = (Hyperlink)sender;
-            if (h.NavigateUri is not null)
+            if (h.NavigateUri is not null && h.Parent.GetType() != typeof(ModernWpf.Controls.HyperlinkButton))
             {
-                Process.Start(h.NavigateUri.ToString());
+                Process.Start(h!.NavigateUri.ToString());
             }
             
         }

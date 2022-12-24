@@ -23,7 +23,7 @@ namespace OpenFrp.Launcher.Controls
         public AccountFlyout()
         {
             InitializeComponent();
-            this.DataContext = OfAppHelper.SettingModel;
+            this.DataContext = OfAppHelper.SettingViewModel;
         }
     }
 }

@@ -37,12 +37,20 @@ namespace OpenFrp.Launcher.ViewModels
         private Flyout? _flyout { get; set; }
 
         [RelayCommand]
-        void Logout()
+        async void Logout()
         {
-            _flyout?.Hide();
-            OfApi.ClearAccount();
-            LoginState = false;
-            UserInfoData = new();
+
+            if ((await OfAppHelper.PipeClient.PushMessage(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.CLIENT_TO_SERVER,
+                    Message = "退出登录。"
+                })).Flag)
+            {
+                _flyout?.Hide();
+                OfApi.ClearAccount();
+                LoginState = false;
+                UserInfoData = new();
+            }
             
         }
 
@@ -57,13 +65,21 @@ namespace OpenFrp.Launcher.ViewModels
                     // 弹出登录窗口。
                     var dialog = new Controls.LoginDialog();
                     await dialog.ShowAsync();
-                    LoginState = OfApi.LoginState;
+                    
                     var info = await OfApi.GetUserInfo();
                     if (info.Flag)
                     {
                         UserInfoData = info.Data;
                     }
-                    
+                    await OfAppHelper.PipeClient.PushMessage(new()
+                    {
+                        Action = Core.Pipe.PipeModel.OfAction.CLIENT_TO_SERVER,
+                        Message = "登录成功!!!"
+                    });
+
+                    LoginState = OfApi.LoginState;
+
+
                 }
                 _hasDialog = false;
             }

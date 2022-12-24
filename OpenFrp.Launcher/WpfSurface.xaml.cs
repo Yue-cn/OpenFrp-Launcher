@@ -23,7 +23,7 @@ namespace OpenFrp.Launcher
         {
             InitializeComponent();
         }
-        protected override void OnInitialized(EventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e); 
             OfApp_NavigationView.ItemInvoked += (s, e) =>
@@ -36,6 +36,11 @@ namespace OpenFrp.Launcher
                 page = typeof(Views.Setting);
                 OfApp_RootFrame.Navigate(page);
             };
+
+            OfAppHelper.PipeClient = new OpenFrp.Core.Pipe.PipeClient();
+            await OfAppHelper.PipeClient.Start();
+
+
         }
     }
 }

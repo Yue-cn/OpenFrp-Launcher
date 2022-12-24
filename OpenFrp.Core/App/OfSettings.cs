@@ -31,9 +31,9 @@ namespace OpenFrp.Core.App
             get => _Theme;
             set
             {
-                if (MainWindow is not null)
+                if (Utils.MainWindow is not null)
                 {
-                    try { ThemeManager.SetRequestedTheme(MainWindow, value); }
+                    try { ThemeManager.SetRequestedTheme(Utils.MainWindow, value); }
                     catch { }
                 }
                 _Theme = value;
@@ -56,13 +56,7 @@ namespace OpenFrp.Core.App
             await Task.Yield();
             Instance = new(); 
         }
-        /// <summary>
-        /// 应用主窗口（操控台返回 Null)
-        /// </summary>
-        public static System.Windows.Window? MainWindow
-        {
-            get => System.Windows.Application.Current?.MainWindow;
-        }
+
 
 
 

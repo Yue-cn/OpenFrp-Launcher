@@ -8,8 +8,18 @@ namespace OpenFrp.Launcher
 {
     public class OfAppHelper
     {
-        public static ViewModels.SettingModel SettingModel { get; set; } = new();
-
+        /// <summary>
+        /// 设置页面 - 模型
+        /// </summary>
+        public static ViewModels.SettingModel SettingViewModel { get; set; } = new();
+        /// <summary>
+        /// 用户信息
+        /// </summary>
         public static OpenFrp.Core.Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel UserInfoModel { get; set; } = new();
+
+        /// <summary>
+        /// 管道 - 客户端
+        /// </summary>
+        public static OpenFrp.Core.Pipe.PipeClient PipeClient { get; set; } = new();
     }
 }

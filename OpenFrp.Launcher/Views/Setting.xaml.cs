@@ -23,7 +23,7 @@ namespace OpenFrp.Launcher.Views
         public Setting()
         {
             InitializeComponent();
-            this.DataContext = OfAppHelper.SettingModel;
+            this.DataContext = OfAppHelper.SettingViewModel;
         }
 
     }

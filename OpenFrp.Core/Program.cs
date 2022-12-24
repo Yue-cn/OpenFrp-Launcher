@@ -4,8 +4,13 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
-            
+            var app = new Pipe.PipeServer();
+            app.Start();
+            while (true)
+            {
+                Console.Title = "Action Service (Server)";
+                Console.ReadKey();
+            }
         }
     }
 }

@@ -37,6 +37,9 @@
             <Style BasedOn="{StaticResource DefaultHyperlinkStyle}" TargetType="Hyperlink">
                 <EventSetter Event="Click" Handler="Hyperlink_Click" />
             </Style>
+            <Style TargetType="ui:HyperlinkButton">
+                <Setter Property="Tag" Value="unselect" />
+            </Style>
             <!--  窗口选项  -->
             <WindowChrome
                 x:Key="DefaultWindowChrome"

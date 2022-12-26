@@ -18,7 +18,11 @@ namespace OpenFrp.Core.Api
         public static bool LoginState => !string.IsNullOrEmpty(Authorization) && !string.IsNullOrEmpty(Session);
 
         public static void ClearAccount() => Authorization = Session = default;
-
+        /// <summary>
+        /// Api交互 - 登录
+        /// </summary>
+        /// <param name="user">用户账户</param>
+        /// <param name="password">密码</param>
         public static async ValueTask<Response.BaseModel> Login(string user,string password)
         {
             return await POST<Response.BaseModel>(
@@ -27,6 +31,9 @@ namespace OpenFrp.Core.Api
                     user,password).ToStringContent()
                 ) ?? new() { Message = "软件请求失败。"};
         }
+        /// <summary>
+        /// Api交互 - 获取用户个人信息
+        /// </summary>
         public static async ValueTask<Response.UserInfoModel> GetUserInfo()
         {
             if (!LoginState)
@@ -34,7 +41,7 @@ namespace OpenFrp.Core.Api
                 return new()
                 {
                     Flag = false,
-                    Message = "凭证无效。"
+                    Message = "您尚未登录。"
                 };
             }
             else
@@ -56,21 +63,24 @@ namespace OpenFrp.Core.Api
             try
             {
                 using var response =  await client.PostAsync(url, body);
-                var data = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-                if (data is Response.BaseModel res)
+                if (response.IsSuccessStatusCode)
                 {
-                    // 是否有值 +  是否成功 
-                    // 因为要先判断是否成功
-                    if (response.Headers.Contains("Authorization")
-                        && res.Flag == true
-                        && res.Data is not null)
+                    var data = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+                    if (data is Response.BaseModel res)
                     {
-                        Session = res?.Data;
-                        Authorization = response.Headers.GetValues("Authorization").First();
+                        // 是否有值 +  是否成功 
+                        // 因为要先判断是否成功
+                        if (response.Headers.Contains("Authorization")
+                            && res.Flag == true
+                            && res.Data is not null)
+                        {
+                            Session = res?.Data;
+                            Authorization = response.Headers.GetValues("Authorization").First();
+                        }
                     }
+                    // 如果不是基本类 & 登录，那么直接返回。
+                    return data;
                 }
-                // 如果不是基本类 & 登录，那么直接返回。
-                return data;
             }
             catch (Exception ex)
             {

@@ -30,7 +30,7 @@
             OpenPaneLength="225">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
-                    Content="Home"
+                    Content="Homo"
                     Icon="Home"
                     Tag="Se" />
             </ui:NavigationView.MenuItems>
@@ -40,7 +40,7 @@
                     Icon="&#xE946;"
                     Tag="About" />
             </ui:NavigationView.FooterMenuItems>
-            <ui:Frame x:Name="OfApp_RootFrame">
+            <ui:Frame x:Name="OfApp_RootFrame" JournalOwnership="OwnsJournal">
 
                 <ui:Frame.Style>
                     <Style TargetType="ui:Frame">

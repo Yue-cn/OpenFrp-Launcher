@@ -50,7 +50,7 @@ namespace OpenFrp.Core.Pipe
             var request = JsonConvert.DeserializeObject<PipeModel.RequestModel>((await Reviced()).GetString(true));
             return request;
         }
-        public async ValueTask PushMessage(PipeModel.BaseModel message)
+        public async ValueTask PushMessageAsync(PipeModel.BaseModel message)
         {
             await Task.Run(() =>
             {
@@ -65,9 +65,21 @@ namespace OpenFrp.Core.Pipe
                 }
             });
         }
-        public async ValueTask<PipeModel.ResponseModel> PushMessageWithRequest(PipeModel.RequestModel request)
+        public void PushMessage(PipeModel.BaseModel message)
         {
-            await PushMessage(request);
+            if (AppStream is not null)
+            {
+                try
+                {
+                    byte[] bytes = message.ToString().GetBytes();
+                    AppStream.Write(bytes, 0, bytes.Length);
+                }
+                catch { }
+            }
+        }
+        public async ValueTask<PipeModel.ResponseModel> PushMessageWithRequestAsync(PipeModel.RequestModel request)
+        {
+            await PushMessageAsync(request);
             return JsonConvert.DeserializeObject<PipeModel.ResponseModel>((await Reviced()).GetString(true)) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }

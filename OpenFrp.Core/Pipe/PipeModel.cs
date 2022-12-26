@@ -13,13 +13,13 @@ namespace OpenFrp.Core.Pipe
         public enum OfAction : int
         {
             /// <summary>
-            /// 客户端发送给服务端(Dev)
+            /// 获取状态。
             /// </summary>
-            CLIENT_TO_SERVER,
+            Get_State = 0,
             /// <summary>
-            /// 服务端发送给客户端(Dev)
+            /// 服务器已关闭。
             /// </summary>
-            SERVER_TO_CLIENT
+            Server_Closed = 1,
         }
         public class BaseModel : MessagePraser<BaseModel>
         {

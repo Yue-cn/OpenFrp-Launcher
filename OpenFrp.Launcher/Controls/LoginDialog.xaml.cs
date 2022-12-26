@@ -42,13 +42,10 @@ namespace OpenFrp.Launcher.Controls
             Of_Ld_ELoader1.ShowLoader();
             // 由于在内网模式下 延迟≈0 所以延迟一下。
             await Task.Delay(500);
-            var res = await OfApi.Login(Of_Ld_Username.Text, Of_Ld_Password.Password);
+            // 登录且获得信息
+            var res = await OfAppHelper.LoginAndUserInfo(Of_Ld_Username.Text, Of_Ld_Password.Password, _sourec.Token);
             if (res.Flag)
             {
-                if (_sourec.IsCancellationRequested)
-                {
-                    OfApi.ClearAccount();
-                }
                 Hide();
                 return;
             }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Pipes;
 using System.Security.AccessControl;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -13,6 +14,10 @@ namespace OpenFrp.Core.Pipe
         private NamedPipeServerStream? _server { get; set; }
 
         public bool State { get; private set; }
+
+        public Func<PipeModel.OfAction, PipeModel.RequestModel, PipeModel.ResponseModel>? RequestFunction { get; set; }
+
+        public Action? OnDisconnect { get; set; }
 
         public void Start(bool push = false)
         {
@@ -25,6 +30,14 @@ namespace OpenFrp.Core.Pipe
             Utils.Debug("开始侦听！");
             BeginLisenting();
         }
+
+        public void Disconnect() => _server?.Disconnect();
+
+        public void Close()
+        {
+            _server?.Close();
+        }
+
         private bool BeginLisenting()
         {
             if (_server is not null)
@@ -48,14 +61,25 @@ namespace OpenFrp.Core.Pipe
                     
                     if (response is null)
                     {
-                        Utils.Debug("已断开联机");
-                        _server.Disconnect();
+                        Utils.Debug("已断开连接。");
+                        if (OnDisconnect is not null) OnDisconnect();
+                        if (_server.IsConnected)
+                        {
+                            _server.Disconnect();
+                        }
                         State = false;
                         break;
                     }
-                    Utils.Debug($"接受到数据 ! {response}");
+                    Utils.Debug($"接受到数据 ! Data Content: {response}");
 
-                    await PushMessage(Execute(response.Action));
+                    if (RequestFunction is not null)
+                    {
+                        await PushMessageAsync(RequestFunction(response.Action, response));
+                    }
+                    else
+                    {
+                        await PushMessageAsync(Execute(response.Action, response));
+                    }
 
                     Utils.Debug("发送数据。");
                 }
@@ -64,18 +88,18 @@ namespace OpenFrp.Core.Pipe
             BeginLisenting();
         }
 
-        private PipeModel.ResponseModel Execute(PipeModel.OfAction action)
+        private PipeModel.ResponseModel Execute(PipeModel.OfAction action, PipeModel.RequestModel request)
         {
 
             switch (action)
             {
-                case PipeModel.OfAction.CLIENT_TO_SERVER:
+                case PipeModel.OfAction.Get_State:
                     {
                         return new() 
                         { 
                             Flag = true,
                             Message = "success",
-                            Action = PipeModel.OfAction.SERVER_TO_CLIENT 
+                            Action = PipeModel.OfAction.Get_State 
                         };
                     };
                 default:

@@ -15,7 +15,7 @@
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
     PrimaryButtonText="登录"
     mc:Ignorable="d">
-    <Grid Width="498" Height="300">
+    <Grid Width="498" Height="325">
         <ui:InfoBar
             x:Name="Of_Ld_ErrorInfo"
             Title="登录失败"
@@ -92,7 +92,7 @@
 
             <Grid Grid.Column="2">
                 <TextBlock TextWrapping="Wrap">
-                    扑催汉尘疆虎眉饿丙钛拉获践下皮缺熄肩强禹守常斧吕野力滞耘逐钛罩骤绑傲辑室轻邱傻辆篮卸举秩俗抚虑锋野码居豹狗娘讲渠结盾捞巍蒂周匀肚激！责键帝归氧肝畔改，坡引铁骂昔淆衫践泵旅爬速虚塑幕绥唐哗瓷弥胶该免冕柬千？姿饮鬼襄沿颌娃饱导谎钉台隘聚阵籽池声劣训楔防鞘让怒哟讨繁厉卖层限辈衔取蛾蚁小洋垛，耳捞棚帐金昏戒愈敏诫珍境卑卖些垛正英里世著宋实返俘限颇软钛牌海奉垮近嚷避察括唇？畅蓬宝厢责偷往右达灸叶丧辆伤却声、
+                    扑催汉尘骤绑傲辑室轻邱傻辆篮卸举秩俗抚虑锋野码居豹狗娘讲渠结盾捞巍蒂周匀肚激！责键帝归氧肝畔改，坡引铁骂昔淆衫践泵旅爬速虚塑幕绥唐哗瓷弥胶该免冕柬千？姿饮鬼襄沿颌娃饱导谎钉台隘聚阵籽池声劣训楔防鞘让怒哟讨繁厉卖层限辈衔取蛾蚁小洋垛，耳捞棚帐金昏戒愈敏诫珍境卑卖些垛正英里世著宋实返俘限颇软钛牌海奉垮近嚷避察括唇？畅蓬宝厢责偷往右达灸叶丧辆伤却声、
                     <Hyperlink NavigateUri="https://www.openfrp.net">我超,王者荣耀</Hyperlink>
                 </TextBlock>
             </Grid>

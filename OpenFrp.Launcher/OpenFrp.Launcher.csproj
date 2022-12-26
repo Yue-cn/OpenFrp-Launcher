@@ -14,6 +14,12 @@
 		<ApplicationManifest>./Properties/App.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="2dd846197af6b65664e1e30cb140d6a69856b426.jpg%40240w_240h_1c_1s.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Resource Include="2dd846197af6b65664e1e30cb140d6a69856b426.jpg@240w_240h_1c_1s.png" />
+	</ItemGroup>
+	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
 	  <PackageReference Include="ModernWpfUI" Version="10.1.65" />
 	</ItemGroup>

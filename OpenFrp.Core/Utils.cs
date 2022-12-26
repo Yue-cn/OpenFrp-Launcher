@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace OpenFrp.Core
 {
@@ -45,6 +46,7 @@ namespace OpenFrp.Core
         {
             get => System.Windows.Application.Current?.MainWindow;
         }
+        public static bool ServicesMode { get; } = !Environment.UserInteractive;
         /// <summary>
         /// 应用程序 所在目录
         /// </summary>
@@ -57,8 +59,28 @@ namespace OpenFrp.Core
         /// 配置文件的文件目录
         /// </summary>
         public static string ApplicationConfigPath { get; } = Path.Combine(ApplicationPath,"config.json");
+        /// <summary>
+        /// Core 文件
+        /// </summary>
+        public static string CorePath { get; } = Path.Combine(ApplicationPath, "OpenFrp.Core.exe");
+        /// <summary>
+        /// 所在文件名
+        /// </summary>
+        public static string ExcutableName { get; } = Process.GetCurrentProcess().MainModule.FileName;
 
-        internal static void Debug(string s) => Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
+        private static StreamWriter? _writer = Utils.ServicesMode ? new StreamWriter(Path.Combine(ApplicationPath, "logs.txt")) : default;
+
+        internal static void Debug(string s)
+        {
+            if (!Utils.ServicesMode)
+            {
+                Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
+            }
+            else
+            {
+                _writer?.WriteLineAsync($"[{DateTimeOffset.Now}] {s}");
+            }
+        }
         
         public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");
 

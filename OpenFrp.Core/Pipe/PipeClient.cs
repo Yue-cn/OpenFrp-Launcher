@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Pipes;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -19,14 +20,15 @@ namespace OpenFrp.Core.Pipe
             AppStream = _client = new NamedPipeClientStream(".", Utils.PipeRouteName + (push ? "_PUSH" : ""),
                 PipeDirection.InOut, PipeOptions.Asynchronous);
             await _client.ConnectAsync();
+            Utils.Debug("客户端连接成功!!!");
             State = true;
         }
-        public async ValueTask<PipeModel.ResponseModel> PushMessage(PipeModel.RequestModel request)
+        public async ValueTask<PipeModel.ResponseModel> PushMessageAsync(PipeModel.RequestModel request)
         {
             if (State)
             {
                 
-                return await base.PushMessageWithRequest(request) ??
+                return await base.PushMessageWithRequestAsync(request) ??
                     new() { Message = "后台处理错误,请稍后重试。" };
             }
             return new() { Message = "尚未连接到后台,请稍后重试。" };

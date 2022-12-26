@@ -39,6 +39,8 @@ namespace OpenFrp.Core.App
                 _Theme = value;
             }
         }
+        [JsonProperty("workmode")]
+        public WorkMode WorkMode { get; set; }
 
         /// <summary>
         /// 读取配置
@@ -80,9 +82,10 @@ namespace OpenFrp.Core.App
                 Utils.WriteLog(ex.ToString());
             }
         }
-
-
-
-
+    }
+    public enum WorkMode
+    {
+        DeamonProcess,
+        DeamonService
     }
 }

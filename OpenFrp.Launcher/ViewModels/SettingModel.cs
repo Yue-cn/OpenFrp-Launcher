@@ -32,6 +32,11 @@ namespace OpenFrp.Launcher.ViewModels
             get => (int)OpenFrp.Core.App.OfSettings.Instance.Theme;
             set => OpenFrp.Core.App.OfSettings.Instance.Theme = (ElementTheme)value;
         }
+        public int ApplicationWorkMode
+        {
+            get => (int)OpenFrp.Core.App.OfSettings.Instance.WorkMode;
+            set => OpenFrp.Core.App.OfSettings.Instance.WorkMode = (OpenFrp.Core.App.WorkMode)value;
+        }
 
         /// <summary>
         /// 登录状态 (实际使用请改为<see cref="LoginState"/>)
@@ -61,19 +66,14 @@ namespace OpenFrp.Launcher.ViewModels
         [RelayCommand]
         async void Logout()
         {
-
-            if ((await OfAppHelper.PipeClient.PushMessage(new()
-                {
-                    Action = Core.Pipe.PipeModel.OfAction.CLIENT_TO_SERVER,
-                    Message = "退出登录。"
-                })).Flag)
+            await Task.Yield();
+            if (true)
             {
                 _flyout?.Hide();
                 OfApi.ClearAccount();
                 LoginState = false;
                 UserInfoData = new();
             }
-            
         }
 
         [RelayCommand]
@@ -87,21 +87,7 @@ namespace OpenFrp.Launcher.ViewModels
                     // 弹出登录窗口。
                     var dialog = new Controls.LoginDialog();
                     await dialog.ShowAsync();
-                    
-                    var info = await OfApi.GetUserInfo();
-                    if (info.Flag)
-                    {
-                        UserInfoData = info.Data;
-                    }
-                    await OfAppHelper.PipeClient.PushMessage(new()
-                    {
-                        Action = Core.Pipe.PipeModel.OfAction.CLIENT_TO_SERVER,
-                        Message = "登录成功!!!"
-                    });
-
-                    LoginState = OfApi.LoginState;
-
-
+                    // 请求用户个人信息已移动到内部逻辑。
                 }
                 _hasDialog = false;
             }

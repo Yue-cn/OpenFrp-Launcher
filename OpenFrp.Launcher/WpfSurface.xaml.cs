@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Windows.UI.WebUI;
 
 namespace OpenFrp.Launcher
 {
@@ -35,6 +36,7 @@ namespace OpenFrp.Launcher
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e); 
+
             OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
                 Type page;
@@ -47,42 +49,46 @@ namespace OpenFrp.Launcher
             };
             OfApp_RootFrame.Navigating += (s, e) =>
             {
-                if (e.NavigationMode == System.Windows.Navigation.NavigationMode.Back)
-                {
-                    e.Cancel = true;
-                }
+                OfApp_RootFrame.RemoveBackEntry();
             };
-            PipeWorker();
+
+            // Defualt Pipe Server 
+            // 服务端 单独发给 客户端，不需要客户端先发送请求。
+            ServerPipeWorker();
+            ClientPipeWorker();
+
         }
 
-        private async void PipeWorker()
+        private async void ClientPipeWorker()
         {
-            // 当进程权限过高时，会显示无权获得该进程的信息。
-            try
-            {
-                var process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault() ?? Process.Start(new ProcessStartInfo()
-                {
-                    FileName = System.IO.Path.Combine(Utils.ApplicationPath, "OpenFrp.Core.exe"),
-                    CreateNoWindow = false,
-                    UseShellExecute = false,
-                });
-                process.EnableRaisingEvents = true;
-                // 进程退出时
-                process.Exited += (sender, args) =>
-                {
-                    App.Current?.Dispatcher.Invoke(() =>
-                    {
-                        LauncherModel.PipeRunningState = false;
-                        PipeWorker();
-                    });
-                };
-            }
-            catch { }
+            // 抛弃旧版 Process 检测机制 仅连接失败（卡住）的时候 Kill 后开启。
 
-            OfAppHelper.PipeClient = new OpenFrp.Core.Pipe.PipeClient();
+
             await OfAppHelper.PipeClient.Start();
             LauncherModel.PipeRunningState = true;
 
+        }
+
+        private void ServerPipeWorker()
+        {
+            OfAppHelper.PipeServer.Start(true);
+            OfAppHelper.PipeServer.RequestFunction = (request, model) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    switch (request)
+                    {
+                        // 服务器关闭时 自动发出 Event
+                        case Core.Pipe.PipeModel.OfAction.Server_Closed:
+                            {
+                                LauncherModel.PipeRunningState = false;
+                                ClientPipeWorker();
+                            }
+                            break;
+                    }
+                });
+                return new();
+            };
         }
         
 

@@ -60,6 +60,21 @@ namespace OpenFrp.Core.Api
 
             public class BaseModel : MessagePraser<BaseModel>
             {
+                public BaseModel() { }
+
+                public BaseModel(string? data = null, bool flag = false, string message = "")
+                {
+                    Data = data;
+                    Flag = flag;
+                    Message = message;
+                }
+                public BaseModel(string message = "")
+                {
+                    Message = message;
+                }
+
+
+
                 /// <summary>
                 /// API 返回的数据内容
                 /// </summary>

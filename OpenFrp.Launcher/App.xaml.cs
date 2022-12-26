@@ -31,6 +31,13 @@ namespace OpenFrp.Launcher
                 Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
                 Launcher.Properties.UxTheme.ShouldSystemUseDarkMode();
             }
+            if (!Debugger.IsAttached)
+            {
+                AppDomain.CurrentDomain.UnhandledException += (w, s) =>
+                {
+                    MessageBox.Show(s.ExceptionObject.ToString());
+                };
+            }
             await OfSettings.ReadConfig();
         }
 

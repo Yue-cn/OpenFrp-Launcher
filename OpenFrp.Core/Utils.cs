@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -83,6 +84,20 @@ namespace OpenFrp.Core
         }
         
         public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");
-
+        /// <summary>
+        /// 检查服务是否开启
+        /// </summary>
+        public static void CheckService()
+        {
+            using var service = new ServiceController("OpenFrp Launcher Service");
+            if (!service.CanStop)
+            {
+                Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                {
+                    Verb = "runas",
+                    CreateNoWindow = true
+                });
+            }
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using OpenFrp.Core;
+using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
 using OpenFrp.Launcher.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -33,9 +35,11 @@ namespace OpenFrp.Launcher
             set => DataContext = value;
         }
 
-        protected override void OnInitialized(EventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
-            base.OnInitialized(e); 
+            base.OnInitialized(e);
+
+            await OfSettings.ReadConfig();
 
             OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
@@ -57,12 +61,63 @@ namespace OpenFrp.Launcher
             ServerPipeWorker();
             ClientPipeWorker();
 
+            if (OfSettings.Instance.Account.HasAccount)
+            {
+                if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
+                {
+                    // 服务模式
+                    var result = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                    {
+                        Action = Core.Pipe.PipeModel.OfAction.Get_State
+                    });
+                    if (result.Flag)
+                    {
+
+                        if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
+                            result.AuthMessage?.UserDataModel is not null)
+                        {
+                            OfAppHelper.UserInfoModel = result.AuthMessage?.UserDataModel!;
+                            OfAppHelper.LauncherViewModel!.PipeRunningState = true;
+                            OfAppHelper.SettingViewModel.LoginState = true;
+                        }
+                    }
+                }
+                else
+                {
+                    var result = await OfAppHelper.LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
+                    if (result.Flag)
+                    {
+                        
+                    }
+                }
+            }
+
         }
 
         private async void ClientPipeWorker()
         {
             // 抛弃旧版 Process 检测机制 仅连接失败（卡住）的时候 Kill 后开启。
-
+            if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
+            {
+                try
+                {
+                    Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
+                    if (process is null)
+                    {
+                        Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
+                        {
+                            CreateNoWindow = false,
+                            UseShellExecute = false
+                        });
+                    }
+                }
+                catch { }
+                
+            }
+            else
+            {
+                Utils.CheckService();
+            }
 
             await OfAppHelper.PipeClient.Start();
             LauncherModel.PipeRunningState = true;
@@ -74,7 +129,7 @@ namespace OpenFrp.Launcher
             OfAppHelper.PipeServer.Start(true);
             OfAppHelper.PipeServer.RequestFunction = (request, model) =>
             {
-                App.Current.Dispatcher.Invoke(() =>
+                App.Current.Dispatcher.Invoke(async () =>
                 {
                     switch (request)
                     {
@@ -82,6 +137,7 @@ namespace OpenFrp.Launcher
                         case Core.Pipe.PipeModel.OfAction.Server_Closed:
                             {
                                 LauncherModel.PipeRunningState = false;
+                                await Task.Delay(1500);
                                 ClientPipeWorker();
                             }
                             break;

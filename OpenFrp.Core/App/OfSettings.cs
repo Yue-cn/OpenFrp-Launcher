@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System;
 
 namespace OpenFrp.Core.App
 {
@@ -39,8 +41,45 @@ namespace OpenFrp.Core.App
                 _Theme = value;
             }
         }
+        /// <summary>
+        /// 软件运行模式(Process / Service)
+        /// </summary>
         [JsonProperty("workmode")]
         public WorkMode WorkMode { get; set; }
+        /// <summary>
+        /// 用户的账户
+        /// </summary>
+        [JsonProperty("account")]
+        public AccountModel Account { get; set; } = new();
+        /// <summary>
+        /// 账户模型
+        /// </summary>
+        public class AccountModel
+        {
+            public AccountModel() { }
+
+            public AccountModel(string? user, string? password)
+            {
+                User = user;
+                Password = password;
+            }
+            [JsonIgnore]
+            public bool HasAccount
+            {
+                get => !string.IsNullOrEmpty(User) || !string.IsNullOrEmpty(Password);
+            }
+
+            [JsonProperty("user")]
+            public string? User { get; set; }
+
+            [JsonProperty("password")]
+            public string? Password { get; set; }
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
 
         /// <summary>
         /// 读取配置

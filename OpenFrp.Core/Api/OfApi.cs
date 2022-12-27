@@ -13,8 +13,8 @@ namespace OpenFrp.Core.Api
 {
     public static class OfApi
     {
-        private static string? Authorization { get; set; }
-        private static string? Session { get; set; }
+        public static string? Authorization { get; set; }
+        public static string? Session { get; set; }
         public static bool LoginState => !string.IsNullOrEmpty(Authorization) && !string.IsNullOrEmpty(Session);
 
         public static void ClearAccount() => Authorization = Session = default;
@@ -23,7 +23,7 @@ namespace OpenFrp.Core.Api
         /// </summary>
         /// <param name="user">用户账户</param>
         /// <param name="password">密码</param>
-        public static async ValueTask<Response.BaseModel> Login(string user,string password)
+        public static async ValueTask<Response.BaseModel> Login(string? user,string? password)
         {
             return await POST<Response.BaseModel>(
                 OfApiUrl.Login,

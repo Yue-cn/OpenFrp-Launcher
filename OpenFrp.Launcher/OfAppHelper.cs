@@ -35,26 +35,26 @@ namespace OpenFrp.Launcher
         /// <summary>
         /// 登录且获得用户个人信息
         /// </summary>
-        internal static async ValueTask<Response.BaseModel> LoginAndUserInfo(string user,string password,CancellationToken? _token = null)
+        internal static async ValueTask<Response.BaseModel> LoginAndUserInfo(string? user,string? password,CancellationToken? _token = null)
         {
             var lo_res = await OfApi.Login(user, password);
             if (lo_res.Flag)
             {
-                if (_token?.IsCancellationRequested == false)
+                if (_token is null || _token?.IsCancellationRequested == false)
                 {
                     var ui_res = await OfApi.GetUserInfo();
                     if (ui_res.Flag)
                     {
-                        UserInfoModel = ui_res.Data;
-                        SettingViewModel.LoginState = OfApi.LoginState;
-                        return new(null,true, "");
-                    }
-                    return new($"获取用户信息失败: {ui_res.Message}");
+                        if (_token is null || _token?.IsCancellationRequested == false)
+                        {
+                            UserInfoModel = ui_res.Data;
+                            SettingViewModel.LoginState = OfApi.LoginState;
+                            return new(null, true, "");
+                        }
+                    }else return new($"获取用户信息失败: {ui_res.Message}");
+
                 }
-                else
-                {
-                    return new("用户已取消操作。");
-                }
+                return new("用户已取消操作。");
 
             }
             return new($"{lo_res.Message}");

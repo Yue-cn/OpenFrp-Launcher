@@ -10,7 +10,9 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OpenFrp.Core;
 using OpenFrp.Core.Api;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace OpenFrp.Launcher.ViewModels
 {
@@ -100,6 +102,41 @@ namespace OpenFrp.Launcher.ViewModels
                 };
                 _flyout.ShowAt(sender);
             }
+        }
+
+        [RelayCommand]
+        async void ActionServiceMode(Button sender)
+        {
+            if ((await OfAppHelper.PipeClient.PushMessageAsync(new()
+            {
+                Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                Message = "关闭。"
+            })).Action == Core.Pipe.PipeModel.OfAction.Server_Closed)
+            {
+                if (OfAppHelper.LauncherViewModel is not null)
+                OfAppHelper.LauncherViewModel.PipeRunningState = false;
+            }
+            try
+            {
+                if (ApplicationWorkMode == 0)
+                {
+                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--install")
+                    {
+                        CreateNoWindow = true,
+                        Verb = "runas"
+                    });
+                }
+                else
+                {
+                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--uninstall")
+                    {
+                        CreateNoWindow = true,
+                        Verb = "runas",
+                    });
+                }
+            }
+            catch { }
+            Application.Current.Shutdown();
         }
     }
 }

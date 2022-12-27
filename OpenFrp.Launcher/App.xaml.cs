@@ -25,7 +25,7 @@ namespace OpenFrp.Launcher
         /// </summary>
         protected override async void OnStartup(StartupEventArgs e)
         {
-            Console.WriteLine();
+
             if (isSupportDarkMode)
             {
                 Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
@@ -38,7 +38,7 @@ namespace OpenFrp.Launcher
                     MessageBox.Show(s.ExceptionObject.ToString());
                 };
             }
-            await OfSettings.ReadConfig();
+            
         }
 
         protected override async void OnExit(ExitEventArgs e)

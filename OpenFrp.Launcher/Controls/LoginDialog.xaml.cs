@@ -1,4 +1,5 @@
 ﻿using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace OpenFrp.Launcher.Controls
         {
             
             args.Cancel = true;
-            Of_Ld_ErrorInfo.IsEnabled = false;
+            IsPrimaryButtonEnabled = Of_Ld_ErrorInfo.IsEnabled = false;
             Of_Ld_ELoader1.ShowLoader();
             // 由于在内网模式下 延迟≈0 所以延迟一下。
             await Task.Delay(500);
@@ -46,12 +47,33 @@ namespace OpenFrp.Launcher.Controls
             var res = await OfAppHelper.LoginAndUserInfo(Of_Ld_Username.Text, Of_Ld_Password.Password, _sourec.Token);
             if (res.Flag)
             {
-                Hide();
+                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,
+                    AuthMessage = new()
+                    {
+                        Authorization = OfApi.Authorization,
+                        UserSession = OfApi.Session,
+                        UserDataModel = OfAppHelper.UserInfoModel
+                    }
+                });
+                if (resp.Flag)
+                {
+                    OfSettings.Instance.Account = new(Of_Ld_Username.Text, Of_Ld_Password.Password);
+                    Of_Ld_Username.Text = Of_Ld_Password.Password = string.Empty;
+                    Hide();
+                    return;
+                }
+                OfApi.ClearAccount();
+                OfAppHelper.UserInfoModel = new();
+                Of_Ld_ErrorInfo.Message = resp.Message;
+                Of_Ld_ELoader1.ShowContent();
+                IsPrimaryButtonEnabled = Of_Ld_ErrorInfo.IsEnabled = true;
                 return;
             }
             Of_Ld_ErrorInfo.Message = res.Message;
             Of_Ld_ELoader1.ShowContent();
-            Of_Ld_ErrorInfo.IsEnabled = true;
+            IsPrimaryButtonEnabled = Of_Ld_ErrorInfo.IsEnabled = true;
         }
 
         /// <summary>

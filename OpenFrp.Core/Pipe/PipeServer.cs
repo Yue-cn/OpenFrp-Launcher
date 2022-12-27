@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO.Pipes;
 using System.Security.AccessControl;
 using Windows.ApplicationModel.VoiceCommands;
+using Windows.UI.WebUI;
+using OpenFrp.Core.Api;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -18,6 +20,8 @@ namespace OpenFrp.Core.Pipe
         public Func<PipeModel.OfAction, PipeModel.RequestModel, PipeModel.ResponseModel>? RequestFunction { get; set; }
 
         public Action? OnDisconnect { get; set; }
+
+        public Action? OnClose { get; set; }
 
         public void Start(bool push = false)
         {
@@ -63,7 +67,7 @@ namespace OpenFrp.Core.Pipe
                     {
                         Utils.Debug("已断开连接。");
                         if (OnDisconnect is not null) OnDisconnect();
-                        if (_server.IsConnected)
+                        if (_server?.IsConnected == true)
                         {
                             _server.Disconnect();
                         }
@@ -82,10 +86,55 @@ namespace OpenFrp.Core.Pipe
                     }
 
                     Utils.Debug("发送数据。");
+                    
+                    if (response.Action == PipeModel.OfAction.Close_Server)
+                    {
+                        _server?.Disconnect();
+                        Environment.Exit(0);
+                    }
                 }
                 else break;
             }
             BeginLisenting();
+        }
+
+        internal PipeModel.ResponseModel Execute(PipeModel.OfAction action, PipeModel.RequestModel request)
+        {
+
+            switch (action)
+            {
+                case PipeModel.OfAction.Get_State:
+                    {
+                        return new() 
+                        { 
+                            Flag = true,
+                            Action = PipeModel.OfAction.Get_State,
+                        };
+                    };
+                case PipeModel.OfAction.Close_Server:
+                    {
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.Server_Closed,
+                            Flag = true
+                        };
+                    }
+                case PipeModel.OfAction.LoginState_Push:
+                    {
+                        OfApi.Authorization = request.AuthMessage?.Authorization;
+                        OfApi.Session = request.AuthMessage?.UserSession;
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.LoginState_Push,
+                            Flag = true
+                        };
+                    }
+                default:
+                    {
+                        return new() { Message = "Action Not Found" };
+                    }
+            }
+            
         }
     }
 }

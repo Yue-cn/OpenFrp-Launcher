@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
@@ -22,7 +24,49 @@ namespace OpenFrp.Core
             //Debugger.Launch();
             var appServer = new Pipe.PipeServer();
             appServer.Start();
+
+            await Task.Delay(1500);
+
+            Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel UserDataModel = new();
+            var res1 = await OfApi.Login(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
+            var res2 = await OfApi.GetUserInfo();
+            string er = "";
+            if (!res1.Flag || !res2.Flag)
+            {
+                // 请求失败的逻辑
+                er = $"请求失败。{(res1.Flag ? null : res1.Message)},{(res2.Flag ? null : res2.Message)} \n {OfSettings.Instance}";
+            }
+            else
+            {
+                OfApi.Session = res1.Data;
+                UserDataModel = res2.Data;
+            }
+            // 更改部分请求
+            appServer.RequestFunction = (request, model) =>
+            {
+                switch (request)
+                {
+                    case Pipe.PipeModel.OfAction.Get_State:
+                        return new()
+                        {
+                            Flag = true,
+                            Action = Pipe.PipeModel.OfAction.Get_State,
+                            AuthMessage = new()
+                            {
+                                UserDataModel = UserDataModel,
+                                Authorization = OfApi.Authorization,
+                                UserSession = OfApi.Session
+                            },
+                            Message = er
+                        };
+                    default: return appServer.Execute(request, model);
+                }
+            };
+
             await appClient.Start(true);
+
+            
+
         }
         protected override void OnStop()
         {
@@ -55,7 +99,7 @@ namespace OpenFrp.Core
                     ServiceName = "OpenFrp Launcher Service",
                     DisplayName = "OpenFrp Launcher Deamon Service",
                     Description = "OpenFrp 启动器 后台进程。",
-                    StartType = ServiceStartMode.Manual,
+                    StartType = ServiceStartMode.Automatic,
                 }
             });
         }

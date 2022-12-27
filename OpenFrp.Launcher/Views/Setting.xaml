@@ -46,6 +46,26 @@
                     </Button.Style>
                 </Button>
             </of:SettingItem>
+            <of:SettingItem Title="核心运行模式" Message="WindowsService Describe">
+                <of:SettingItem.Icon>
+                    <ui:FontIcon FontSize="24" Glyph="&#xe912;" />
+                </of:SettingItem.Icon>
+                <Button
+                    Command="{Binding ActionServiceModeCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+                    IsEnabled="{Binding PipeRunningState, Mode=OneWay}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource AccentButtonStyle}" TargetType="Button">
+                            <Setter Property="Content" Value="安装" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ApplicationWorkMode}" Value="1">
+                                    <Setter Property="Content" Value="卸载" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </of:SettingItem>
 
         </ui:SimpleStackPanel>
     </of:BaseView>

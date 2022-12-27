@@ -87,27 +87,5 @@ namespace OpenFrp.Core.Pipe
             }
             BeginLisenting();
         }
-
-        private PipeModel.ResponseModel Execute(PipeModel.OfAction action, PipeModel.RequestModel request)
-        {
-
-            switch (action)
-            {
-                case PipeModel.OfAction.Get_State:
-                    {
-                        return new() 
-                        { 
-                            Flag = true,
-                            Message = "success",
-                            Action = PipeModel.OfAction.Get_State 
-                        };
-                    };
-                default:
-                    {
-                        return new() { Message = "Action Not Found" };
-                    }
-            }
-            
-        }
     }
 }

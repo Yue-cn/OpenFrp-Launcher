@@ -123,10 +123,20 @@ namespace OpenFrp.Core.Pipe
                     {
                         OfApi.Authorization = request.AuthMessage?.Authorization;
                         OfApi.Session = request.AuthMessage?.UserSession;
+                        OfApi.UserInfoDataModel = request.AuthMessage?.UserDataModel;
                         return new()
                         {
                             Action = PipeModel.OfAction.LoginState_Push,
                             Flag = true
+                        };
+                    }
+                case PipeModel.OfAction.LoginState_Logout:
+                    {
+                        OfApi.ClearAccount();
+                        return new()
+                        {
+                            Flag = true,
+                            Action = PipeModel.OfAction.LoginState_Logout,
                         };
                     }
                 default:

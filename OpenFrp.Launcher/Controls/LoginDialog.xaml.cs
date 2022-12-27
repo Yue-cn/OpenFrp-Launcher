@@ -47,28 +47,10 @@ namespace OpenFrp.Launcher.Controls
             var res = await OfAppHelper.LoginAndUserInfo(Of_Ld_Username.Text, Of_Ld_Password.Password, _sourec.Token);
             if (res.Flag)
             {
-                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
-                {
-                    Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,
-                    AuthMessage = new()
-                    {
-                        Authorization = OfApi.Authorization,
-                        UserSession = OfApi.Session,
-                        UserDataModel = OfAppHelper.UserInfoModel
-                    }
-                });
-                if (resp.Flag)
-                {
-                    OfSettings.Instance.Account = new(Of_Ld_Username.Text, Of_Ld_Password.Password);
-                    Of_Ld_Username.Text = Of_Ld_Password.Password = string.Empty;
-                    Hide();
-                    return;
-                }
-                OfApi.ClearAccount();
-                OfAppHelper.UserInfoModel = new();
-                Of_Ld_ErrorInfo.Message = resp.Message;
-                Of_Ld_ELoader1.ShowContent();
-                IsPrimaryButtonEnabled = Of_Ld_ErrorInfo.IsEnabled = true;
+                // PUSH 给服务端
+                OfSettings.Instance.Account = new(Of_Ld_Username.Text, Of_Ld_Password.Password);
+                Of_Ld_Username.Text = Of_Ld_Password.Password = string.Empty;
+                Hide();
                 return;
             }
             Of_Ld_ErrorInfo.Message = res.Message;

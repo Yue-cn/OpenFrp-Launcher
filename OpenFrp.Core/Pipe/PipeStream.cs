@@ -80,7 +80,8 @@ namespace OpenFrp.Core.Pipe
         public async ValueTask<PipeModel.ResponseModel> PushMessageWithRequestAsync(PipeModel.RequestModel request)
         {
             await PushMessageAsync(request);
-            return JsonConvert.DeserializeObject<PipeModel.ResponseModel>((await Reviced()).GetString(true)) ??
+            string str = (await Reviced()).GetString(true);
+            return JsonConvert.DeserializeObject<PipeModel.ResponseModel>(str) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }
         

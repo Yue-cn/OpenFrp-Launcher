@@ -43,24 +43,28 @@ namespace OpenFrp.Launcher
 
             OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
-                Type page;
-                if (!e.IsSettingsInvoked)
+                Type? page = null;
+                if (e.IsSettingsInvoked)
                 {
-                    
+                    page = typeof(Views.Setting);
                 }
-                page = typeof(Views.Setting);
+                else
+                {
+                    page = (s.SelectedItem as NavigationViewItem)?.Tag switch
+                    {
+                        "Home" => typeof(Views.Home),
+                        _ => null
+                    };
+                }
+                if (page is not null)
                 OfApp_RootFrame.Navigate(page);
             };
-            OfApp_RootFrame.Navigating += (s, e) =>
-            {
-                OfApp_RootFrame.RemoveBackEntry();
-            };
-
+            OfApp_RootFrame.Navigating += (s, e) => OfApp_RootFrame.RemoveBackEntry();
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
             ClientPipeWorker();
-
+            // 启动器 自动登录逻辑
             if (OfSettings.Instance.Account.HasAccount)
             {
                 if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
@@ -84,10 +88,11 @@ namespace OpenFrp.Launcher
                 }
                 else
                 {
+                    await Task.Delay(1500);
                     var result = await OfAppHelper.LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
                     if (result.Flag)
                     {
-                        
+
                     }
                 }
             }
@@ -120,6 +125,14 @@ namespace OpenFrp.Launcher
             }
 
             await OfAppHelper.PipeClient.Start();
+            
+            if (OfSettings.Instance.WorkMode is WorkMode.DeamonProcess)
+            {
+                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Get_State
+                });
+            }
             LauncherModel.PipeRunningState = true;
 
         }

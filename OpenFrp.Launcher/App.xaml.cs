@@ -23,7 +23,7 @@ namespace OpenFrp.Launcher
         /// <summary>
         /// 应用启动时
         /// </summary>
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
 
             if (isSupportDarkMode)

@@ -68,8 +68,11 @@ namespace OpenFrp.Launcher.ViewModels
         [RelayCommand]
         async void Logout()
         {
-            await Task.Yield();
-            if (true)
+            var resp = await OfAppHelper.PipeClient.PushMessageAsync(new()
+            {
+                Action = Core.Pipe.PipeModel.OfAction.LoginState_Logout,
+            });
+            if (resp.Flag)
             {
                 _flyout?.Hide();
                 OfApi.ClearAccount();

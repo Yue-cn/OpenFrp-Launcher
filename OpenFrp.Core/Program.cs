@@ -161,27 +161,50 @@ namespace OpenFrp.Core
             // 连接启动器用的。
             // 既然这里连接成功了，那么下方的可以与前台交互了。
             var appClient = new Pipe.PipeClient();
-            await appClient.Start(true);
+            //await appClient.Start(true);
             if (!Utils.ServicesMode)
             {
                 // 退出事件
                 SetConsoleCtrlHandler((ctrl) =>
                 {
                     // 如果有客户端连接，那么这里需要推送。
-                    if (appClient.State)
+                    appClient.PushMessageAsync(new Pipe.PipeModel.RequestModel()
                     {
-                        appClient.PushMessageAsync(new Pipe.PipeModel.RequestModel()
-                        {
-                            Action = Pipe.PipeModel.OfAction.Server_Closed
-                        }).GetAwaiter().GetResult();
-                    }
+                        Action = Pipe.PipeModel.OfAction.Server_Closed
+                    }).GetAwaiter().GetResult();
                     Environment.Exit(0);
                     return true;
                 }, true);
+                appServer.RequestFunction = (request, model) =>
+                {
+                    switch (request)
+                    {
+                        case Pipe.PipeModel.OfAction.Get_State:
+                            {
+                                //Debugger.Launch();
+                                new Thread(async () => await appClient.Start(true)).Start();
+                                goto default;
+                            };
+                        default: return appServer.Execute(request, model);
+                    }
+                };
             }
             while (true)
             {
-                await Task.Delay(2000);
+                if (Utils.ServicesMode)
+                {
+                    await Task.Delay(1500);
+                }
+                else
+                {
+                    switch (Console.ReadLine())
+                    {
+                        case "user":
+                            {
+                                Console.WriteLine($"Session: {OfApi.Session}\nAppAuth: {OfApi.Authorization}\nUserName: {OfApi.UserInfoDataModel?.UserName ?? "UnLogin"}");
+                            };break;
+                    }
+                }
             }
         }
     }

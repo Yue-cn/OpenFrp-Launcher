@@ -12,7 +12,7 @@ namespace OpenFrp.Core.Api
         /// <summary>
         /// 测试时 内网专用 API 当然可以改自己的
         /// </summary>
-        public const string BaseUrl = @"http://192.168.31.73:5111";
+        public const string BaseUrl = @"http://192.168.31.73:5110";
 #else
         /// <summary>
         /// 正式使用时，切回官方 Api

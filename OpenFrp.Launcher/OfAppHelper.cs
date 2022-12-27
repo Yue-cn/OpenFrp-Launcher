@@ -37,19 +37,38 @@ namespace OpenFrp.Launcher
         /// </summary>
         internal static async ValueTask<Response.BaseModel> LoginAndUserInfo(string? user,string? password,CancellationToken? _token = null)
         {
+            // 登录 1
             var lo_res = await OfApi.Login(user, password);
             if (lo_res.Flag)
             {
                 if (_token is null || _token?.IsCancellationRequested == false)
                 {
+                    // 获取用户信息
                     var ui_res = await OfApi.GetUserInfo();
                     if (ui_res.Flag)
                     {
                         if (_token is null || _token?.IsCancellationRequested == false)
                         {
-                            UserInfoModel = ui_res.Data;
-                            SettingViewModel.LoginState = OfApi.LoginState;
-                            return new(null, true, "");
+                            // 推送用户星系
+                            var pipe_resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                            {
+                                Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,
+                                AuthMessage = new()
+                                {
+                                    Authorization = OfApi.Authorization,
+                                    UserSession = OfApi.Session,
+                                    UserDataModel = ui_res.Data
+                                }
+                            });
+                            if (pipe_resp.Flag)
+                            {
+                                if (_token is null || _token?.IsCancellationRequested == false)
+                                {
+                                    UserInfoModel = ui_res.Data;
+                                    SettingViewModel.LoginState = OfApi.LoginState;
+                                    return new(null, true, "");
+                                }
+                            } else return new($"推送给服务端失败: {pipe_resp.Message}");
                         }
                     }else return new($"获取用户信息失败: {ui_res.Message}");
 

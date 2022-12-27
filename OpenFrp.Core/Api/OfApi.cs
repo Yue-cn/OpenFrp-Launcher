@@ -15,9 +15,14 @@ namespace OpenFrp.Core.Api
     {
         public static string? Authorization { get; set; }
         public static string? Session { get; set; }
+        internal static OfApiModel.Response.UserInfoModel.UserInfoDataModel? UserInfoDataModel { get; set; }
         public static bool LoginState => !string.IsNullOrEmpty(Authorization) && !string.IsNullOrEmpty(Session);
 
-        public static void ClearAccount() => Authorization = Session = default;
+        public static void ClearAccount()
+        {
+            UserInfoDataModel = null;
+            Authorization = Session = null;
+        }
         /// <summary>
         /// Api交互 - 登录
         /// </summary>

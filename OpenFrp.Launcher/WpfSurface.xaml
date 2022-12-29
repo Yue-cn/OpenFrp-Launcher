@@ -12,6 +12,7 @@
     xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="WpfSurface"
+    MinWidth="540"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
     ui:ThemeManager.RequestedTheme="Light"
@@ -32,6 +33,7 @@
                 <ui:NavigationViewItem
                     Content="首页"
                     Icon="Home"
+                    IsSelected="True"
                     Tag="Home" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>

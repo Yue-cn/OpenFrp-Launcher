@@ -10,7 +10,11 @@
         <Setter Property="MinWidth" Value="{DynamicResource FlyoutThemeMinWidth}" />
         <Setter Property="MinHeight" Value="{DynamicResource ItemMinHeight}" />
         <Setter Property="BorderThickness" Value="{DynamicResource ExpanderHeaderBorderThickness}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="Gray" Opacity="0.1"/>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=FrameworkElement}}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="ui:ControlHelper.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />

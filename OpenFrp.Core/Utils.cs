@@ -68,6 +68,11 @@ namespace OpenFrp.Core
         /// 所在文件名
         /// </summary>
         public static string ExcutableName { get; } = Process.GetCurrentProcess().MainModule.FileName;
+        /// <summary>
+        /// 存储文件目录
+        /// </summary>
+        public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
+
 
         private static StreamWriter? _writer = Utils.ServicesMode ? new StreamWriter(Path.Combine(ApplicationPath, "logs.txt")) : default;
 

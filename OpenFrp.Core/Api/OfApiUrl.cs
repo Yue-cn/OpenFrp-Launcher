@@ -12,7 +12,7 @@ namespace OpenFrp.Core.Api
         /// <summary>
         /// 测试时 内网专用 API 当然可以改自己的
         /// </summary>
-        public const string BaseUrl = @"http://192.168.31.73:5110";
+        public const string BaseUrl = @"http://192.168.31.74:5111";
 #else
         /// <summary>
         /// 正式使用时，切回官方 Api
@@ -30,5 +30,13 @@ namespace OpenFrp.Core.Api
         /// <para> 绑定模型: <see cref="OfApiModel.Response.UserInfoModel"/> </para>
         /// </summary>
         public const string UserInfo = $"{BaseUrl}/frp/api/getUserInfo";
+
+        /// <summary>
+        /// OpenFrp - 签到
+        /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
+        /// </summary>
+        public const string UserSignin = $"{BaseUrl}/frp/api/userSign";
+
+        public const string LauncherInfo = $"http://192.168.31.74:5111/launcher/info";
     }
 }

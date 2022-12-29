@@ -1,16 +1,38 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace OpenFrp.Launcher.Controls
 {
     public partial class ElementLoader : UserControl
     {
+        public ElementLoader()
+        {
 
 
+
+        }
+        [RelayCommand]
+        void Refresh()
+        {
+            bool isClicked = false;
+
+            if (!isClicked)
+            {
+                isClicked = true;
+                // 开始加载
+                ShowLoader();
+                if (_action is not null) _action();
+                // 设置消息
+                PushMessage(worker: () => { });
+            }
+        }
+        #region Property
         public bool IsLoading
         {
             get { return (bool)GetValue(IsLoadingProperty); }
@@ -41,22 +63,53 @@ namespace OpenFrp.Launcher.Controls
         public static readonly DependencyProperty ProgressRingSizeProperty =
             DependencyProperty.Register("ProgressRingSize", typeof(int), typeof(ElementLoader), new PropertyMetadata(100));
 
+
+
+        public string ErrorTitle
+        {
+            get { return (string)GetValue(ErrorTitleProperty); }
+            set { SetValue(ErrorTitleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ErrorTitle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ErrorTitleProperty =
+            DependencyProperty.Register("ErrorTitle", typeof(string), typeof(ElementLoader), new PropertyMetadata(""));
+
+
+
+        public string ErrorButtonText
+        {
+            get { return (string)GetValue(ErrorButtonTextProperty); }
+            set { SetValue(ErrorButtonTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ErrorButtonText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ErrorButtonTextProperty =
+            DependencyProperty.Register("ErrorButtonText", typeof(string), typeof(ElementLoader), new PropertyMetadata("重试"));
+
+
+
+
+
+
+
+        
+
+
+
+
+
+        private Action? _action { get; set; }
+
+
+
+        #endregion
+
         public void PushMessage(Action worker,string title = "",string buttonContent = "")
         {
-            ((TextBlock)FindName("Loader_ErrorMessage")).Text = title;
-            ((Button)FindName("Loader_ErrorRefresh")).Content = buttonContent;
-            bool isClicked = false;
-            ((Button)FindName("Loader_ErrorRefresh")).Click += (sender,args) =>
-            {
-                if (!isClicked)
-                {
-                    isClicked = true;
-                    // 开始加载
-                    ShowLoader();
-                    // 设置消息
-                    PushMessage(worker: () => { });
-                }
-            };
+            ErrorTitle = title;
+            ErrorButtonText = buttonContent;
+            _action = worker;
         }
         /// <summary>
         /// 显示内容

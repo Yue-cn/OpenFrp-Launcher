@@ -50,8 +50,8 @@ namespace OpenFrp.Launcher.ViewModels
         /// </summary>
         public OpenFrp.Core.Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel UserInfoData
         {
-            get => OfAppHelper.UserInfoModel;
-            set => OfAppHelper.UserInfoModel = value;
+            get => OfApi.UserInfoDataModel!;
+            set => OfApi.UserInfoDataModel = value;
         }
 
         
@@ -65,6 +65,9 @@ namespace OpenFrp.Launcher.ViewModels
 
         private Flyout? _flyout { get; set; }
 
+        /// <summary>
+        /// 登出
+        /// </summary>
         [RelayCommand]
         async void Logout()
         {
@@ -80,7 +83,9 @@ namespace OpenFrp.Launcher.ViewModels
                 UserInfoData = new();
             }
         }
-
+        /// <summary>
+        /// 登录
+        /// </summary>
         [RelayCommand]
         async void Login(Button sender)
         {
@@ -106,7 +111,9 @@ namespace OpenFrp.Launcher.ViewModels
                 _flyout.ShowAt(sender);
             }
         }
-
+        /// <summary>
+        /// 安装 / 卸载 服务
+        /// </summary>
         [RelayCommand]
         async void ActionServiceMode(Button sender)
         {

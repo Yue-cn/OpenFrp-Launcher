@@ -7,7 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Windows.Media.Core;
 
 namespace OpenFrp.Core.Api
 {
@@ -15,7 +16,7 @@ namespace OpenFrp.Core.Api
     {
         public static string? Authorization { get; set; }
         public static string? Session { get; set; }
-        internal static OfApiModel.Response.UserInfoModel.UserInfoDataModel? UserInfoDataModel { get; set; }
+        public static OfApiModel.Response.UserInfoModel.UserInfoDataModel? UserInfoDataModel { get; set; }
         public static bool LoginState => !string.IsNullOrEmpty(Authorization) && !string.IsNullOrEmpty(Session);
 
         public static void ClearAccount()
@@ -59,12 +60,46 @@ namespace OpenFrp.Core.Api
             }
         }
 
+        /// <summary>
+        /// Api交互 - 获取用户个人信息
+        /// </summary>
+        public static async ValueTask<Response.BaseModel> UserSignin()
+        {
+            if (!LoginState)
+            {
+                return new()
+                {
+                    Flag = false,
+                    Message = "您尚未登录。"
+                };
+            }
+            else
+            {
+                return await POST<Response.BaseModel>(
+                    OfApiUrl.UserSignin,
+                    new Request.SessionData(
+                        Session).ToStringContent()
+                    ) ?? new() { Message = "软件请求失败。" };
+            }
+        }
+
+        public static async ValueTask<Response.LauncherPreview> GetLauncherPreview()
+        {
+            return await GET<Response.LauncherPreview>(OfApiUrl.LauncherInfo) ??
+                new()
+                {
+                    Message = "API请求失败。"
+                };
+        }
+
         public static async ValueTask<T?> POST<T>(string url,StringContent body)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
-            //client.Timeout = new TimeSpan(0,0,0,5);
+#if !DEBUG
+            client.Timeout = new TimeSpan(0,0,0,5);
+#endif
             try
             {
                 using var response =  await client.PostAsync(url, body);
@@ -85,6 +120,53 @@ namespace OpenFrp.Core.Api
                     }
                     // 如果不是基本类 & 登录，那么直接返回。
                     return data;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return default;
+        }
+
+        public static async ValueTask<T?> GET<T>(string url)
+        {
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
+                ? default : new(Authorization);
+#if !DEBUG
+            client.Timeout = new TimeSpan(0,0,0,5);
+#endif
+            try
+            {
+                using var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    string str = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<T>(str);
+                    // 如果不是基本类 & 登录，那么直接返回。
+                    return data;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return default;
+        }
+
+        public static async ValueTask<byte[]?> GET(string url)
+        {
+            HttpClient client = new HttpClient();
+#if DEBUG
+            client.Timeout = new TimeSpan(0,0,0,5);
+#endif
+            try
+            {
+                using var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
                 }
             }
             catch (Exception ex)

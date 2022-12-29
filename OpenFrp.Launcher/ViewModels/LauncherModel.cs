@@ -14,14 +14,8 @@ namespace OpenFrp.Launcher.ViewModels
         /// 管道运行状态 (实际请改用<see cref="PipeRunningState"/>)
         /// </summary>
         [ObservableProperty]
-        [NotifyPropertyChangedRecipients]
         public bool pipeRunningState;
 
-        [RelayCommand]
-        void GC_Collet()
-        {
-            GC.Collect(0,GCCollectionMode.Optimized);
-            
-        }
+
     }
 }

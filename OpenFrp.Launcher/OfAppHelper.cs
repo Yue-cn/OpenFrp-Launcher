@@ -10,19 +10,19 @@ namespace OpenFrp.Launcher
 {
     public class OfAppHelper
     {
-        public static ViewModels.LauncherModel? LauncherViewModel
+        /// <summary>
+        /// 启动器 - 主模型
+        /// </summary>
+        public static ViewModels.LauncherModel LauncherViewModel
         {
-            get => (ViewModels.LauncherModel?)App.Current?.MainWindow.DataContext;
+            get => (ViewModels.LauncherModel)App.Current?.MainWindow.DataContext!;
             set => App.Current.MainWindow.DataContext = value;
         }
         /// <summary>
         /// 设置页面 - 模型
         /// </summary>
         public static ViewModels.SettingModel SettingViewModel { get; set; } = new();
-        /// <summary>
-        /// 用户信息
-        /// </summary>
-        public static OpenFrp.Core.Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel UserInfoModel { get; set; } = new();
+
 
         /// <summary>
         /// 管道 - 客户端
@@ -32,11 +32,14 @@ namespace OpenFrp.Launcher
         /// 管道 - PUSH
         /// </summary>
         public static OpenFrp.Core.Pipe.PipeServer PipeServer { get; set; } = new();
+
+        internal static bool isLoading { get; set; }
         /// <summary>
         /// 登录且获得用户个人信息
         /// </summary>
         internal static async ValueTask<Response.BaseModel> LoginAndUserInfo(string? user,string? password,CancellationToken? _token = null)
         {
+            isLoading = true;
             // 登录 1
             var lo_res = await OfApi.Login(user, password);
             if (lo_res.Flag)
@@ -64,7 +67,8 @@ namespace OpenFrp.Launcher
                             {
                                 if (_token is null || _token?.IsCancellationRequested == false)
                                 {
-                                    UserInfoModel = ui_res.Data;
+                                    isLoading = false;
+                                    OfApi.UserInfoDataModel = ui_res.Data;
                                     SettingViewModel.LoginState = OfApi.LoginState;
                                     return new(null, true, "");
                                 }

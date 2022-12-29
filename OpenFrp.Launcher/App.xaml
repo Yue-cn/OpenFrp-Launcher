@@ -24,6 +24,7 @@
                 <ResourceDictionary Source="./Controls/BaseView.xaml" />
                 <ResourceDictionary Source="./Controls/SettingItem.xaml" />
                 <ResourceDictionary Source="./Controls/ElementLoader.xaml" />
+                <ResourceDictionary Source="./Controls/Card.xaml" />
 
 
             </ResourceDictionary.MergedDictionaries>
@@ -31,7 +32,7 @@
             <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
 
             <!--  页面（控件）的最大宽度  -->
-            <sys:Double x:Key="OfApp_PageMaxWidth">1100</sys:Double>
+            <sys:Double x:Key="OfApp_PageMaxWidth">1200</sys:Double>
 
             <!--  当链接被点击时  -->
             <Style BasedOn="{StaticResource DefaultHyperlinkStyle}" TargetType="Hyperlink">

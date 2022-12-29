@@ -1,10 +1,12 @@
-﻿using OpenFrp.Core;
+﻿using Newtonsoft.Json;
+using OpenFrp.Core;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.App;
 using OpenFrp.Launcher.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,8 +17,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Windows.UI.WebUI;
+
 
 namespace OpenFrp.Launcher
 {
@@ -38,6 +39,9 @@ namespace OpenFrp.Launcher
         protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
+
+            System.IO.Directory.CreateDirectory(Utils.AppTempleFilesPath);
+            System.IO.Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath,"static"));
 
             await OfSettings.ReadConfig();
 
@@ -80,7 +84,7 @@ namespace OpenFrp.Launcher
                         if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
                             result.AuthMessage?.UserDataModel is not null)
                         {
-                            OfAppHelper.UserInfoModel = result.AuthMessage?.UserDataModel!;
+                            OfApi.UserInfoDataModel = result.AuthMessage?.UserDataModel!;
                             OfAppHelper.LauncherViewModel!.PipeRunningState = true;
                             OfAppHelper.SettingViewModel.LoginState = true;
                         }
@@ -88,7 +92,8 @@ namespace OpenFrp.Launcher
                 }
                 else
                 {
-                    await Task.Delay(1500);
+                    //await Task.Delay(1000);
+                    
                     var result = await OfAppHelper.LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
                     if (result.Flag)
                     {

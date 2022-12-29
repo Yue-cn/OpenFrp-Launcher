@@ -5,11 +5,222 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:OpenFrp.Launcher.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
     xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="Home"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="954"
+    d:DesignWidth="1176"
     mc:Ignorable="d">
-    <of:BaseView Title="首页" />
+    <ui:Page.DataContext>
+        <model:HomeModel />
+    </ui:Page.DataContext>
+    <of:BaseView Title="首页">
+        <ui:SimpleStackPanel Height="1000" Spacing="8">
+            <Grid MinHeight="300" SizeChanged="Grid_SizeChanged">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.3*" />
+                    <ColumnDefinition Width="*" MinWidth="300" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <!--  首页大图  -->
+                <Grid MinHeight="150">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Grid.RowSpan" Value="2" />
+                            <Setter Property="Grid.Row" Value="0" />
+                            <Setter Property="Grid.Column" Value="0" />
+                            <Setter Property="Grid.ColumnSpan" Value="1" />
+                            <Setter Property="Margin" Value="0,0,4,0" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                    <Setter Property="Grid.Row" Value="0" />
+                                    <Setter Property="Grid.RowSpan" Value="1" />
+                                    <Setter Property="Grid.Column" Value="0" />
+                                    <Setter Property="Grid.ColumnSpan" Value="2" />
+                                    <Setter Property="Margin" Value="0,0,0,4" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <of:Card Panel.ZIndex="20">
+                        <of:ElementLoader x:Name="Of_Preview_CardLoader">
+                            <Grid>
+                                <ui:ThemeShadowChrome />
+                                <Border x:Name="Of_Preview_Background" CornerRadius="8">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png" Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                                <Border CornerRadius="8">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Click="Refresh_MenuItem_Click" Header="刷新">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Refresh" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Click="Save_MenuItem_Click" Header="保存图片">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Save" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1.5">
+                                            <GradientStop Offset="1" Color="Black" />
+                                            <GradientStop Offset="0" Color="#007F7F7F" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <ui:HyperlinkButton
+                                    Margin="24,0,-16,24"
+                                    Padding="8"
+                                    VerticalAlignment="Bottom"
+                                    AutomationProperties.Name="打开链接"
+                                    NavigateUri="{Binding LauncherPreviewData.Link}">
+                                    <ui:HyperlinkButton.ToolTip>
+                                        <TextBlock>
+                                            <Run Text="打开链接 - " />
+                                            <Run Text="{Binding LauncherPreviewData.Title}" />
+                                        </TextBlock>
+                                    </ui:HyperlinkButton.ToolTip>
+                                    <ui:SimpleStackPanel
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Spacing="0">
+                                        <TextBlock
+                                            FontSize="28"
+                                            FontWeight="Light"
+                                            Foreground="White"
+                                            Style="{StaticResource TitleTextBlockStyle}"
+                                            Text="{Binding LauncherPreviewData.Title}" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock
+                                                FontSize="22"
+                                                FontWeight="Light"
+                                                Foreground="White"
+                                                Style="{StaticResource SubtitleTextBlockStyle}">
+                                                <Run Text="{Binding LauncherPreviewData.Content}" />
+
+
+                                            </TextBlock>
+                                            <ui:SymbolIcon
+                                                Grid.Column="1"
+                                                Margin="8,0,0,0"
+                                                VerticalAlignment="Bottom"
+                                                FontSize="24"
+                                                Foreground="White"
+                                                Symbol="Link" />
+                                        </StackPanel>
+
+
+                                    </ui:SimpleStackPanel>
+                                </ui:HyperlinkButton>
+
+
+                            </Grid>
+
+                        </of:ElementLoader>
+                    </of:Card>
+
+
+                </Grid>
+                <!--  个人信息  -->
+                <Grid MinHeight="200">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Grid.RowSpan" Value="2" />
+                            <Setter Property="Grid.Row" Value="0" />
+                            <Setter Property="Grid.Column" Value="2" />
+                            <Setter Property="Grid.ColumnSpan" Value="1" />
+                            <Setter Property="Margin" Value="4,0,0,0" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                    <Setter Property="Grid.Row" Value="1" />
+                                    <Setter Property="Grid.RowSpan" Value="1" />
+                                    <Setter Property="Grid.Column" Value="0" />
+                                    <Setter Property="Grid.ColumnSpan" Value="2" />
+                                    <Setter Property="Margin" Value="0,4,0,0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <of:Card>
+                        <of:ElementLoader x:Name="Of_UserInfo_Loader">
+                            <Grid Margin="0,24">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Margin="24,0"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="个人信息" />
+
+                                <Grid Grid.Row="2">
+                                    <ui:ListView Padding="20,0,20,0" ItemsSource="{Binding UserInfoViewModels}">
+                                        <ui:ListView.Style>
+                                            <Style TargetType="ui:ListView">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AdaptiveSmall}" Value="False">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:ListView.Style>
+                                        <ui:ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid MinHeight="55">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="8" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <ContentControl
+                                                        Grid.Column="0"
+                                                        Content="{Binding IconElement}"
+                                                        Focusable="False" />
+                                                    <TextBlock
+                                                        Grid.Column="2"
+                                                        Margin="0,8,0,8"
+                                                        VerticalAlignment="Center"
+                                                        TextWrapping="Wrap">
+                                                        <Run Text="{Binding Title}" /><Run Text=":" />
+                                                        <Run Text="{Binding Content}" />
+                                                    </TextBlock>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ui:ListView.ItemTemplate>
+                                    </ui:ListView>
+                                </Grid>
+                                <Grid Grid.Row="3">
+                                    <ui:CommandBar Margin="20,0" HorizontalAlignment="Left">
+                                        <ui:AppBarButton
+                                            Command="{Binding SigninCommand}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                                            Icon="Calendar"
+                                            Label="签到" />
+                                        <ui:AppBarButton
+                                            Command="{Binding OpeninWebCommand}"
+                                            Icon="Globe"
+                                            Label="官网" />
+                                    </ui:CommandBar>
+                                </Grid>
+                            </Grid>
+                        </of:ElementLoader>
+                    </of:Card>
+                </Grid>
+            </Grid>
+        </ui:SimpleStackPanel>
+    </of:BaseView>
 </ui:Page>

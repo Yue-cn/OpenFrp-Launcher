@@ -17,6 +17,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="of:Card">
                     <Border
+                        Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"

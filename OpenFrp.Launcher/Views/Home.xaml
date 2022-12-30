@@ -15,12 +15,22 @@
     <ui:Page.DataContext>
         <model:HomeModel />
     </ui:Page.DataContext>
-    <of:BaseView Title="首页">
-        <ui:SimpleStackPanel Height="1000" Spacing="8">
+    <of:BaseView x:Name="Of_Home_BaseView" Title="首页">
+        <ui:SimpleStackPanel MinHeight="1000" Spacing="8">
             <Grid MinHeight="300" SizeChanged="Grid_SizeChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2.3*" />
-                    <ColumnDefinition Width="*" MinWidth="300" />
+                    <ColumnDefinition Width="*">
+                        <ColumnDefinition.Style>
+                            <Style TargetType="ColumnDefinition">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AdaptiveSmall}" Value="False">
+                                        <Setter Property="MinWidth" Value="300" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ColumnDefinition.Style>
+                    </ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -47,10 +57,10 @@
                         </Style>
                     </Grid.Style>
                     <of:Card Panel.ZIndex="20">
-                        <of:ElementLoader x:Name="Of_Preview_CardLoader">
+                        <of:ElementLoader x:Name="Of_Home_PreviewCardLoader">
                             <Grid>
                                 <ui:ThemeShadowChrome />
-                                <Border x:Name="Of_Preview_Background" CornerRadius="8">
+                                <Border x:Name="Of_Home_PreviewBackground" CornerRadius="8">
                                     <Border.Background>
                                         <ImageBrush ImageSource="pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png" Stretch="UniformToFill" />
                                     </Border.Background>
@@ -152,7 +162,7 @@
                         </Style>
                     </Grid.Style>
                     <of:Card>
-                        <of:ElementLoader x:Name="Of_UserInfo_Loader">
+                        <of:ElementLoader x:Name="Of_Home_UserInfoLoader">
                             <Grid Margin="0,24">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -160,16 +170,22 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Margin="24,0"
-                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                    Text="个人信息" />
-
+                                <TextBlock Grid.Row="0" Text="个人信息">
+                                    <TextBlock.Style>
+                                        <Style BasedOn="{StaticResource SubtitleTextBlockStyle}" TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="24,0,0,0" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                                    <Setter Property="Margin" Value="24,8,0,0" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                                 <Grid Grid.Row="2">
-                                    <ui:ListView Padding="20,0,20,0" ItemsSource="{Binding UserInfoViewModels}">
-                                        <ui:ListView.Style>
-                                            <Style TargetType="ui:ListView">
+                                    <ListView Padding="20,0" ItemsSource="{Binding UserInfoViewModels}">
+                                        <ListView.Style>
+                                            <Style BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding AdaptiveSmall}" Value="False">
@@ -177,8 +193,8 @@
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </ui:ListView.Style>
-                                        <ui:ListView.ItemTemplate>
+                                        </ListView.Style>
+                                        <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid MinHeight="55">
                                                     <Grid.ColumnDefinitions>
@@ -186,10 +202,10 @@
                                                         <ColumnDefinition Width="8" />
                                                         <ColumnDefinition Width="*" />
                                                     </Grid.ColumnDefinitions>
-                                                    <ContentControl
+                                                    <ui:FontIcon
                                                         Grid.Column="0"
-                                                        Content="{Binding IconElement}"
-                                                        Focusable="False" />
+                                                        Focusable="False"
+                                                        Glyph="{Binding IconElement, Mode=OneWay}" />
                                                     <TextBlock
                                                         Grid.Column="2"
                                                         Margin="0,8,0,8"
@@ -200,10 +216,59 @@
                                                     </TextBlock>
                                                 </Grid>
                                             </DataTemplate>
-                                        </ui:ListView.ItemTemplate>
-                                    </ui:ListView>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                    <ui:GridView
+                                        Padding="20,0"
+                                        ItemsSource="{Binding UserInfoViewModels, Mode=OneWay}"
+                                        PreviewMouseWheel="GridView_PreviewMouseWheel"
+                                        ScrollViewer.CanContentScroll="False"
+                                        ScrollViewer.PanningMode="None">
+                                        <ui:GridView.Style>
+                                            <Style TargetType="ui:GridView">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:GridView.Style>
+                                        <ui:GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="200" Height="110">
+                                                    <Grid Margin="20,-4,20,0" VerticalAlignment="Center">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="4" />
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <ui:FontIcon
+                                                            HorizontalAlignment="Left"
+                                                            Focusable="False"
+                                                            Glyph="{Binding IconElement, Mode=OneWay}" />
+                                                        <Label Grid.Row="2" Content="{Binding Title}" />
+                                                        <Label Grid.Row="3" Content="{Binding Content}" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ui:GridView.ItemTemplate>
+                                    </ui:GridView>
                                 </Grid>
-                                <Grid Grid.Row="3">
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Grid.Row" Value="3" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                                    <Setter Property="Grid.Row" Value="0" />
+                                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
                                     <ui:CommandBar Margin="20,0" HorizontalAlignment="Left">
                                         <ui:AppBarButton
                                             Command="{Binding SigninCommand}"
@@ -221,6 +286,19 @@
                     </of:Card>
                 </Grid>
             </Grid>
+            <of:Card MinHeight="250">
+                <of:ElementLoader x:Name="Of_Home_BroadCastLoader">
+                    <Grid Margin="24">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="公告" />
+                        <Grid x:Name="Of_Home_BroadCast_Content" Grid.Row="2" />
+                    </Grid>
+                </of:ElementLoader>
+            </of:Card>
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

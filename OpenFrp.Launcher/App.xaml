@@ -37,6 +37,7 @@
             <!--  当链接被点击时  -->
             <Style BasedOn="{StaticResource DefaultHyperlinkStyle}" TargetType="Hyperlink">
                 <EventSetter Event="Click" Handler="Hyperlink_Click" />
+                <EventSetter Event="RequestNavigate" Handler="Hyperlink_RequestNavigate" />
             </Style>
             <Style TargetType="ui:HyperlinkButton">
                 <Setter Property="Tag" Value="unselect" />

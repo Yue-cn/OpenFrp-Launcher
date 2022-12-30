@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OpenFrp.Core;
 using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
 using Windows.ApplicationModel.VoiceCommands;
 
 namespace OpenFrp.Launcher.ViewModels
@@ -81,6 +82,8 @@ namespace OpenFrp.Launcher.ViewModels
                 OfApi.ClearAccount();
                 LoginState = false;
                 UserInfoData = new();
+                OfSettings.Instance.Account = new();
+                
             }
         }
         /// <summary>

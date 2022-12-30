@@ -16,7 +16,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-
+using System.Windows.Markup;
+using System.Xml;
 
 namespace OpenFrp.Launcher.Views
 {
@@ -25,7 +26,9 @@ namespace OpenFrp.Launcher.Views
     /// </summary>
     public partial class Home : Page
     {
-
+        /// <summary>
+        /// 首页模型
+        /// </summary>
         private HomeModel HomeModel
         {
             get => (HomeModel)DataContext;
@@ -37,11 +40,15 @@ namespace OpenFrp.Launcher.Views
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
+            // 开始相关操作
             RefreshUserInfo();
             RefreshLauncherPreview();
+            RefreshBroadCast();
         }
 
-
+        /// <summary>
+        /// 自适应大小
+        /// </summary>
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var grid = (Grid)sender;
@@ -61,15 +68,15 @@ namespace OpenFrp.Launcher.Views
         /// </summary>
         internal async void RefreshUserInfo()
         {
-            Of_UserInfo_Loader.ShowLoader();
+            Of_Home_UserInfoLoader.ShowLoader();
             while (OfAppHelper.isLoading)
             {
                 await Task.Delay(500);
             }
             if (!OfApi.LoginState)
             {
-                Of_UserInfo_Loader.ShowError();
-                Of_UserInfo_Loader.PushMessage(() =>
+                Of_Home_UserInfoLoader.ShowError();
+                Of_Home_UserInfoLoader.PushMessage(() =>
                 {
                     (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.Setting));
                     var item = ((App.Current.MainWindow as WpfSurface)?.OfApp_NavigationView.SettingsItem as NavigationViewItem);
@@ -83,34 +90,48 @@ namespace OpenFrp.Launcher.Views
                 {
                     new()
                     {
-                        IconElement = new SymbolIcon(Symbol.Mail),
+                        IconElement = "\xe715",
                         Title = "邮箱",
                         Content = HomeModel.UserInfoData.Email,
                     },
                     new()
                     {
-                        IconElement = new SymbolIcon(Symbol.ContactInfo),
+                        IconElement = $"\xe77b",
                         Title = "昵称",
                         Content = HomeModel.UserInfoData.UserName,
                     },
                     new()
                     {
-                        IconElement = new FontIcon(){Glyph = "\xe8a4" },
+                        IconElement = "\xe8a4",
                         Title = "隧道数",
                         Content = $"{HomeModel.UserInfoData.UsedProxies} / {HomeModel.UserInfoData.MaxProxies}",
                     },
                     new()
                     {
-                        IconElement = new FontIcon(){Glyph = "\xeafc" },
+                        IconElement = "\xeafc",
                         Title = "可用流量",
                         Content = $"{Math.Round(HomeModel.UserInfoData.Traffic / (double)1024,2)} Gib",
                     },
-                    new(),
-                    new(),
-                    new(),
-                    new(),
+                    new()
+                    {
+                        IconElement = "\xe780",
+                        Title = "实名状态",
+                        Content = $"{(HomeModel.UserInfoData.isRealname ? "已": "未")}实名"
+                    },
+                    new()
+                    {
+                        IconElement = "\xe902",
+                        Title = "所在组",
+                        Content = HomeModel.UserInfoData.GroupCName,
+                    },
+                    new()
+                    {
+                        IconElement = "\xec05",
+                        Title = "带宽速率 (Mbps)",
+                        Content = $"{(HomeModel.UserInfoData.InputLimit / 1024) * 8} / {(HomeModel.UserInfoData.OutputLimit / 1024) * 8}"
+                    },
                 };
-                Of_UserInfo_Loader.ShowContent();
+                Of_Home_UserInfoLoader.ShowContent();
             }
             
         }
@@ -119,12 +140,15 @@ namespace OpenFrp.Launcher.Views
         /// </summary>
         internal async void RefreshLauncherPreview()
         {
+            Of_Home_PreviewCardLoader.ShowLoader();
             var lp = await OfApi.GetLauncherPreview();
-            ((ImageBrush)Of_Preview_Background.Background).ImageSource = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png"));
+            
+            ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png"));
             if (lp.Flag)
             {
                 if (lp.Data.Info.ImageUrl is not null)
                 {
+                    Of_Home_PreviewCardLoader.ShowContent();
                     string url = lp.Data.Info.ImageUrl.ToString();
                     string fileName = Path.Combine(Utils.AppTempleFilesPath,"static", $"{lp.Data.Info.ImageUrl.ToString().GetMD5()}.png");
                     if (!File.Exists(fileName))
@@ -139,24 +163,44 @@ namespace OpenFrp.Launcher.Views
                         }
                         else
                         {
-                            Of_Preview_CardLoader.ShowContent();
                             return;
                         };
                     }
                     
-                    ((ImageBrush)Of_Preview_Background.Background).ImageSource = new BitmapImage(new Uri(fileName));
+                    ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri(fileName));
 
                 }
                 HomeModel.LauncherPreviewData = lp.Data.Info;
             }
-            Of_Preview_CardLoader.ShowContent();
+            Of_Home_PreviewCardLoader.ShowContent();
         }
+
+        internal async void RefreshBroadCast()
+        {
+            Of_Home_BroadCastLoader.ShowLoader();
+            var lp = await OfApi.GetBroadCast();
+            if (lp.Flag)
+            {
+                Of_Home_BroadCast_Content.Children.Add(XamlReader.Parse(lp.Data) as UIElement);
+                await Task.Delay(250);
+                Of_Home_BroadCastLoader.ShowContent();
+            }
+            else
+            {
+                Of_Home_BroadCastLoader.ShowError();
+                Of_Home_BroadCastLoader.PushMessage(RefreshBroadCast,lp.Message,"重试");
+            }
+            
+
+        }
+
+        #region Element Command
         /// <summary>
         /// "刷新的菜单按钮"被按下
         /// </summary>
         private async void Refresh_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Of_Preview_CardLoader.ShowLoader();
+            Of_Home_PreviewCardLoader.ShowLoader();
             await Task.Delay(1000);
             RefreshLauncherPreview();
         }
@@ -168,16 +212,18 @@ namespace OpenFrp.Launcher.Views
 
             try
             {
-                var dialog = new Microsoft.Win32.SaveFileDialog();
-                dialog.Filter = "图片文件|*.png";
-                
+                var dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "图片文件|*.png"
+                };
+
                 if (dialog.ShowDialog() is true)
                 {
                     using var file = new FileStream(dialog.FileName,FileMode.Create);
                     
                     Stream stream = HomeModel.LauncherPreviewData.ImageUrl is null ? 
                         App.GetResourceStream(new Uri("pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png")).Stream :
-                        new FileStream(((BitmapImage)((ImageBrush)Of_Preview_Background.Background).ImageSource).UriSource.ToString().Replace("file:///",""), FileMode.Open,FileAccess.Read);
+                        new FileStream(((BitmapImage)((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource).UriSource.ToString().Replace("file:///",""), FileMode.Open,FileAccess.Read);
                     byte[] buffer = new byte[stream.Length];
                     int count = await stream.ReadAsync(buffer, 0, buffer.Length);
                     if (count > 0)
@@ -190,5 +236,10 @@ namespace OpenFrp.Launcher.Views
             catch { }
             
         }
+        /// <summary>
+        /// 滚动逻辑修复
+        /// </summary>
+        private void GridView_PreviewMouseWheel(object sender, MouseWheelEventArgs e) => Of_Home_BaseView.ExcuteScroll(e);
+        #endregion
     }
 }

@@ -63,7 +63,12 @@ namespace OpenFrp.Launcher
                 if (page is not null)
                 OfApp_RootFrame.Navigate(page);
             };
-            OfApp_RootFrame.Navigating += (s, e) => OfApp_RootFrame.RemoveBackEntry();
+            OfApp_RootFrame.Navigating += (s, e) =>
+            {
+                if (e.Uri is null) OfApp_RootFrame.RemoveBackEntry();
+                else { e.Cancel = true; }
+
+            };
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-
+using System.Windows.Input;
 
 namespace OpenFrp.Launcher.Controls
 {
@@ -19,5 +19,7 @@ namespace OpenFrp.Launcher.Controls
         // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title", typeof(string), typeof(BaseView));
+
+        public void ExcuteScroll(MouseWheelEventArgs e) => ((ScrollViewerEx)GetTemplateChild("_ScrollViewer"))?.ExcuteScroll(e);
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using static OpenFrp.Core.Api.OfApiModel.Response;
@@ -141,6 +142,22 @@ namespace OpenFrp.Core.Api
                     /// </summary>
                     [JsonProperty("token")]
                     public string? UserToken { get; set; }
+
+                    /// <summary>
+                    /// 是否已实名
+                    /// </summary>
+                    [JsonProperty("realname")]
+                    public bool isRealname { get; set; }
+                    /// <summary>
+                    /// 入口带宽速率
+                    /// </summary>
+                    [JsonProperty("inLimit")]
+                    public int InputLimit { get; set; }
+                    /// <summary>
+                    /// 出口带宽速率
+                    /// </summary>
+                    [JsonProperty("outLimit")]
+                    public int OutputLimit { get; set; }
                 }
             }
 

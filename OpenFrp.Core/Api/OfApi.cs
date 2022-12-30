@@ -82,7 +82,21 @@ namespace OpenFrp.Core.Api
                     ) ?? new() { Message = "软件请求失败。" };
             }
         }
-
+        /// <summary>
+        /// Api交互 - 获取启动器公告
+        /// </summary>
+        /// <returns></returns>
+        public static async ValueTask<Response.BaseModel> GetBroadCast()
+        {
+            return await GET<Response.BaseModel>(OfApiUrl.LauncherBroadCast) ??
+                new()
+                {
+                    Message = "API请求失败。"
+                };
+        }
+        /// <summary>
+        /// Api交互 - 获取启动器信息
+        /// </summary>
         public static async ValueTask<Response.LauncherPreview> GetLauncherPreview()
         {
             return await GET<Response.LauncherPreview>(OfApiUrl.LauncherInfo) ??
@@ -94,12 +108,12 @@ namespace OpenFrp.Core.Api
 
         public static async ValueTask<T?> POST<T>(string url,StringContent body)
         {
-            HttpClient client = new HttpClient();
+            HttpClient client = new();
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
-#if !DEBUG
+
             client.Timeout = new TimeSpan(0,0,0,5);
-#endif
+
             try
             {
                 using var response =  await client.PostAsync(url, body);
@@ -131,12 +145,12 @@ namespace OpenFrp.Core.Api
 
         public static async ValueTask<T?> GET<T>(string url)
         {
-            HttpClient client = new HttpClient();
+            HttpClient client = new();
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
-#if !DEBUG
+
             client.Timeout = new TimeSpan(0,0,0,5);
-#endif
+
             try
             {
                 using var response = await client.GetAsync(url);
@@ -157,7 +171,7 @@ namespace OpenFrp.Core.Api
 
         public static async ValueTask<byte[]?> GET(string url)
         {
-            HttpClient client = new HttpClient();
+            HttpClient client = new();
 #if DEBUG
             client.Timeout = new TimeSpan(0,0,0,5);
 #endif

@@ -35,7 +35,7 @@ namespace OpenFrp.Launcher.ViewModels
         {
             public class UserInfoViewModel
             {
-                public object IconElement { get; set; } = new SymbolIcon(Symbol.Play);
+                public string IconElement { get; set; } = "\xe713";
 
                 public string Title { get; set; } = "Unknown";
 
@@ -70,14 +70,17 @@ namespace OpenFrp.Launcher.ViewModels
                 dialog.Loaded += async (sender, args) =>
                 {
                     var resp = await OfApi.UserSignin();
-                    await Task.Delay(500);
-                    loader.Content = resp.Message;
+                    var resp1 = await OfApi.GetUserInfo();
+                    loader.Content = $"{(string.IsNullOrEmpty(resp.Data) ? resp1.Message : resp.Data)}";
+                    if (resp1.Flag) { OfApi.UserInfoDataModel = resp1.Data; }
                     loader.ShowContent();
                     dialog.IsPrimaryButtonEnabled = true;
                 };
+                
                 await dialog.ShowAsync();
-                page.Of_UserInfo_Loader.ShowLoader();
-                await Task.Delay(750);
+
+                page.Of_Home_UserInfoLoader.ShowLoader();
+                await Task.Delay(500);
                 page.RefreshUserInfo();
             }
             _hasDialog = false;

@@ -25,7 +25,10 @@
                                 Text="{TemplateBinding Title}" />
                         </Grid>
 
-                        <ui:ScrollViewerEx Grid.Row="2">
+                        <ui:ScrollViewerEx
+                            Name="_ScrollViewer"
+                            Grid.Row="2"
+                            PanningMode="Both">
                             <Grid
                                 MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
                                 Margin="40,8,40,32"

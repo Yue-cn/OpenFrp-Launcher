@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OpenFrp.Launcher.ViewModels
 {
-    public partial class LauncherModel : ObservableRecipient
+    public partial class LauncherModel : ObservableObject
     {
         /// <summary>
         /// 管道运行状态 (实际请改用<see cref="PipeRunningState"/>)

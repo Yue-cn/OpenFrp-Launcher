@@ -25,6 +25,8 @@
                 <ResourceDictionary Source="./Controls/SettingItem.xaml" />
                 <ResourceDictionary Source="./Controls/ElementLoader.xaml" />
                 <ResourceDictionary Source="./Controls/Card.xaml" />
+                <ResourceDictionary Source="./Controls/Expander.xaml" />
+
 
 
             </ResourceDictionary.MergedDictionaries>

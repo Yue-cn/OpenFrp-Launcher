@@ -112,7 +112,9 @@
                                 </Grid.Style>
                                 <ui:SimpleStackPanel Spacing="8">
                                     <TextBlock
+                                        Padding="16,0"
                                         HorizontalAlignment="Center"
+                                        TextAlignment="Center"
                                         FontSize="16"
                                         Style="{StaticResource BodyTextBlockStyle}"
                                         Text="{TemplateBinding ErrorTitle}" />

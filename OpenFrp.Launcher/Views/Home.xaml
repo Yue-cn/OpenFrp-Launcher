@@ -16,7 +16,7 @@
         <model:HomeModel />
     </ui:Page.DataContext>
     <of:BaseView x:Name="Of_Home_BaseView" Title="首页">
-        <ui:SimpleStackPanel MinHeight="1000" Spacing="8">
+        <ui:SimpleStackPanel  Spacing="8">
             <Grid MinHeight="300" SizeChanged="Grid_SizeChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2.3*" />
@@ -62,7 +62,7 @@
                                 <ui:ThemeShadowChrome />
                                 <Border x:Name="Of_Home_PreviewBackground" CornerRadius="8">
                                     <Border.Background>
-                                        <ImageBrush ImageSource="pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png" Stretch="UniformToFill" />
+                                        <ImageBrush ImageSource="pack://application:,,,/OpenFrp.Launcher;component/Resourecs/wallhaven-m9o2vk_1920x1080.png" Stretch="UniformToFill" />
                                     </Border.Background>
                                 </Border>
                                 <Border CornerRadius="8">
@@ -142,7 +142,7 @@
 
                 </Grid>
                 <!--  个人信息  -->
-                <Grid MinHeight="200">
+                <Grid MinHeight="250">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Setter Property="Grid.RowSpan" Value="2" />
@@ -299,6 +299,7 @@
                     </Grid>
                 </of:ElementLoader>
             </of:Card>
+            <TextBlock Opacity="0.1" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" Margin="0,16,0,0" Text="OpenFrp Launcher Alpha" HorizontalAlignment="Center"/>
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

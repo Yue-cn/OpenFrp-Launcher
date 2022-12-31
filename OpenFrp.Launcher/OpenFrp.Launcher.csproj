@@ -15,13 +15,15 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="2dd846197af6b65664e1e30cb140d6a69856b426.jpg%40240w_240h_1c_1s.png" />
+	  <None Remove="Resourecs\winui.png" />
 	  <None Remove="wallhaven-m9o2vk_1920x1080.png" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Resource Include="wallhaven-m9o2vk_1920x1080.png" />
+	  <Resource Include="Resourecs\wallhaven-m9o2vk_1920x1080.png" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Resource Include="2dd846197af6b65664e1e30cb140d6a69856b426.jpg@240w_240h_1c_1s.png" />
+	  <Resource Include="Resourecs\2dd846197af6b65664e1e30cb140d6a69856b426.jpg%40240w_240h_1c_1s.png" />
+	  <Resource Include="Resourecs\winui.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />

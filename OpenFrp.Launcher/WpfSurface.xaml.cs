@@ -57,6 +57,7 @@ namespace OpenFrp.Launcher
                     page = (s.SelectedItem as NavigationViewItem)?.Tag switch
                     {
                         "Home" => typeof(Views.Home),
+                        "About" => typeof(Views.About),
                         _ => null
                     };
                 }
@@ -67,49 +68,17 @@ namespace OpenFrp.Launcher
             {
                 if (e.Uri is null) OfApp_RootFrame.RemoveBackEntry();
                 else { e.Cancel = true; }
-
             };
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
             ClientPipeWorker();
             // 启动器 自动登录逻辑
-            if (OfSettings.Instance.Account.HasAccount)
-            {
-                if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
-                {
-                    // 服务模式
-                    var result = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
-                    {
-                        Action = Core.Pipe.PipeModel.OfAction.Get_State
-                    });
-                    if (result.Flag)
-                    {
-
-                        if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
-                            result.AuthMessage?.UserDataModel is not null)
-                        {
-                            OfApi.UserInfoDataModel = result.AuthMessage?.UserDataModel!;
-                            OfAppHelper.LauncherViewModel!.PipeRunningState = true;
-                            OfAppHelper.SettingViewModel.LoginState = true;
-                        }
-                    }
-                }
-                else
-                {
-                    //await Task.Delay(1000);
-                    
-                    var result = await OfAppHelper.LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
-                    if (result.Flag)
-                    {
-
-                    }
-                }
-            }
+            await OfAppHelper.RequestLogin();
 
         }
 
-        private async void ClientPipeWorker()
+        private async void ClientPipeWorker(bool restart = false)
         {
             // 抛弃旧版 Process 检测机制 仅连接失败（卡住）的时候 Kill 后开启。
             if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
@@ -144,6 +113,20 @@ namespace OpenFrp.Launcher
                 });
             }
             LauncherModel.PipeRunningState = true;
+            await Task.Delay(500);
+            if (restart && OfApi.LoginState)
+            {
+                await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,
+                    AuthMessage = new()
+                    {
+                        Authorization = OfApi.Authorization,
+                        UserSession = OfApi.Session,
+                        UserDataModel = OfApi.UserInfoDataModel
+                    }
+                });
+            }
 
         }
 
@@ -161,7 +144,7 @@ namespace OpenFrp.Launcher
                             {
                                 LauncherModel.PipeRunningState = false;
                                 await Task.Delay(1500);
-                                ClientPipeWorker();
+                                ClientPipeWorker(true);
                             }
                             break;
                     }

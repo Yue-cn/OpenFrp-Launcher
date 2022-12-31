@@ -1,5 +1,6 @@
 ﻿using OpenFrp.Core.Api;
 using OpenFrp.Core.Api.OfApiModel;
+using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,16 +73,64 @@ namespace OpenFrp.Launcher
                                     SettingViewModel.LoginState = OfApi.LoginState;
                                     return new(null, true, "");
                                 }
-                            } else return new($"推送给服务端失败: {pipe_resp.Message}");
+                            }
+                            else 
+                            {
+                                isLoading = false;
+                                return new($"推送给服务端失败: {pipe_resp.Message}"); 
+                            }
                         }
-                    }else return new($"获取用户信息失败: {ui_res.Message}");
-
+                    }
+                    else 
+                    {
+                        isLoading = false;
+                        return new($"获取用户信息失败: {ui_res.Message}");
+                    } 
                 }
+                isLoading = false;
                 return new("用户已取消操作。");
-
             }
+            isLoading = false;
             return new($"{lo_res.Message}");
 
+        }
+
+        internal static async ValueTask RequestLogin()
+        {
+            if (OfSettings.Instance.Account.HasAccount)
+            {
+                if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
+                {
+                    // 服务模式
+                    var result = await PipeClient.PushMessageWithRequestAsync(new()
+                    {
+                        Action = Core.Pipe.PipeModel.OfAction.Get_State
+                    });
+                    if (result.Flag)
+                    {
+
+                        if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
+                            result.AuthMessage?.UserDataModel is not null)
+                        {
+                            OfApi.UserInfoDataModel = result.AuthMessage?.UserDataModel!;
+                            LauncherViewModel!.PipeRunningState = true;
+                            SettingViewModel.LoginState = true;
+                            OfApi.Authorization = result.AuthMessage?.Authorization;
+                            OfApi.Session = result.AuthMessage?.UserSession;
+                        }
+                    }
+                }
+                else
+                {
+                    //await Task.Delay(1000);
+
+                    var result = await LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
+                    if (result.Flag)
+                    {
+
+                    }
+                }
+            }
         }
     }
 }

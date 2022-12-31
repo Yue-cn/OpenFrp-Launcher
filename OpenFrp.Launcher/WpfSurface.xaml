@@ -38,7 +38,7 @@
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
-                    Content="About"
+                    Content="关于"
                     Icon="&#xE946;"
                     Tag="About" />
             </ui:NavigationView.FooterMenuItems>

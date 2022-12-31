@@ -1,0 +1,153 @@
+﻿<ui:Page
+    x:Class="OpenFrp.Launcher.Views.About"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:OpenFrp.Launcher.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
+    xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="About"
+    d:DesignHeight="535.714"
+    d:DesignWidth="1090.476"
+    mc:Ignorable="d">
+    <ui:Page.DataContext>
+        <model:AboutModel />
+    </ui:Page.DataContext>
+    <of:BaseView Title="关于">
+        <ui:SimpleStackPanel Spacing="8">
+            <Grid>
+                <ui:HyperlinkButton
+                    MaxWidth="250"
+                    NavigateUri="https://github.com/Yue-cn/OpenFrp-Launcher"
+                    ToolTip="https://github.com/Yue-cn/OpenFrp-Launcher">
+                    <ui:SimpleStackPanel
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Spacing="4">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="OpenFrp Launcher" />
+                        <TextBlock
+                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="https://github.com/Yue-cn/OpenFrp-Launcher"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                    </ui:SimpleStackPanel>
+                </ui:HyperlinkButton>
+                <ui:HyperlinkButton
+                    MaxWidth="210"
+                    HorizontalAlignment="Right"
+                    NavigateUri="http://github.com/wherewhere/ModernWpf/"
+                    ToolTip="http://github.com/wherewhere/ModernWpf/">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            Width="40"
+                            Height="40"
+                            Source="../Resourecs/winui.png" />
+                        <ui:SimpleStackPanel
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Spacing="0">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Modern Wpf" />
+                            <TextBlock
+                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="http://github.com/wherewhere/ModernWpf/"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                        </ui:SimpleStackPanel>
+                    </Grid>
+                </ui:HyperlinkButton>
+            </Grid>
+            <Grid Margin="-4,0,0,8">
+                <ListView
+                    d:ItemsSource="{d:SampleData ItemCount=5}"
+                    IsHitTestVisible="False"
+                    ItemsSource="{Binding AboutDatas}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding Title}" />
+                                <TextBlock
+                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{Binding Content}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            <of:Expander>
+                <of:Expander.Header>
+                    <ui:SimpleStackPanel
+                        Height="65"
+                        Margin="4,0,0,0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <ui:FontIcon FontSize="24" Glyph="&#xe8c7;" />
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="赞组我们" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="共享更好的服务" />
+                        </TextBlock>
+                    </ui:SimpleStackPanel>
+                </of:Expander.Header>
+                <Grid MinHeight="175">
+                    <ui:SimpleStackPanel>
+                        <WrapPanel>
+                            <ui:HyperlinkButton
+                                MinWidth="300"
+                                Padding="16,12"
+                                HorizontalContentAlignment="Left"
+                                NavigateUri="https://afdian.net/a/zgitnetwork">
+                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                                    <ui:FontIcon FontSize="24" Glyph="&#xeb41;" />
+                                    <TextBlock VerticalAlignment="Center">
+                                        <Run Text="在爱发电上" />
+                                        <LineBreak />
+                                        <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="https://afdian.net/a/zgitnetwork" />
+                                    </TextBlock>
+                                </ui:SimpleStackPanel>
+                            </ui:HyperlinkButton>
+                            <ui:HyperlinkButton
+                                MinWidth="300"
+                                Padding="16,12"
+                                HorizontalContentAlignment="Left"
+                                NavigateUri="https://www.openfrp.net/home/addon">
+                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="12">
+                                    <ui:FontIcon FontSize="24" Glyph="&#xebd2;" />
+                                    <TextBlock VerticalAlignment="Center">
+                                        <Run Text="参与增值服务" />
+                                        <LineBreak />
+                                        <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="他人受益,自己也受益。" />
+                                    </TextBlock>
+                                </ui:SimpleStackPanel>
+                            </ui:HyperlinkButton>
+                        </WrapPanel>
+                        <TextBlock Margin="8,12" Text="特此谢明: SakuraFrp Launcher" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </ui:SimpleStackPanel>
+                </Grid>
+            </of:Expander>
+            <ui:HyperlinkButton NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html" Padding="10,8" HorizontalContentAlignment="Left">
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="8">
+                    <ui:SymbolIcon Symbol="Link"/>
+                    <TextBlock Text="GPL-3 Document"/>
+                </ui:SimpleStackPanel>
+            </ui:HyperlinkButton>
+        </ui:SimpleStackPanel>
+    </of:BaseView>
+</ui:Page>

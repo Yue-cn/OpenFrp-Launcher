@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Markup;
 using System.Xml;
+using OpenFrp.Core.App;
 
 namespace OpenFrp.Launcher.Views
 {
@@ -69,23 +70,36 @@ namespace OpenFrp.Launcher.Views
         internal async void RefreshUserInfo()
         {
             Of_Home_UserInfoLoader.ShowLoader();
-            while (OfAppHelper.isLoading)
+            while (OfAppHelper.isLoading && OfSettings.Instance.Account.HasAccount)
             {
                 await Task.Delay(500);
             }
+            if (OfSettings.Instance.WorkMode is WorkMode.DeamonService) await Task.Delay(1000);
             if (!OfApi.LoginState)
             {
-                Of_Home_UserInfoLoader.ShowError();
-                Of_Home_UserInfoLoader.PushMessage(() =>
+                if (!OfSettings.Instance.Account.HasAccount)
                 {
-                    (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.Setting));
-                    var item = ((App.Current.MainWindow as WpfSurface)?.OfApp_NavigationView.SettingsItem as NavigationViewItem);
-                    if (item is not null) item.IsSelected = true;
-                }, "登录后即可查看个人信息。", "登录");
+                    Of_Home_UserInfoLoader.ShowError();
+                    Of_Home_UserInfoLoader.PushMessage(() =>
+                    {
+                        (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.Setting));
+                        var item = ((App.Current.MainWindow as WpfSurface)?.OfApp_NavigationView.SettingsItem as NavigationViewItem);
+                        if (item is not null) item.IsSelected = true;
+                    }, "登录后即可查看个人信息。", "登录");
+                }
+                else
+                {
+                    Of_Home_UserInfoLoader.ShowError();
+                    Of_Home_UserInfoLoader.PushMessage(async () =>
+                    {
+                        await OfAppHelper.RequestLogin();
+                        RefreshUserInfo();
+                    }, "登录请求失败，请稍后重试 (可能是密码错误)", "重试");
+                }
             }
             else
             {
-                
+
                 HomeModel.UserInfoViewModels = new()
                 {
                     new()
@@ -143,7 +157,7 @@ namespace OpenFrp.Launcher.Views
             Of_Home_PreviewCardLoader.ShowLoader();
             var lp = await OfApi.GetLauncherPreview();
             
-            ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png"));
+            ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/Resourecs/wallhaven-m9o2vk_1920x1080.png"));
             if (lp.Flag)
             {
                 if (lp.Data.Info.ImageUrl is not null)
@@ -222,7 +236,7 @@ namespace OpenFrp.Launcher.Views
                     using var file = new FileStream(dialog.FileName,FileMode.Create);
                     
                     Stream stream = HomeModel.LauncherPreviewData.ImageUrl is null ? 
-                        App.GetResourceStream(new Uri("pack://application:,,,/OpenFrp.Launcher;component/wallhaven-m9o2vk_1920x1080.png")).Stream :
+                        App.GetResourceStream(new Uri("pack://application:,,,/OpenFrp.Launcher;component/Resourecs/wallhaven-m9o2vk_1920x1080.png")).Stream :
                         new FileStream(((BitmapImage)((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource).UriSource.ToString().Replace("file:///",""), FileMode.Open,FileAccess.Read);
                     byte[] buffer = new byte[stream.Length];
                     int count = await stream.ReadAsync(buffer, 0, buffer.Length);

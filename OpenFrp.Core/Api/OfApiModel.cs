@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using static OpenFrp.Core.Api.OfApiModel.Response;
 using static OpenFrp.Core.ModelHelper;
 
@@ -14,6 +15,9 @@ namespace OpenFrp.Core.Api
     {
         public class Request
         {
+            /// <summary>
+            /// 登录时请求的 BODY
+            /// </summary>
             public class LoginData : MessagePraser<BaseModel>
             {
                 public LoginData(string? userName, string? password)
@@ -28,7 +32,9 @@ namespace OpenFrp.Core.Api
                 [JsonProperty("password")]
                 public string? Password { get; set; } 
             }
-
+            /// <summary>
+            /// 大部分功能请求时的 BODY
+            /// </summary>
             public class SessionData : MessagePraser<SessionData>
             {
                 public SessionData(string? session)
@@ -38,6 +44,19 @@ namespace OpenFrp.Core.Api
 
                 [JsonProperty("session")]
                 public string? Session { get; set; }
+            }
+            /// <summary>
+            /// 移除隧道时的Body
+            /// </summary>
+            public class RemoveProxyData : SessionData
+            {
+                public RemoveProxyData(string? session,int id) : base(session)
+                {
+                    ProxyID = id;
+                }
+
+                [JsonProperty("proxy_id")]
+                public int ProxyID { get; set; }
             }
         }
         public class Response
@@ -161,6 +180,129 @@ namespace OpenFrp.Core.Api
                 }
             }
 
+            public class UserProxiesModel : BaseModel
+            {
+                /// <summary>
+                /// 用户隧道列表
+                /// </summary>
+                [JsonProperty("data")]
+                public new UserProxiesDataModel Data { get; set; } = new();
+
+                public class UserProxiesDataModel
+                {
+                    [JsonProperty("total")]
+                    public int Count { get; set; }
+                    /// <summary>
+                    /// 列表
+                    /// </summary>
+                    [JsonProperty("list")]
+                    public List<UserProxies> List { get; set; } = new();
+                    
+                }
+                public class UserProxies
+                {
+                    /// <summary>
+                    /// 内部专用 - 是否运行中
+                    /// </summary>
+                    [JsonIgnore]
+                    public bool isRuuning { get; set; }
+                    /// <summary>
+                    /// 隧道链接
+                    /// </summary>
+                    [JsonProperty("connectAddress")]
+                    public string? ConnectAddress { get; set; }
+
+                    /// <summary>
+                    /// 远程端口号
+                    /// </summary>
+                    [JsonProperty("remotePort")]
+                    public int RemotePort { get; set; }
+                    /// <summary>
+                    /// 自定义属性
+                    /// </summary>
+                    [JsonProperty("custom")]
+                    public string? CustomArgs { get; set; }
+                    /// <summary>
+                    /// 域名列表
+                    /// </summary>
+                    [JsonProperty("domain")]
+                    public string[] Domains { get; set; } = new string[]{};
+                    /// <summary>
+                    /// 节点名称
+                    /// </summary>
+                    [JsonProperty("friendlyNode")]
+                    public string? NodeName { get; set; }
+                    /// <summary>
+                    /// 节点ID
+                    /// </summary>
+                    [JsonProperty("node")]
+                    public int NodeID { get; set; }
+
+                    /// <summary>
+                    /// 隧道 ID
+                    /// </summary>
+                    [JsonProperty("id")]
+                    public int ProxyId { get; set; }
+                    /// <summary>
+                    /// 在隧道头部加上的X-From-Where
+                    /// </summary>
+                    [JsonProperty("headerXFromWhere")]
+                    public string? X_From_Where { get; set; }
+
+                    /// <summary>
+                    /// 上次开启
+                    /// </summary>
+                    [JsonProperty("lastLogin")]
+                    public long Lastlogin { get; set; }
+                    /// <summary>
+                    /// 上次更新
+                    /// </summary>
+                    [JsonProperty("lastUpdate")]
+                    public long LastUpdate { get; set; }
+                    /// <summary>
+                    /// 本地IP
+                    /// </summary>
+                    [JsonProperty("localIp")]
+                    public string? LocalIP { get; set; }
+                    /// <summary>
+                    /// 本地端口
+                    /// </summary>
+                    [JsonProperty("localPort")]
+                    public int LocalPort { get; set; }
+
+                    /// <summary>
+                    /// 隧道名称
+                    /// </summary>
+                    [JsonProperty("proxyName")]
+                    public string? ProxyName { get; set; }
+                    /// <summary>
+                    /// 隧道类型
+                    /// </summary>
+                    [JsonProperty("proxyType")]
+                    public string? ProxyType { get; set; }
+
+                    /// <summary>
+                    /// 是否在线
+                    /// </summary>
+                    [JsonProperty("online")]
+                    public bool Online { get; set; }
+                    /// <summary>
+                    /// 是否启用
+                    /// </summary>
+                    [JsonProperty("status")]
+                    public bool IsEnabled { get; set; }
+                    /// <summary>
+                    /// 是否开启数据压缩
+                    /// </summary>
+                    [JsonProperty("useComperssion")]
+                    public bool ComperssionMode { get; set; }
+                    /// <summary>
+                    /// 是否有加密传输
+                    /// </summary>
+                    [JsonProperty("useEncryption")]
+                    public bool EncryptionMode { get; set; }
+                }
+            }
             /// <summary>
             /// 启动器首页大图模型
             /// </summary>

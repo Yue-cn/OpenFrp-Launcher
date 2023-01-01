@@ -181,7 +181,6 @@ namespace OpenFrp.Core
                     {
                         case Pipe.PipeModel.OfAction.Get_State:
                             {
-                                //Debugger.Launch();
                                 new Thread(async () => await appClient.Start(true)).Start();
                                 goto default;
                             };
@@ -203,6 +202,13 @@ namespace OpenFrp.Core
                             {
                                 Console.WriteLine($"Session: {OfApi.Session}\nAppAuth: {OfApi.Authorization}\nUserName: {OfApi.UserInfoDataModel?.UserName ?? "UnLogin"}");
                             };break;
+                        case "rp":
+                            {
+                                foreach(var item in App.ConsoleHelper.RunningProxies)
+                                {
+                                    Console.WriteLine($"Key: {item.Key} , Value: {item.Value}");
+                                }
+                            }break;
                     }
                 }
             }

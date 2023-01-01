@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenFrp.Core.Api.OfApiModel;
+using OpenFrp.Core.App;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -105,10 +106,61 @@ namespace OpenFrp.Core.Api
                     Message = "API请求失败。"
                 };
         }
+        /// <summary>
+        /// Api交互 - 获取用户隧道
+        /// </summary>
+        public static async ValueTask<Response.UserProxiesModel> GetUserProxies()
+        {
+            if (!LoginState)
+            {
+                return new()
+                {
+                    Flag = false,
+                    Message = "您尚未登录。"
+                };
+            }
+            else
+            {
+                var result = await POST<Response.UserProxiesModel>(
+                    OfApiUrl.UserProxies,
+                    new Request.SessionData(
+                        Session).ToStringContent()
+                    ) ?? new() { Message = "软件请求失败。" };
+                if (result.Flag)
+                {
+                    result.Data.List.ForEach((item) =>
+                    {
+                        item.ProxyType = item.ProxyType?.ToUpper();
+                    });
+                }
+                return result;
+            }
+        }
+
+        public static async ValueTask<Response.BaseModel> RemoveProxy(int id)
+        {
+            return await POST<Response.BaseModel>(
+                    OfApiUrl.RemoveProxy,
+                    new Request.RemoveProxyData(
+                        Session,id).ToStringContent()
+                    ) ?? new() { Message = "软件请求失败。" };
+        }
+
+
 
         public static async ValueTask<T?> POST<T>(string url,StringContent body)
         {
-            HttpClient client = new();
+            var handle = new HttpClientHandler()
+            {
+                
+            };
+            if (OfSettings.Instance.BypassProxy) 
+            { 
+                handle.Proxy = null;
+                handle.UseProxy = false;
+            }
+            HttpClient client = new(handle);
+            
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
 
@@ -145,7 +197,16 @@ namespace OpenFrp.Core.Api
 
         public static async ValueTask<T?> GET<T>(string url)
         {
-            HttpClient client = new();
+            var handle = new HttpClientHandler()
+            {
+
+            };
+            if (OfSettings.Instance.BypassProxy)
+            {
+                handle.Proxy = null;
+                handle.UseProxy = false;
+            }
+            HttpClient client = new(handle);
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
 
@@ -171,10 +232,19 @@ namespace OpenFrp.Core.Api
 
         public static async ValueTask<byte[]?> GET(string url)
         {
-            HttpClient client = new();
-#if DEBUG
+            var handle = new HttpClientHandler()
+            {
+
+            };
+            if (OfSettings.Instance.BypassProxy)
+            {
+                handle.Proxy = null;
+                handle.UseProxy = false;
+            }
+            HttpClient client = new(handle);
+
             client.Timeout = new TimeSpan(0,0,0,5);
-#endif
+
             try
             {
                 using var response = await client.GetAsync(url);

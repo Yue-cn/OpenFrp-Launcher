@@ -31,6 +31,7 @@ namespace OpenFrp.Core.Api
 
         /// <summary>
         /// OpenFrp - 登录
+        ///  <para>Body Request: <see cref="OfApiModel.Request.LoginData"/></para>
         /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
         /// </summary>
         public const string Login = $"{BaseUrl}/user/login";
@@ -56,5 +57,16 @@ namespace OpenFrp.Core.Api
         /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
         /// </summary>
         public const string LauncherBroadCast = $"{LauncherApiUrl}/launcher/broadCast";
+        /// <summary>
+        /// 用户隧道
+        /// <para> 绑定模型: <see cref="OfApiModel.Response.UserProxiesModel"/></para>
+        /// </summary>
+        public const string UserProxies = $"{BaseUrl}/frp/api/getUserProxies";
+        /// <summary>
+        /// 移除隧道
+        /// <para>Body Request: <see cref="OfApiModel.Request.RemoveProxyData"/></para>
+        /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
+        /// </summary>
+        public const string RemoveProxy = $"{BaseUrl}/frp/api/removeProxy";
     }
 }

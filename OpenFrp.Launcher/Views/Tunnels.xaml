@@ -1,0 +1,111 @@
+﻿<ui:Page
+    x:Class="OpenFrp.Launcher.Views.Tunnels"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:OpenFrp.Launcher.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
+    xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="Tunnels"
+    d:DesignHeight="516.951"
+    d:DesignWidth="708.902"
+    mc:Ignorable="d">
+    <ui:Page.DataContext>
+        <model:TunnelsModel />
+    </ui:Page.DataContext>
+    <of:BaseView x:Name="Of_Tunnels_BaseView" Title="隧道">
+        <of:BaseView.SafeBlockTop>
+            <ui:CommandBar Margin="-4,0,0,0" HorizontalAlignment="Left">
+
+                <ui:AppBarButton
+                    Command="{Binding RefreshCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ui:Page, AncestorLevel=1}}"
+                    Icon="Refresh"
+                    Label="刷新" />
+                <ui:AppBarButton
+                    Command="{Binding ToCreatePageCommand}"
+                    Icon="Add"
+                    IsEnabled="{Binding IsEnableTool}"
+                    Label="创建隧道" />
+            </ui:CommandBar>
+        </of:BaseView.SafeBlockTop>
+        <Grid>
+            <of:ElementLoader
+                x:Name="Of_Tunnels_ListLoader"
+                Grid.Row="2"
+                ErrorButtonText="登录"
+                ErrorTitle="您尚未登录，登录后即可查看您的隧道。">
+                <ui:GridView
+                    Margin="-8"
+                    Padding="8"
+                    AutomationProperties.Name="很抱歉,本软件部分内容无法使用自动化。"
+                    Focusable="False"
+                    ItemsSource="{Binding UserProxies}"
+                    PreviewMouseWheel="GridView_PreviewMouseWheel"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ui:GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Width="350"
+                                Height="225"
+                                Padding="28"
+                                IsEnabled="{Binding IsEnabled}">
+                                <Grid>
+                                    <ui:SimpleStackPanel>
+                                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding ProxyName}" />
+                                        <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                            <Run Text="{Binding NodeName}" /><LineBreak />
+                                            <Run Text="{Binding ProxyType, StringFormat={}{0}穿透}" />
+                                            <Run>
+                                                <MultiBinding StringFormat="{}{0}:{1}">
+                                                    <Binding Path="LocalIP" />
+                                                    <Binding Path="LocalPort" />
+                                                </MultiBinding>
+                                            </Run><LineBreak />
+                                            <Run>
+                                                <Run.Style>
+                                                    <Style TargetType="Run">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                                <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                                                                <Setter Property="Text" Value="已禁用" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Run.Style>
+                                            </Run>
+                                        </TextBlock>
+                                    </ui:SimpleStackPanel>
+                                    <ui:CommandBar HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                        <ui:AppBarButton
+                                            Command="{Binding DataContext.CopyLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                                            CommandParameter="{Binding ConnectAddress}"
+                                            Icon="Copy"
+                                            Label="复制连接" />
+                                        <ui:AppBarButton Icon="&#xe967;" Label="操控台" />
+                                        <ui:AppBarButton
+                                            Command="{Binding DataContext.RemoveProxyCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                                            CommandParameter="{Binding ProxyId}"
+                                            Icon="Remove"
+                                            Label="删除" />
+                                    </ui:CommandBar>
+                                    <ui:ToggleSwitch
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        IsOn="{Binding isRuuning}"
+                                        Style="{StaticResource LeftLabelToggleSwitchStyle}"
+                                        Toggled="ToggleSwitch_Toggled" />
+                                </Grid>
+                            </Border>
+
+
+                        </DataTemplate>
+                    </ui:GridView.ItemTemplate>
+                </ui:GridView>
+            </of:ElementLoader>
+        </Grid>
+    </of:BaseView>
+</ui:Page>

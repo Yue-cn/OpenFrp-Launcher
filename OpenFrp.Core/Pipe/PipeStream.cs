@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,6 +82,7 @@ namespace OpenFrp.Core.Pipe
         {
             await PushMessageAsync(request);
             string str = (await Reviced()).GetString(true);
+            Debug.Write(str);
             return JsonConvert.DeserializeObject<PipeModel.ResponseModel>(str) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }

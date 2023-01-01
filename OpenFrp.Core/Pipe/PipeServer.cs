@@ -8,6 +8,7 @@ using System.Security.AccessControl;
 using Windows.ApplicationModel.VoiceCommands;
 using Windows.UI.WebUI;
 using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -23,11 +24,14 @@ namespace OpenFrp.Core.Pipe
 
         public Action? OnClose { get; set; }
 
+        private bool _push { get; set; }
+
         public void Start(bool push = false)
         {
             PipeSecurity pipeSecurity = new PipeSecurity();
             pipeSecurity.SetAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, AccessControlType.Allow));
             Utils.Debug("Appplication Startup!!");
+            _push = push;
             AppStream = _server = new NamedPipeServerStream(Utils.PipeRouteName + (push ? "_PUSH" : ""), PipeDirection.InOut,12,PipeTransmissionMode.Byte,PipeOptions.Asynchronous,BufferSize,BufferSize,pipeSecurity);
             Utils.Debug($"PipeRouteName: {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
             // 开始侦听连接
@@ -46,7 +50,17 @@ namespace OpenFrp.Core.Pipe
         {
             if (_server is not null)
             {
-                _server.BeginWaitForConnection(OnConnected, _server);
+
+                try
+                {
+                    _server.BeginWaitForConnection(OnConnected, _server);
+                }
+                catch
+                {
+                    _server.Close();
+                    Start(_push);
+                    return false;
+                }
                 State = true;
                 return true;
             }
@@ -93,8 +107,13 @@ namespace OpenFrp.Core.Pipe
                         Environment.Exit(0);
                     }
                 }
-                else break;
+                else
+                {
+                    _server?.Disconnect();
+                    break;
+                }
             }
+            await Task.Delay(250);
             BeginLisenting();
         }
 
@@ -109,6 +128,10 @@ namespace OpenFrp.Core.Pipe
                         { 
                             Flag = true,
                             Action = PipeModel.OfAction.Get_State,
+                            FrpMessage = new()
+                            {
+                                RunningId = ConsoleHelper.RunningProxies.Keys.ToArray()
+                            }
                         };
                     };
                 case PipeModel.OfAction.Close_Server:
@@ -137,6 +160,40 @@ namespace OpenFrp.Core.Pipe
                         {
                             Flag = true,
                             Action = PipeModel.OfAction.LoginState_Logout,
+                        };
+                    }
+                case PipeModel.OfAction.Start_Frpc:
+                    {
+                        if (OfApi.UserInfoDataModel is null || request.FrpMessage is null)
+                        {
+                            return new()
+                            {
+                                Flag = false,
+                                Action = PipeModel.OfAction.Start_Frpc
+                            };
+                        }
+                        if (!ConsoleHelper.RunningProxies.ContainsKey(request.FrpMessage!.Id))
+                        ConsoleHelper.RunningProxies.Add(request.FrpMessage!.Id, OfApi.UserInfoDataModel!.UserToken ?? "");
+                        // 开启Frpc
+                        return new()
+                        {
+                            Flag = true,
+                            Action = PipeModel.OfAction.Start_Frpc
+                        };
+                    }
+                case PipeModel.OfAction.Close_Frpc:
+                    {
+                        if (OfApi.UserInfoDataModel is null || request.FrpMessage is null)
+                        {
+                            //正常来说 不会出现此情况
+                        }
+                        if (ConsoleHelper.RunningProxies.ContainsKey(request.FrpMessage!.Id))
+                            ConsoleHelper.RunningProxies.Remove(request.FrpMessage!.Id);
+                        // 关闭Frpc
+                        return new()
+                        {
+                            Flag = true,
+                            Action = PipeModel.OfAction.Close_Frpc
                         };
                     }
                 default:

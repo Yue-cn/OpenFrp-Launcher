@@ -74,7 +74,15 @@
                     </Button>
                 </ui:SimpleStackPanel>
             </of:SettingItem>
-
+            <of:SettingItem Title="绕过系统代理" Message="本FRP默认屏蔽国外IP，所以在挂了代理后，会出现无法访问的情况。">
+                <of:SettingItem.Icon>
+                    <ui:FontIcon FontSize="24" Glyph="&#xe968;" />
+                </of:SettingItem.Icon>
+                <ui:ToggleSwitch
+                    Margin="0,0,-12,0"
+                    IsOn="{Binding BypassProxy}"
+                    Style="{StaticResource LeftLabelToggleSwitchStyle}" />
+            </of:SettingItem>
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

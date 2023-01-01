@@ -35,6 +35,10 @@
                     Icon="Home"
                     IsSelected="True"
                     Tag="Home" />
+                <ui:NavigationViewItem
+                    Content="隧道"
+                    Icon="&#xe71d;"
+                    Tag="Tunnels" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem

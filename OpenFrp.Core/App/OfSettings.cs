@@ -47,6 +47,11 @@ namespace OpenFrp.Core.App
         [JsonProperty("workmode")]
         public WorkMode WorkMode { get; set; }
         /// <summary>
+        /// 是否绕过代理
+        /// </summary>
+        [JsonProperty("bypassProxy")]
+        public bool BypassProxy { get; set; } = true;
+        /// <summary>
         /// 用户的账户
         /// </summary>
         [JsonProperty("account")]

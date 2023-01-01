@@ -33,6 +33,14 @@ namespace OpenFrp.Core.Pipe
             /// 登出。
             /// </summary>
             LoginState_Logout = 4,
+            /// <summary>
+            /// 开启
+            /// </summary>
+            Start_Frpc = 5,
+            /// <summary>
+            /// 关闭
+            /// </summary>
+            Close_Frpc = 6
         }
         public class BaseModel : MessagePraser<BaseModel>
         {
@@ -60,6 +68,9 @@ namespace OpenFrp.Core.Pipe
             [JsonProperty("auth")]
             public AuthModel? AuthMessage { get; set; }
 
+            [JsonProperty("frp")]
+            public FrpModel? FrpMessage { get; set; }
+
             public class AuthModel
             {
                 /// <summary>
@@ -75,6 +86,15 @@ namespace OpenFrp.Core.Pipe
                 /// </summary>
                 public string? Authorization { get; set; }
 
+            }
+
+            public class FrpModel
+            {
+                [JsonProperty("id")]
+                public int Id { get; set; }
+
+                [JsonProperty("runningIds")]
+                public int[] RunningId { get; set; } = new int[0];
             }
         }
         public class RequestModel : BaseModel

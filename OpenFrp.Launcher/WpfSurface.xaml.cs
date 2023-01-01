@@ -58,6 +58,7 @@ namespace OpenFrp.Launcher
                     {
                         "Home" => typeof(Views.Home),
                         "About" => typeof(Views.About),
+                        "Tunnels" => typeof(Views.Tunnels),
                         _ => null
                     };
                 }
@@ -107,10 +108,14 @@ namespace OpenFrp.Launcher
             
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonProcess)
             {
-                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                var resp =  await OfAppHelper.PipeClient.PushMessageAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.Get_State
                 });
+                if (resp.Flag)
+                {
+                    OfAppHelper.RunningIds = resp.FrpMessage!.RunningId.ToList();
+                }
             }
             LauncherModel.PipeRunningState = true;
             await Task.Delay(500);

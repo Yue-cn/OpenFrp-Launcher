@@ -16,7 +16,7 @@
         <model:HomeModel />
     </ui:Page.DataContext>
     <of:BaseView x:Name="Of_Home_BaseView" Title="首页">
-        <ui:SimpleStackPanel  Spacing="8">
+        <ui:SimpleStackPanel Spacing="8">
             <Grid MinHeight="300" SizeChanged="Grid_SizeChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2.3*" />
@@ -299,7 +299,12 @@
                     </Grid>
                 </of:ElementLoader>
             </of:Card>
-            <TextBlock Opacity="0.1" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" Margin="0,16,0,0" Text="OpenFrp Launcher Alpha" HorizontalAlignment="Center"/>
+            <TextBlock
+                Margin="0,16,0,0"
+                HorizontalAlignment="Center"
+                Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                Opacity="0.1"
+                Text="OpenFrp Launcher Alpha" />
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

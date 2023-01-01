@@ -40,6 +40,11 @@ namespace OpenFrp.Launcher.ViewModels
             get => (int)OpenFrp.Core.App.OfSettings.Instance.WorkMode;
             set => OpenFrp.Core.App.OfSettings.Instance.WorkMode = (OpenFrp.Core.App.WorkMode)value;
         }
+        public bool BypassProxy
+        {
+            get => OpenFrp.Core.App.OfSettings.Instance.BypassProxy;
+            set => OpenFrp.Core.App.OfSettings.Instance.BypassProxy = value;
+        }
 
         /// <summary>
         /// 登录状态 (实际使用请改为<see cref="LoginState"/>)

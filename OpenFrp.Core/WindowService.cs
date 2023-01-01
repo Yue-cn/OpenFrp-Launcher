@@ -57,6 +57,10 @@ namespace OpenFrp.Core
                                 Authorization = OfApi.Authorization,
                                 UserSession = OfApi.Session
                             },
+                            FrpMessage = new()
+                            {
+                                RunningId = ConsoleHelper.RunningProxies.Keys.ToArray()
+                            },
                             Message = er
                         };
                     default: return appServer.Execute(request, model);

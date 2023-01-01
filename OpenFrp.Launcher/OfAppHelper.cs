@@ -24,7 +24,7 @@ namespace OpenFrp.Launcher
         /// </summary>
         public static ViewModels.SettingModel SettingViewModel { get; set; } = new();
 
-
+        public static List<int> RunningIds { get; set; } = new();
         /// <summary>
         /// 管道 - 客户端
         /// </summary>
@@ -109,6 +109,7 @@ namespace OpenFrp.Launcher
                     if (result.Flag)
                     {
 
+                        
                         if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
                             result.AuthMessage?.UserDataModel is not null)
                         {
@@ -117,6 +118,7 @@ namespace OpenFrp.Launcher
                             SettingViewModel.LoginState = true;
                             OfApi.Authorization = result.AuthMessage?.Authorization;
                             OfApi.Session = result.AuthMessage?.UserSession;
+                            RunningIds = result.FrpMessage!.RunningId.ToList();
                         }
                     }
                 }

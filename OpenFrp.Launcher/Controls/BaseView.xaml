@@ -5,36 +5,46 @@
     xmlns:ui="http://schemas.modernwpf.com/2019">
     <Style TargetType="of:BaseView">
         <Setter Property="Title" Value="默认文本" />
-
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Padding" Value="40,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="of:BaseView">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid
                             Grid.Row="0"
                             MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
-                            Margin="40,36,40,4">
+                            Margin="40,0,40,0">
                             <TextBlock
+                                Margin="0,36,0,4"
                                 HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 Style="{StaticResource TitleTextBlockStyle}"
                                 Text="{TemplateBinding Title}" />
                         </Grid>
-
+                        <ContentControl
+                            Grid.Row="1"
+                            MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
+                            Margin="{TemplateBinding Padding}"
+                            Content="{TemplateBinding SafeBlockTop}" />
                         <ui:ScrollViewerEx
                             Name="_ScrollViewer"
                             Grid.Row="2"
-                            PanningMode="Both">
-                            <Grid
+                            PanningMode="Both"
+                            VerticalScrollBarVisibility="{Binding (ScrollViewer.VerticalScrollBarVisibility), RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                            <Border
+                                MinHeight="{Binding ActualHeight, ElementName=_ScrollViewer}"
                                 MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
-                                Margin="40,8,40,32"
+                                Margin="{TemplateBinding Padding}"
+                                Padding="0,8,0,32"
                                 VerticalAlignment="Top">
                                 <ContentPresenter />
-                            </Grid>
+                            </Border>
                         </ui:ScrollViewerEx>
                     </Grid>
                 </ControlTemplate>

@@ -74,7 +74,7 @@ namespace OpenFrp.Core
         public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
 
 
-        private static StreamWriter? _writer = Utils.ServicesMode ? new StreamWriter(Path.Combine(ApplicationPath, "logs.txt")) : default;
+        //private static StreamWriter? _writer = Utils.ServicesMode ? new StreamWriter(Path.Combine(ApplicationPath, "logs.txt")) : default;
 
         internal static void Debug(string s)
         {
@@ -82,10 +82,10 @@ namespace OpenFrp.Core
             {
                 Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
             }
-            else
-            {
-                _writer?.WriteLineAsync($"[{DateTimeOffset.Now}] {s}");
-            }
+            //else
+            //{
+            //    _writer?.WriteLineAsync($"[{DateTimeOffset.Now}] {s}");
+            //}
         }
         
         public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");

@@ -82,7 +82,7 @@ namespace OpenFrp.Core.Pipe
         {
             await PushMessageAsync(request);
             string str = (await Reviced()).GetString(true);
-            Debug.Write(str);
+            Utils.Debug(str);
             return JsonConvert.DeserializeObject<PipeModel.ResponseModel>(str) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }

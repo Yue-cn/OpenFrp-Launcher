@@ -5,10 +5,16 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using static OpenFrp.Core.Api.OfApiModel.Response;
 using static OpenFrp.Core.ModelHelper;
 
+/*
+    Author: Yue(越)
+    Github: https://github.com/Yue-cn
+    Language: Chinese
+ */
 namespace OpenFrp.Core.Api
 {
     namespace OfApiModel
@@ -37,6 +43,11 @@ namespace OpenFrp.Core.Api
             /// </summary>
             public class SessionData : MessagePraser<SessionData>
             {
+                public SessionData()
+                {
+
+                }
+
                 public SessionData(string? session)
                 {
                     Session = session;
@@ -58,6 +69,94 @@ namespace OpenFrp.Core.Api
                 [JsonProperty("proxy_id")]
                 public int ProxyID { get; set; }
             }
+            /// <summary>
+            /// 创建隧道时的Body
+            /// </summary>
+            public class CreateProxyData : SessionData
+            {
+                /// <summary>
+                /// 隧道名称
+                /// </summary>
+                [JsonProperty("name")]
+                public string? ProxyName { get; set; }
+                /// <summary>
+                /// 隧道所在的节点ID
+                /// </summary>
+                [JsonProperty("node_id")]
+                public int NodeID { get; set; }
+                /// <summary>
+                /// 本地链接
+                /// </summary>
+                [JsonProperty("local_addr")]
+                public string? LocalAddress { get; set; } = "127.0.0.1";
+                /// <summary>
+                /// 本地端口
+                /// </summary>
+                [JsonProperty("local_port")]
+                public int LocalPort { get; set; }
+                /// <summary>
+                /// 远程端口
+                /// </summary>
+                [JsonProperty("remote_port")]
+                public int RemotePort { get; set; }
+                /// <summary>
+                /// 绑定的域名
+                /// </summary>
+                [JsonProperty("domain_bind")]
+                private string _BindDomain
+                {
+                    get => JsonConvert.SerializeObject(BindDomain);
+                    set => BindDomain = JsonConvert.DeserializeObject<string[]>(value) ?? new string[0];
+                }
+
+                [JsonIgnore]
+                public string[] BindDomain { get; set; } = new string[0];
+
+                [JsonProperty("dataGzip")]
+                public bool GZipMode { get; set; }
+
+                [JsonProperty("dataEncrypt")]
+                public bool EncryptMode { get; set; }
+                /// <summary>
+                /// 自定义参数
+                /// </summary>
+                [JsonProperty("custom")]
+                public string CustomArgs { get; set; } = string.Empty;
+                /// <summary>
+                /// 请求来源
+                /// </summary>
+                [JsonProperty("request_from")]
+                public string? RequestFrom { get; set; }
+                /// <summary>
+                /// Host重写
+                /// </summary>
+                [JsonProperty("host_rewrite")]
+                public string? HostRewrite { get; set; }
+                /// <summary>
+                /// 请求密码
+                /// </summary>
+                [JsonProperty("request_pass")]
+                public string? RequestPass { get; set; }
+                /// <summary>
+                /// URL 路由
+                /// </summary>
+                [JsonProperty("url_route")]
+                public string? URLRoute { get; set; }
+
+                /// <summary>
+                /// 隧道类型
+                /// </summary>
+                [JsonProperty("type")]
+                public string? ProxyType { get; set; }
+                /// <summary>
+                /// Proxy Protocol Version
+                /// </summary>
+                [JsonIgnore]
+                public int ProxyProtocolVersion { get; set; }
+                
+            }
+
+
         }
         public class Response
         {
@@ -179,7 +278,9 @@ namespace OpenFrp.Core.Api
                     public int OutputLimit { get; set; }
                 }
             }
-
+            /// <summary>
+            /// 用户隧道模型
+            /// </summary>
             public class UserProxiesModel : BaseModel
             {
                 /// <summary>
@@ -263,7 +364,7 @@ namespace OpenFrp.Core.Api
                     /// 本地IP
                     /// </summary>
                     [JsonProperty("localIp")]
-                    public string? LocalIP { get; set; }
+                    public string? LocalAddress { get; set; }
                     /// <summary>
                     /// 本地端口
                     /// </summary>
@@ -301,6 +402,169 @@ namespace OpenFrp.Core.Api
                     /// </summary>
                     [JsonProperty("useEncryption")]
                     public bool EncryptionMode { get; set; }
+                }
+            }
+            /// <summary>
+            /// 节点模型
+            /// </summary>
+            public class NodesModel : BaseModel
+            {
+                [JsonProperty("data")]
+                public new NodesData Data { get; set; } = new();
+
+                public class NodesData
+                {
+                    /// <summary>
+                    /// 节点列表
+                    /// </summary>
+                    [JsonProperty("list")]
+                    public List<NodeInfo> Nodes { get; set; } = new();
+                    /// <summary>
+                    /// 数量
+                    /// </summary>
+                    [JsonProperty("total")]
+                    public int Count { get; set; }
+                }
+
+                public class NodeInfo
+                {
+                    /// <summary>
+                    /// 节点名称
+                    /// </summary>
+                    [JsonProperty("name")]
+                    public string? NodeName { get; set; }
+                    /// <summary>
+                    /// 节点 ID
+                    /// </summary>
+                    [JsonProperty("id")]
+                    public int NodeID { get; set; }
+                    /// <summary>
+                    /// 注释 (实际为 comments)
+                    /// </summary>
+                    [JsonProperty("comments")]
+                    public string? Description { get; set; }
+                    /// <summary>
+                    /// 是否需要实名
+                    /// </summary>
+                    [JsonProperty("needRealname")]
+                    public bool NeedRealname { get; set; }
+
+                    [JsonProperty("classify")]
+                    public NodeClassify NodeClassify { get; set; }
+                    /// <summary>
+                    /// 支持的协议
+                    /// </summary>
+                    [JsonProperty("protocolSupport")]
+                    public NodeProtocolSupport ProtocolSupport { get; set; } = new();
+                    /// <summary>
+                    /// 节点状态
+                    /// </summary>
+                    [JsonProperty("status")]
+                    public int Status { get; set; }
+                    /// <summary>
+                    /// 节点所需组
+                    /// </summary>
+                    [JsonProperty]
+                    public string? Group { get; set; }
+                    [JsonIgnore]
+                    public bool isVipNode
+                    {
+                        get => Group?.IndexOf("normal") == -1;
+                    }
+                    /// <summary>
+                    /// 最大端口
+                    /// </summary>
+                    [JsonIgnore]
+                    public int MaxumumPort { get; set; }
+                    /// <summary>
+                    /// 最小端口
+                    /// </summary>
+                    [JsonIgnore]
+                    public int MinimumPort { get; set; }
+
+                    /// <summary>
+                    /// 服务器是否满载
+                    /// </summary>
+                    [JsonProperty("fullyLoaded")]
+                    public bool isFully { get; set; }
+                    [JsonProperty]
+                    private string allowPort
+                    {
+                        get { return ""; }
+                        set
+                        {
+                            if (!string.IsNullOrEmpty(value))
+                            {
+                                string[] ports = value.Substring(1, value.Length - 2).Split(',');
+                                MinimumPort = Convert.ToInt32(ports[0]);
+                                MaxumumPort = Convert.ToInt32(ports[1]);
+                            }
+                        }
+                    }
+
+                    [JsonIgnore]
+                    public bool isHeader { get; set; }
+                }
+                /// <summary>
+                /// 节点在世界的位置
+                /// </summary>
+                public enum NodeClassify
+                {
+                    ChinaMainland = 1,
+                    ChinaTW_HK = 2,
+                    Other = 3,
+                }
+                /// <summary>
+                /// 支持的协议
+                /// </summary>
+                public class NodeProtocolSupport
+                {
+                    public ComboBoxItem[] ComboBoxUICollection
+                    {
+                        get
+                        {
+                            return new ComboBoxItem[]
+                            {
+                                new(){Content = "TCP",IsEnabled = TCP},
+                                new(){Content = "UDP",IsEnabled = UDP},
+                                new(){Content = "HTTP",IsEnabled = HTTP},
+                                new(){Content = "HTTPS",IsEnabled = HTTPS},
+                                new(){Content = "XTCP",IsEnabled = XTCP},
+                                new(){Content = "STCP",IsEnabled = STCP},
+                            };
+                        }
+                    }
+
+                    public string[] SupportedMode
+                    {
+                        get
+                        {
+                            List<string> strs = new();
+                            ComboBoxUICollection.ToList().ForEach(item =>
+                            {
+                                if (item.IsEnabled) { strs.Add(item.Content.ToString()); }
+                            });
+                            return strs.ToArray();
+                        }
+                    }
+
+                    public int DefualtIndex { get; } = 0;
+
+                    [JsonProperty("tcp")]
+                    public bool TCP { get; set; }
+                    [JsonProperty("udp")]
+                    public bool UDP { get; set; }
+
+                    [JsonProperty("http")]
+                    public bool HTTP { get; set; }
+                    [JsonProperty("https")]
+                    public bool HTTPS { get; set; }
+
+                    [JsonProperty("stcp")]
+                    public bool STCP { get; set; }
+                    [JsonProperty("xtcp")]
+                    public bool XTCP { get; set; }
+
                 }
             }
             /// <summary>

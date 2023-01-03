@@ -15,14 +15,15 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="2dd846197af6b65664e1e30cb140d6a69856b426.jpg%40240w_240h_1c_1s.png" />
+	  <None Remove="Resourecs\v2app.jpg" />
 	  <None Remove="Resourecs\winui.png" />
 	  <None Remove="wallhaven-m9o2vk_1920x1080.png" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Resource Include="Resourecs\v2app.jpg" />
 	  <Resource Include="Resourecs\wallhaven-m9o2vk_1920x1080.png" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Resource Include="Resourecs\2dd846197af6b65664e1e30cb140d6a69856b426.jpg%40240w_240h_1c_1s.png" />
 	  <Resource Include="Resourecs\winui.png" />
 	</ItemGroup>
 	<ItemGroup>

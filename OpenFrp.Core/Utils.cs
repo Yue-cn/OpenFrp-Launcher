@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -103,6 +104,70 @@ namespace OpenFrp.Core
                     CreateNoWindow = true
                 });
             }
+        }
+        public static async Task<T?> WithCancelToken<T>(this Task<T> task,CancellationToken _token)
+        {
+            var src = Task.Run(() => { _token.WaitHandle.WaitOne(5000); });
+
+            if (task != await Task.WhenAny(task, src))
+            {
+                return default;
+            }
+            return task.Result;
+
+
+        }
+
+        public static async ValueTask<OfProcessInfo[]> GetAliveNetworkLink()
+        {
+            var process = Process.Start(new ProcessStartInfo("netstat.exe", "-ano")
+            {
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            });
+            var dic = new Dictionary<string, string>();
+            var pool = new List<Task<OfProcessInfo>>();
+            foreach(var str in (await process.StandardOutput.ReadToEndAsync()).Split('\n'))
+            {
+                var args = str.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                if (args.Length < 3 || !(args[0] is "TCP" || args[0] is "UDP"))
+                {
+                    continue;
+                }
+                if (args[1][0] is '[') continue;
+
+
+                pool.Add(Task.Run<OfProcessInfo>(() =>
+                {
+                    string pid = args[0] is "UDP" ? args[3] : args[4];
+                    if (!dic.ContainsKey(pid))
+                    {
+                        dic[pid] = "[拒绝访问]";
+                        try
+                        {
+                            dic[pid] = Process.GetProcessById(Convert.ToInt32(pid)).ProcessName;
+                        }
+                        catch { }
+                    }
+                    return new()
+                    {
+                        ProcessName = dic[pid],
+                        Address = args[1].Split(':').First(),
+                        Port = Convert.ToInt32(args[1].Split(':').Last())
+                    };
+                }));
+            }
+            
+            return await Task.WhenAll(pool); 
+        }
+        public class OfProcessInfo
+        {
+            public string? Address { get; set; }
+
+            public int Port { get; set; }
+
+            public string? ProcessName { get; set; }
         }
     }
 }

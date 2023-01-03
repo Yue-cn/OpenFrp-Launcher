@@ -145,6 +145,20 @@ namespace OpenFrp.Core.Api
                         Session,id).ToStringContent()
                     ) ?? new() { Message = "软件请求失败。" };
         }
+        
+        public static async ValueTask<Response.NodesModel> GetNodesList()
+        {
+            return await GET<Response.NodesModel>(OfApiUrl.NodeList) ?? 
+                new() { Message = "软件请求失败。" };
+        }
+        public static async ValueTask<Response.BaseModel> CreateProxy(OfApiModel.Request.CreateProxyData data)
+        {
+
+            return await POST<Response.BaseModel>(
+                    OfApiUrl.CreateProxy,
+                    data.ToStringContent()
+                    ) ?? new() { Message = "软件请求失败。" };
+        }
 
 
 
@@ -164,7 +178,7 @@ namespace OpenFrp.Core.Api
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
 
-            client.Timeout = new TimeSpan(0,0,0,5);
+            client.Timeout = new TimeSpan(0,0,0,10);
 
             try
             {
@@ -210,7 +224,7 @@ namespace OpenFrp.Core.Api
             client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(Authorization)
                 ? default : new(Authorization);
 
-            client.Timeout = new TimeSpan(0,0,0,5);
+            client.Timeout = new TimeSpan(0,0,0,10);
 
             try
             {
@@ -243,7 +257,7 @@ namespace OpenFrp.Core.Api
             }
             HttpClient client = new(handle);
 
-            client.Timeout = new TimeSpan(0,0,0,5);
+            client.Timeout = new TimeSpan(0,0,0,10);
 
             try
             {

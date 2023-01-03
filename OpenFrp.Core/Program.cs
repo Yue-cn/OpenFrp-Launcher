@@ -50,6 +50,13 @@ namespace OpenFrp.Core
                     case "--install":await InstallService();break;
                     case "--uninstall":await UninstallService();break;
                     case "--ws":await LocalPipeWorker();break;
+                    case "--ac":
+                        {
+                            foreach (var sbp in await Utils.GetAliveNetworkLink())
+                            {
+                                Console.WriteLine($"{sbp.Address}:{sbp.Port},,,,,,,{sbp.ProcessName}");
+                            }
+                        }break;
                 }
                 
             }

@@ -26,6 +26,7 @@
                 <ResourceDictionary Source="./Controls/ElementLoader.xaml" />
                 <ResourceDictionary Source="./Controls/Card.xaml" />
                 <ResourceDictionary Source="./Controls/Expander.xaml" />
+                <ResourceDictionary Source="./Controls/TunnelConfig.xaml" />
 
 
 
@@ -42,8 +43,8 @@
                 <EventSetter Event="RequestNavigate" Handler="Hyperlink_RequestNavigate" />
             </Style>
             <Style TargetType="ui:AppBarButton">
-                <Setter Property="AutomationProperties.Name" Value="{Binding Label,RelativeSource={RelativeSource Mode=Self}}"/>
-                <Setter Property="ToolTip" Value="{Binding Label,RelativeSource={RelativeSource Mode=Self}}"/>
+                <Setter Property="AutomationProperties.Name" Value="{Binding Label, RelativeSource={RelativeSource Mode=Self}}" />
+                <Setter Property="ToolTip" Value="{Binding Label, RelativeSource={RelativeSource Mode=Self}}" />
             </Style>
             <Style TargetType="ui:HyperlinkButton">
                 <Setter Property="Tag" Value="unselect" />
@@ -66,6 +67,15 @@
                 UseAeroCaptionButtons="False" />
             <!--  基本动画  -->
             <CubicEase x:Key="BaseEase" EasingMode="EaseOut" />
+
+            <DataTemplate x:Key="ProcessListTemplate">
+                <Border Padding="0,4,4,4">
+                    <TextBlock HorizontalAlignment="Left">
+                        <Run Text="{Binding Address}" />:<Run Text="{Binding Port}" />
+                        -<Run Text="{Binding ProcessName}" />
+                    </TextBlock>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

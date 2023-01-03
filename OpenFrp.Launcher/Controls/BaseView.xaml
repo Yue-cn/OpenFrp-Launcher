@@ -28,6 +28,7 @@
                                 Text="{TemplateBinding Title}" />
                         </Grid>
                         <ContentControl
+                            Focusable="False"
                             Grid.Row="1"
                             MaxWidth="{DynamicResource OfApp_PageMaxWidth}"
                             Margin="{TemplateBinding Padding}"

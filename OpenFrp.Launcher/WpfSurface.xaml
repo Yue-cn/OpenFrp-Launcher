@@ -13,6 +13,7 @@
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="WpfSurface"
     MinWidth="540"
+    MinHeight="640"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
     ui:ThemeManager.RequestedTheme="Light"

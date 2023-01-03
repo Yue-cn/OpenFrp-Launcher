@@ -31,7 +31,9 @@
             <ui:PersonPicture
                 Grid.Column="0"
                 Height="64"
-                VerticalAlignment="Top" />
+                SnapsToDevicePixels="True"
+                VerticalAlignment="Top"
+                ProfilePicture="../Resourecs/v2app.jpg"/>
             <!--  ProfilePicture="../2dd846197af6b65664e1e30cb140d6a69856b426.jpg@240w_240h_1c_1s.png"  -->
             <TextBlock
                 Grid.Column="2"

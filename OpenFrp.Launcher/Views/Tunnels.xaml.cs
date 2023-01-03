@@ -63,6 +63,14 @@ namespace OpenFrp.Launcher.Views
                 TunnelsModel.isRefreshing = false;
                 return;
             }
+            if (lp.Data.Count is 0)
+            {
+                TunnelsModel.isRefreshing = false;
+                TunnelsModel.IsEnableTool = true;
+                Of_Tunnels_ListLoader.ShowError();
+                Of_Tunnels_ListLoader.PushMessage(TunnelsModel.ToCreatePage, "你还没有一个隧道,创建一个就能看见啦。","创建");
+                return;
+            }
             if (OfAppHelper.RunningIds.Count != 0)
             {
                 lp.Data.List.ForEach((item) =>

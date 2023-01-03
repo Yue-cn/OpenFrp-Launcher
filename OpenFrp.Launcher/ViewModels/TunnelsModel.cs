@@ -1,28 +1,29 @@
 ﻿using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OpenFrp.Core;
 using OpenFrp.Core.Api;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace OpenFrp.Launcher.ViewModels
 {
     public partial class TunnelsModel : ObservableObject
     {
-        [ObservableProperty]
-        public bool isEnableTool;
 
-        public SettingModel SettingModel
-        {
-            get => OfAppHelper.SettingViewModel;
-        }
-
+        #region Tunnel Page
         [ObservableProperty]
         public ObservableCollection<OpenFrp.Core.Api.OfApiModel.Response.UserProxiesModel.UserProxies> userProxies = new();
+
+        [ObservableProperty]
+        public bool isEnableTool;
 
         internal bool isRefreshing = false;
 
@@ -77,14 +78,7 @@ namespace OpenFrp.Launcher.ViewModels
         }
 
         [RelayCommand]
-        void ToCreatePage()
-        {
-            (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.CreateTunnel));
-        }
-        [RelayCommand]
-        void ToMainPage()
-        {
-            (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.GoBack();
-        }
+        internal void ToCreatePage() => (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.CreateTunnel));
+        #endregion
     }
 }

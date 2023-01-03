@@ -9,28 +9,284 @@
     xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="CreateTunnel"
-    d:DesignHeight="543"
+    d:DesignHeight="1092.956"
     d:DesignWidth="1061"
     mc:Ignorable="d">
     <ui:Page.DataContext>
-        <model:TunnelsModel />
+        <model:CreateTunnelsModel />
     </ui:Page.DataContext>
-    <of:BaseView Title="创建隧道">
-        <Grid>
+    <ui:Page.Resources>
+        <model:DomainsStringConverter x:Key="DomainsStringConverter" />
+
+    </ui:Page.Resources>
+    <of:BaseView Title="创建隧道" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <Grid SizeChanged="Grid_SizeChanged">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="*" MinHeight="100" />
+                <RowDefinition Height="8" />
+                <RowDefinition>
+                    <RowDefinition.Style>
+                        <Style TargetType="RowDefinition">
+                            <Setter Property="Height" Value="Auto" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                    <Setter Property="Height" Value="*" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </RowDefinition.Style>
+                </RowDefinition>
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.3*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--  版块 1  -->
+            <Border Margin="0,-8,0,0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Grid.Column" Value="0" />
+                        <Setter Property="Grid.RowSpan" Value="4" />
+                        <Setter Property="Grid.ColumnSpan" Value="1" />
+                        <Setter Property="Grid.Row" Value="0" />
+                        <Setter Property="Padding" Value="0,0,12,0" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                <Setter Property="Grid.RowSpan" Value="1" />
+                                <Setter Property="Grid.Column" Value="0" />
+                                <Setter Property="Grid.ColumnSpan" Value="2" />
+                                <Setter Property="Grid.Row" Value="0" />
+                                <Setter Property="Padding" Value="0,0,0,0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <of:ElementLoader x:Name="Of_CreateTunnel_Loader" Grid.Row="2">
+                    <ui:GridView x:Name="Of_CreateTunnel_Views" ItemsSource="{Binding NodesList}">
+                        <ui:GridView.Style>
+                            <Style TargetType="ui:GridView">
+                                <Setter Property="Margin" Value="-40,0,0,0" />
+                                <Setter Property="Padding" Value="40,0,0,0" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                        <Setter Property="Margin" Value="-40,0" />
+                                        <Setter Property="Padding" Value="40,0" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:GridView.Style>
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="300" Height="155">
+                                    <ui:SimpleStackPanel
+                                        Margin="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Spacing="2">
+                                        <!--  是否满载,离线,VIP节点,隧道名称  -->
+                                        <ui:SimpleStackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" Text="[VIP] ">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding isVipNode}" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                                                Text="[离线] ">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="200">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                                                Text="[满载] ">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding isFully}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                FontSize="16"
+                                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                                Text="{Binding NodeName}" />
+                                        </ui:SimpleStackPanel>
+                                        <!--  标注  -->
+                                        <TextBlock
+                                            FontSize="14"
+                                            Text="{Binding Description}"
+                                            TextWrapping="Wrap">
+                                            <TextBlock.Style>
+                                                <Style BasedOn="{StaticResource BodyTextBlockStyle}" TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Description}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <!--  可用协议  -->
+                                        <TextBlock>
+                                            <Run Text="可用" />
+                                            <Run Text="{Binding ProtocolSupport.SupportedMode, Converter={StaticResource DomainsStringConverter}, Mode=OneWay}" />
+
+                                        </TextBlock>
+                                        <!--  需要实名  -->
+                                        <TextBlock Text="需要实名">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding NeedRealname}" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </ui:SimpleStackPanel>
+                                    <ui:SimpleStackPanel />
+                                </Grid>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                        <ui:GridView.ItemContainerStyle>
+                            <Style TargetType="ui:GridViewItem">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Setter Property="Opacity" Value="0.6" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Status}" Value="200">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding DataContext.UserInfoData.Group, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}" Value="normal" />
+                                            <Condition Binding="{Binding isVipNode}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </MultiDataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="200">
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding isFully}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Setter Property="Opacity" Value="0.6" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding isHeader}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Setter Property="IsHitTestVisible" Value="False" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Setter Property="Width" Value="{Binding (ScrollViewer.ActualWidth), RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:GridView}}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ui:GridViewItem">
+                                                    <TextBlock
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource SubtitleTextBlockStyle}"
+                                                        Text="{Binding NodeName}" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:GridView.ItemContainerStyle>
+
+                    </ui:GridView>
+                </of:ElementLoader>
+
+            </Border>
+            <!--  版块 2  -->
+            <Border>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Grid.Column" Value="1" />
+                        <Setter Property="Grid.RowSpan" Value="2" />
+                        <Setter Property="Grid.ColumnSpan" Value="1" />
+                        <Setter Property="Grid.Row" Value="0" />
+                        <Setter Property="Padding" Value="12,0,24,0" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AdaptiveSmall}" Value="True">
+                                <Setter Property="Grid.RowSpan" Value="1" />
+                                <Setter Property="Grid.Column" Value="0" />
+                                <Setter Property="Grid.ColumnSpan" Value="2" />
+                                <Setter Property="Grid.Row" Value="2" />
+                                <Setter Property="Padding" Value="0,12,0,24" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="配置" />
+                    <ui:ScrollViewerEx Grid.Row="2" Padding="-4,0,4,0">
+                        <of:TunnelConfig
+                            x:Name="Of_TunnelConfig"
+                            Focusable="False"
+                            NodeInfo="{Binding SelectedItem, ElementName=Of_CreateTunnel_Views}" />
+                    </ui:ScrollViewerEx>
+                </Grid>
+            </Border>
+            <!--  操控钮  -->
+            <Grid
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="0,8,0,0">
                 <ui:SimpleStackPanel
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="8">
                     <Button
                         Padding="48,8"
-                        Content="创建"
-                        Style="{StaticResource AccentButtonStyle}" />
-                    <Button Command="{Binding ToMainPageCommand}" Padding="48,8" Content="取消" />
+                        Command="{Binding SumbitCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                        Content="创建">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource AccentButtonStyle}" TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=Of_CreateTunnel_Views}" Value="-1">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button
+                        Padding="48,8"
+                        Command="{Binding ToMainPageCommand}"
+                        Content="取消" />
                 </ui:SimpleStackPanel>
             </Grid>
         </Grid>

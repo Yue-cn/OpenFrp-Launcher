@@ -41,7 +41,6 @@ namespace OpenFrp.Core.Api
         /// <para> 绑定模型: <see cref="OfApiModel.Response.UserInfoModel"/> </para>
         /// </summary>
         public const string UserInfo = $"{BaseUrl}/frp/api/getUserInfo";
-
         /// <summary>
         /// OpenFrp - 签到
         /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
@@ -57,6 +56,10 @@ namespace OpenFrp.Core.Api
         /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
         /// </summary>
         public const string LauncherBroadCast = $"{LauncherApiUrl}/launcher/broadCast";
+
+        public const string CheckFrpcUpdate = $"{LauncherApiUrl}/launcher/update/frpc";
+
+        public const string CheckLauncherUpdate = $"{LauncherApiUrl}/launcher/update/launcher";
         /// <summary>
         /// 用户隧道
         /// <para> 绑定模型: <see cref="OfApiModel.Response.UserProxiesModel"/></para>

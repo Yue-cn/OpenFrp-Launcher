@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using OpenFrp.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +25,7 @@ namespace OpenFrp.Launcher.ViewModels
             aboutDatas.Add(new()
             {
                 Title = "版本",
-                Content = $"v1.5.0"
+                Content = Utils.ApplicationVersions
             });
             aboutDatas.Add(new()
             {
@@ -41,5 +43,9 @@ namespace OpenFrp.Launcher.ViewModels
 
             public string Content { get; set; } = "Content";
         }
+
+        [RelayCommand]
+        private void CheckUpdate() => (App.Current.MainWindow as WpfSurface)?.CheckUpdate();
+
     }
 }

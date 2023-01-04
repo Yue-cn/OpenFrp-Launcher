@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Navigation;
+using Windows.UI.Xaml;
 using static OpenFrp.Core.Api.OfApiModel.Response;
 using static OpenFrp.Core.ModelHelper;
 
@@ -605,16 +606,7 @@ namespace OpenFrp.Core.Api
                 /// 启动器 首页预览
                 /// </summary>
                 [JsonProperty("data")]
-                public new _LauncherPreviewStruct Data { get; set; } = new();
-
-                public class _LauncherPreviewStruct
-                {
-                    /// <summary>
-                    /// 首页大图的信息
-                    /// </summary>
-                    [JsonProperty("info")]
-                    public LauncherPreviewDataModel Info { get; set; } = new();
-                }
+                public new LauncherPreviewDataModel Data { get; set; } = new();
 
                 public class LauncherPreviewDataModel
                 {
@@ -640,6 +632,39 @@ namespace OpenFrp.Core.Api
                     /// </summary>
                     [JsonProperty("link")]
                     public string? Link { get; set; } = "https://www.openfrp.net";
+                }
+            }
+            /// <summary>
+            /// 更新信息
+            /// </summary>
+            public class UpdateInfo
+            {
+                /// <summary>
+                /// FRPC - 最新版本
+                /// </summary>
+                [JsonProperty("latest")]
+                public string? LatestVersion { get; set; }
+
+                [JsonProperty("launcher")]
+                public LauncherData LauncherInfo { get; set; } = new();
+
+                public class LauncherData
+                {
+                    /// <summary>
+                    /// 启动器 - 最新版本
+                    /// </summary>
+                    [JsonProperty("latest")]
+                    public string? LatestVersion { get; set; }
+                    /// <summary>
+                    /// 更新内容
+                    /// </summary>
+                    [JsonProperty("content")]
+                    public string? Content { get; set; }
+                    /// <summary>
+                    /// 下载链接
+                    /// </summary>
+                    [JsonProperty("download_url")]
+                    public string? DownloadUrl { get; set; }
                 }
             }
 

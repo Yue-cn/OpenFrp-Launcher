@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenFrp.Core.App;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace OpenFrp.Core
 {
     public static class Utils
     {
+        #region Extend Functions
         /// <summary>
         /// 将<see cref="byte[]"/>转为<see cref="string"/>
         /// </summary>
@@ -29,7 +31,9 @@ namespace OpenFrp.Core
         {
             return Encoding.UTF8.GetBytes(str);
         }
-
+        /// <summary>
+        /// 获取文本的 MD5
+        /// </summary>
         public static string GetMD5(this string str)
         {
             var builder = new StringBuilder();
@@ -40,72 +44,7 @@ namespace OpenFrp.Core
             }
             return builder.ToString();
         }
-
-        /// <summary>
-        /// 应用主窗口（操控台返回 Null)
-        /// </summary>
-        public static System.Windows.Window? MainWindow
-        {
-            get => System.Windows.Application.Current?.MainWindow;
-        }
-        public static bool ServicesMode { get; } = !Environment.UserInteractive;
-        /// <summary>
-        /// 应用程序 所在目录
-        /// </summary>
-        public static string ApplicationPath { get; } = $"{AppDomain.CurrentDomain.BaseDirectory}";
-        /// <summary>
-        /// 管道的昵称
-        /// </summary>
-        public static string PipeRouteName { get; } = $"OfApp_{ApplicationPath.GetMD5()}";
-        /// <summary>
-        /// 配置文件的文件目录
-        /// </summary>
-        public static string ApplicationConfigPath { get; } = Path.Combine(ApplicationPath,"config.json");
-        /// <summary>
-        /// Core 文件
-        /// </summary>
-        public static string CorePath { get; } = Path.Combine(ApplicationPath, "OpenFrp.Core.exe");
-        /// <summary>
-        /// 所在文件名
-        /// </summary>
-        public static string ExcutableName { get; } = Process.GetCurrentProcess().MainModule.FileName;
-        /// <summary>
-        /// 存储文件目录
-        /// </summary>
-        public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
-
-
-        //private static StreamWriter? _writer = Utils.ServicesMode ? new StreamWriter(Path.Combine(ApplicationPath, "logs.txt")) : default;
-
-        internal static void Debug(string s)
-        {
-            if (!Utils.ServicesMode)
-            {
-                Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
-            }
-            //else
-            //{
-            //    _writer?.WriteLineAsync($"[{DateTimeOffset.Now}] {s}");
-            //}
-        }
-        
-        public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");
-        /// <summary>
-        /// 检查服务是否开启
-        /// </summary>
-        public static void CheckService()
-        {
-            using var service = new ServiceController("OpenFrp Launcher Service");
-            if (!service.CanStop)
-            {
-                Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
-                {
-                    Verb = "runas",
-                    CreateNoWindow = true
-                });
-            }
-        }
-        public static async Task<T?> WithCancelToken<T>(this Task<T> task,CancellationToken _token)
+        public static async Task<T?> WithCancelToken<T>(this Task<T> task, CancellationToken _token)
         {
             var src = Task.Run(() => { _token.WaitHandle.WaitOne(5000); });
 
@@ -117,7 +56,6 @@ namespace OpenFrp.Core
 
 
         }
-
         public static async ValueTask<OfProcessInfo[]> GetAliveNetworkLink()
         {
             var process = Process.Start(new ProcessStartInfo("netstat.exe", "-ano")
@@ -128,7 +66,7 @@ namespace OpenFrp.Core
             });
             var dic = new Dictionary<string, string>();
             var pool = new List<Task<OfProcessInfo>>();
-            foreach(var str in (await process.StandardOutput.ReadToEndAsync()).Split('\n'))
+            foreach (var str in (await process.StandardOutput.ReadToEndAsync()).Split('\n'))
             {
                 var args = str.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
                 if (args.Length < 3 || !(args[0] is "TCP" || args[0] is "UDP"))
@@ -158,8 +96,8 @@ namespace OpenFrp.Core
                     };
                 }));
             }
-            
-            return await Task.WhenAll(pool); 
+
+            return await Task.WhenAll(pool);
         }
         public class OfProcessInfo
         {
@@ -169,5 +107,90 @@ namespace OpenFrp.Core
 
             public string? ProcessName { get; set; }
         }
+        #endregion
+
+        #region Helper Args
+        /// <summary>
+        /// 应用主窗口（操控台返回 Null)
+        /// </summary>
+        public static System.Windows.Window? MainWindow
+        {
+            get => System.Windows.Application.Current?.MainWindow;
+        }
+        /// <summary>
+        /// 是否在系统服务模式
+        /// </summary>
+        public static bool ServicesMode { get; } = !Environment.UserInteractive;
+        /// <summary>
+        /// 应用程序 所在目录
+        /// </summary>
+        public static string ApplicationPath { get; } = $"{AppDomain.CurrentDomain.BaseDirectory}";
+        /// <summary>
+        /// 管道的昵称
+        /// </summary>
+        public static string PipeRouteName { get; } = $"OfApp_{ApplicationPath.GetMD5()}";
+        /// <summary>
+        /// 配置文件的文件目录
+        /// </summary>
+        public static string ApplicationConfigPath { get; } = Path.Combine(ApplicationPath,"config.json");
+        /// <summary>
+        /// Core 文件
+        /// </summary>
+        public static string CorePath { get; } = Path.Combine(ApplicationPath, "OpenFrp.Core.exe");
+        /// <summary>
+        /// 所在文件名
+        /// </summary>
+        public static string ExcutableName { get; } = Process.GetCurrentProcess().MainModule.FileName;
+        /// <summary>
+        /// 存储文件目录
+        /// </summary>
+        public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
+        #endregion
+
+        /// <summary>
+        /// 写日志
+        /// </summary>
+        internal static void Debug(string s)
+        {
+            if (!Utils.ServicesMode)
+            {
+                Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
+            }
+        }
+        /// <summary>
+        /// 启动器写日志
+        /// </summary>
+        public static void WriteLog(string s) => System.Diagnostics.Debug.WriteLine($"[{DateTimeOffset.Now}] {s}");
+        /// <summary>
+        /// 检查服务是否开启
+        /// </summary>
+        public static void CheckService()
+        {
+            using var service = new ServiceController("OpenFrp Launcher Service");
+            if (!service.CanStop)
+            {
+                Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                {
+                    Verb = "runas",
+                    CreateNoWindow = true
+                });
+            }
+        }
+        public static void StopService()
+        {
+            if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
+            {
+                Process.Start(new ProcessStartInfo("sc", "stop \"OpenFrp Launcher Service\"")
+                {
+                    Verb = "runas",
+                    CreateNoWindow = true
+                });
+            }
+        }
+
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p9aj2";
+
+        public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
+
     }
 }

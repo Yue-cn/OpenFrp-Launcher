@@ -161,6 +161,66 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Spacing="8">
+            <Grid>
+                <Border CornerRadius="4" Opacity="1" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}" />
+                <ui:InfoBar
+                    Title="Launcher"
+                    IsOpen="True"
+                    Message="Frpc 有新版本更新!!!"
+                    Severity="Informational">
+                    <ui:InfoBar.ActionButton>
+                        <Button
+                            HorizontalAlignment="Right"
+                            Content="安装"
+                            Command="{Binding InstallFrpcCommand}"
+                            
+                            Style="{StaticResource AccentButtonStyle}" />
+                    </ui:InfoBar.ActionButton>
+                    <ui:InfoBar.Style>
+                        <Style TargetType="ui:InfoBar">
+                            <Setter Property="IsHitTestVisible" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFrpchasUpdate}" Value="False">
+                                    <Setter Property="IsHitTestVisible" Value="False" />
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:.2" />
+                                                <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,-48,0,0"
+                                                Duration="0:0:.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:.2" />
+                                                <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,0,0,0"
+                                                Duration="0:0:.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:InfoBar.Style>
+                </ui:InfoBar>
+            </Grid>
+
             <ui:InfoBar
                 Title="Launcher"
                 IsClosable="False"
@@ -212,6 +272,7 @@
                     </Style>
                 </ui:InfoBar.Style>
             </ui:InfoBar>
+
         </ui:SimpleStackPanel>
     </Grid>
 </Window>

@@ -160,11 +160,11 @@ namespace OpenFrp.Launcher.Views
             ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/Resourecs/wallhaven-m9o2vk_1920x1080.png"));
             if (lp.Flag)
             {
-                if (lp.Data.Info.ImageUrl is not null)
+                if (lp.Data.ImageUrl is not null)
                 {
                     Of_Home_PreviewCardLoader.ShowContent();
-                    string url = lp.Data.Info.ImageUrl.ToString();
-                    string fileName = Path.Combine(Utils.AppTempleFilesPath,"static", $"{lp.Data.Info.ImageUrl.ToString().GetMD5()}.png");
+                    string url = lp.Data.ImageUrl.ToString();
+                    string fileName = Path.Combine(Utils.AppTempleFilesPath,"static", $"{lp.Data.ImageUrl.ToString().GetMD5()}.png");
                     if (!File.Exists(fileName))
                     {
                         var result = await OfApi.GET(url);
@@ -184,7 +184,7 @@ namespace OpenFrp.Launcher.Views
                     ((ImageBrush)Of_Home_PreviewBackground.Background).ImageSource = new BitmapImage(new Uri(fileName));
 
                 }
-                HomeModel.LauncherPreviewData = lp.Data.Info;
+                HomeModel.LauncherPreviewData = lp.Data;
             }
             Of_Home_PreviewCardLoader.ShowContent();
         }

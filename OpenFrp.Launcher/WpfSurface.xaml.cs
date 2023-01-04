@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,7 +18,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
+using Windows.UI.WebUI;
 
 namespace OpenFrp.Launcher
 {
@@ -40,9 +41,8 @@ namespace OpenFrp.Launcher
         {
             base.OnInitialized(e);
 
-            System.IO.Directory.CreateDirectory(Utils.AppTempleFilesPath);
-            System.IO.Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath,"static"));
-
+            Directory.CreateDirectory(Utils.AppTempleFilesPath);
+            Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
             await OfSettings.ReadConfig();
 
             OfApp_NavigationView.ItemInvoked += (s, e) =>
@@ -70,6 +70,7 @@ namespace OpenFrp.Launcher
                 if (e.Uri is null) OfApp_RootFrame.RemoveBackEntry();
                 else { e.Cancel = true; }
             };
+
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
@@ -77,11 +78,114 @@ namespace OpenFrp.Launcher
             // 启动器 自动登录逻辑
             await OfAppHelper.RequestLogin();
 
+
+            // 启动器更新逻辑
+            CheckUpdate();
+
+        }
+
+        internal async void CheckUpdate()
+        {
+            var update = await Update.CheckUpdate();
+            if (update.UpdateFor is not Update.UpdateFor.None)
+            {
+                if (update.UpdateFor is Update.UpdateFor.Launcher)
+                {
+                    var dialog = new ContentDialog()
+                    {
+                        DefaultButton = ContentDialogButton.Primary,
+                        Title = "启动器有更新啦",
+                        Content = new TextBlock(new Run(update.Content))
+                        {
+                            Width = 350,
+                            MinHeight = 150,
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        PrimaryButtonText = "下载并安装",
+                        CloseButtonText = "取消",
+                    };
+                    
+                    dialog.PrimaryButtonClick += async (sender, args) =>
+                    {
+                        args.Cancel = true;
+                        string file = Path.Combine(Utils.AppTempleFilesPath, $"{update.DownloadUrl?.GetMD5()}.exe");
+
+                        dialog.IsPrimaryButtonEnabled = false;
+                        dialog.CloseButtonText = null;
+
+                        var client = new HttpClient();
+                        var progress = new ProgressRing()
+                        {
+                            Width = 70,
+                            Height = 70,
+                            IsIndeterminate = false,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+                        if (File.Exists(file))
+                        {
+                            progress.Value = 100;
+                            Install();
+                            return;
+                        }
+                        dialog.Content = new Grid()
+                        {
+                            Width = 350,
+                            MinHeight = 150,
+                            Children =
+                            {
+                                progress
+                            }
+
+                        };
+                        var isSuccess = await Update.DownloadWithProgress(update.DownloadUrl!,file, (sender, args) =>
+                        {
+                            progress.Value = args.ProgressPercentage;
+                        });
+                        if (isSuccess)
+                        {
+                            Install();
+                        }
+   
+                        dialog.Content = "下载失败。";
+                    };
+                    await dialog.ShowAsync();
+
+                    async void Install()
+                    {
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo(Path.Combine(Utils.AppTempleFilesPath, $"{update.DownloadUrl?.GetMD5()}.exe"))
+                            {
+                                Verb = "runas"
+                            });
+                            Utils.StopService();
+                            if ((await OfAppHelper.PipeClient.PushMessageAsync(new()
+                            {
+                                Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                                Message = "关闭。"
+                            })).Action == Core.Pipe.PipeModel.OfAction.Server_Closed)
+                            {
+                                if (OfAppHelper.LauncherViewModel is not null)
+                                    OfAppHelper.LauncherViewModel.PipeRunningState = false;
+                            }
+                            Environment.Exit(0);
+                        }
+                        catch { }
+                        dialog.Hide();
+                        return;
+                    }
+
+                }
+                else
+                {
+                    LauncherModel.IsFrpchasUpdate = true;
+                }
+            }
         }
 
         private async void ClientPipeWorker(bool restart = false)
         {
-            // 抛弃旧版 Process 检测机制 仅连接失败（卡住）的时候 Kill 后开启。
             if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
             {
                 try
@@ -91,13 +195,12 @@ namespace OpenFrp.Launcher
                     {
                         Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
                         {
-                            CreateNoWindow = false,
+                            CreateNoWindow = true,
                             UseShellExecute = false
                         });
                     }
                 }
                 catch { }
-                
             }
             else
             {
@@ -108,6 +211,7 @@ namespace OpenFrp.Launcher
             
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonProcess)
             {
+                // 寻找正在运行的隧道
                 var resp =  await OfAppHelper.PipeClient.PushMessageAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.Get_State
@@ -118,9 +222,12 @@ namespace OpenFrp.Launcher
                 }
             }
             LauncherModel.PipeRunningState = true;
+
             await Task.Delay(500);
+
             if (restart && OfApi.LoginState)
             {
+                // 发送账户凭证
                 await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,

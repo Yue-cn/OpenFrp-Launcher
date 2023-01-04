@@ -138,16 +138,29 @@
                                 </ui:SimpleStackPanel>
                             </ui:HyperlinkButton>
                         </WrapPanel>
-                        <TextBlock Margin="8,12" Text="特此谢明: SakuraFrp Launcher" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                        <TextBlock
+                            Margin="8,12"
+                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                            Text="特此谢明: SakuraFrp Launcher" />
                     </ui:SimpleStackPanel>
                 </Grid>
             </of:Expander>
-            <ui:HyperlinkButton NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html" Padding="10,8" HorizontalContentAlignment="Left">
+            <ui:HyperlinkButton
+                Padding="10,8"
+                HorizontalContentAlignment="Left"
+                NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html">
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="8">
-                    <ui:SymbolIcon Symbol="Link"/>
-                    <TextBlock Text="GPL-3 Document"/>
+                    <ui:SymbolIcon Symbol="Link" />
+                    <TextBlock Text="GPL-3 Document" />
                 </ui:SimpleStackPanel>
             </ui:HyperlinkButton>
+            <ui:HyperlinkButton Command="{Binding CheckUpdateCommand}" Padding="10,8" HorizontalContentAlignment="Left">
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="8">
+                    <ui:SymbolIcon Symbol="Up" />
+                    <TextBlock Text="检查更新" />
+                </ui:SimpleStackPanel>
+            </ui:HyperlinkButton>
+
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

@@ -52,6 +52,11 @@ namespace OpenFrp.Core.App
         [JsonProperty("bypassProxy")]
         public bool BypassProxy { get; set; } = true;
         /// <summary>
+        /// Frpc的版本
+        /// </summary>
+        [JsonProperty("frpcVersion")]
+        public string FRPClientVersion { get; set; } = "OpenFRP_0.46.0_e9886afa_20221227 **";
+        /// <summary>
         /// 用户的账户
         /// </summary>
         [JsonProperty("account")]

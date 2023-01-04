@@ -19,12 +19,12 @@ namespace OpenFrp.Core.Api
         public static string? Session { get; set; }
         public static OfApiModel.Response.UserInfoModel.UserInfoDataModel? UserInfoDataModel { get; set; }
         public static bool LoginState => !string.IsNullOrEmpty(Authorization) && !string.IsNullOrEmpty(Session);
-
         public static void ClearAccount()
         {
             UserInfoDataModel = null;
             Authorization = Session = null;
         }
+
         /// <summary>
         /// Api交互 - 登录
         /// </summary>
@@ -136,7 +136,9 @@ namespace OpenFrp.Core.Api
                 return result;
             }
         }
-
+        /// <summary>
+        /// Api交互 - 移除隧道
+        /// </summary>
         public static async ValueTask<Response.BaseModel> RemoveProxy(int id)
         {
             return await POST<Response.BaseModel>(
@@ -145,12 +147,17 @@ namespace OpenFrp.Core.Api
                         Session,id).ToStringContent()
                     ) ?? new() { Message = "软件请求失败。" };
         }
-        
+        /// <summary>
+        /// Api交互 - 获取节点列表
+        /// </summary>
         public static async ValueTask<Response.NodesModel> GetNodesList()
         {
             return await GET<Response.NodesModel>(OfApiUrl.NodeList) ?? 
                 new() { Message = "软件请求失败。" };
         }
+        /// <summary>
+        /// Api交互 - 创建隧道
+        /// </summary>
         public static async ValueTask<Response.BaseModel> CreateProxy(OfApiModel.Request.EditTunnelData data)
         {
 
@@ -159,7 +166,9 @@ namespace OpenFrp.Core.Api
                     data.ToStringContent()
                     ) ?? new() { Message = "软件请求失败。" };
         }
-
+        /// <summary>
+        /// Api交互 - 编辑隧道
+        /// </summary>
         public static async ValueTask<Response.BaseModel> EditProxy(OfApiModel.Request.EditTunnelData data)
         {
             return await POST<Response.BaseModel>(
@@ -167,6 +176,8 @@ namespace OpenFrp.Core.Api
                 data.ToStringContent()
                 ) ?? new() { Message = "软件请求失败。" };
         }
+
+
 
 
         public static async ValueTask<T?> POST<T>(string url,StringContent body)

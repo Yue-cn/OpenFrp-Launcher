@@ -9,5 +9,10 @@ namespace OpenFrp.Core.App
     public class ConsoleHelper
     {
         public static Dictionary<int,string> RunningProxies { get; set; } = new Dictionary<int,string>();
+
+        public static void Launch()
+        {
+
+        }
     }
 }

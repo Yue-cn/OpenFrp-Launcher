@@ -37,11 +37,12 @@ namespace OpenFrp.Launcher.Views
         {
             base.OnInitialized(e);
             RefreshUserTunnels();
+            TunnelsModel.MainPage = this;
         }
         internal async void RefreshUserTunnels()
         {
             Of_Tunnels_ListLoader.ShowLoader();
-            TunnelsModel.UserProxies?.Clear();
+            TunnelsModel.UserTunnels?.Clear();
             var lp = await OfApi.GetUserProxies();
             if (!lp.Flag)
             {
@@ -75,14 +76,14 @@ namespace OpenFrp.Launcher.Views
             {
                 lp.Data.List.ForEach((item) =>
                 {
-                    if (OfAppHelper.RunningIds.Contains(item.ProxyId))
+                    if (OfAppHelper.RunningIds.Contains(item.TunnelId))
                     {
                         item.isRuuning = true;
                     }
                 });
             }
 
-            TunnelsModel.UserProxies = new(lp.Data.List);
+            TunnelsModel.UserTunnels = new(lp.Data.List);
             TunnelsModel.isRefreshing = false;
             TunnelsModel.IsEnableTool = true;
             Of_Tunnels_ListLoader.ShowContent();
@@ -91,7 +92,7 @@ namespace OpenFrp.Launcher.Views
         private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch switcher = (ToggleSwitch)sender;
-            var proxy = (Core.Api.OfApiModel.Response.UserProxiesModel.UserProxies)switcher.DataContext;
+            var proxy = (Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel)switcher.DataContext;
             e.Handled = false;
             if (switcher.IsOn)
             {
@@ -100,13 +101,13 @@ namespace OpenFrp.Launcher.Views
                     Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
                     FrpMessage = new()
                     {
-                        Id = proxy.ProxyId
+                        Id = proxy.TunnelId
                     }
                 });
                 // PUSH Server
                 switcher.IsOn = resp.Flag;
 
-                OfAppHelper.RunningIds.Add(proxy.ProxyId);
+                OfAppHelper.RunningIds.Add(proxy.TunnelId);
             }
             // 关闭
             else
@@ -116,13 +117,14 @@ namespace OpenFrp.Launcher.Views
                     Action = Core.Pipe.PipeModel.OfAction.Close_Frpc,
                     FrpMessage = new()
                     {
-                        Id = proxy.ProxyId
+                        Id = proxy.TunnelId
                     }
                 });
                 switcher.IsOn = !resp.Flag;
-                OfAppHelper.RunningIds.Remove(proxy.ProxyId);
+                OfAppHelper.RunningIds.Remove(proxy.TunnelId);
             }
 
         }
+
     }
 }

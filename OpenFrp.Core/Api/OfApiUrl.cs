@@ -63,22 +63,27 @@ namespace OpenFrp.Core.Api
         /// </summary>
         public const string UserProxies = $"{BaseUrl}/frp/api/getUserProxies";
         /// <summary>
-        /// 移除隧道
-        /// <para>Body Request: <see cref="OfApiModel.Request.RemoveProxyData"/></para>
-        /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
-        /// </summary>
-        public const string RemoveProxy = $"{BaseUrl}/frp/api/removeProxy";
-        /// <summary>
         /// 列出节点
         /// <para> 绑定模型: <see cref="OfApiModel.Response.NodesModel"/></para>
         /// </summary>
         public const string NodeList = $"{BaseUrl}/frp/api/getNodeList";
-
         /// <summary>
-        /// 创建隧道:
-        /// <para>Body Request: <see cref="OfApiModel.Request.CreateProxyData"/></para>
+        /// 移除隧道
+        /// <para>Body Request: <see cref="OfApiModel.Request.RemoveTunnelData"/></para>
         /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
         /// </summary>
-        public const string CreateProxy = $"{BaseUrl}/frp/api/newProxy";
+        public const string RemoveTunnel = $"{BaseUrl}/frp/api/removeProxy";
+        /// <summary>
+        /// 创建隧道:
+        /// <para>Body Request: <see cref="OfApiModel.Request.CreateTunnelData"/></para>
+        /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
+        /// </summary>
+        public const string CreateTunnel = $"{BaseUrl}/frp/api/newProxy";
+        /// <summary>
+        /// 编辑隧道:
+        /// <para>Body Request: <see cref="OfApiModel.Request.CreateTunnelData"/></para>
+        /// <para> 绑定模型: <see cref="OfApiModel.Response.BaseModel"/></para>
+        /// </summary>
+        public const string EditTunnel = $"{BaseUrl}/frp/api/editProxy";
     }
 }

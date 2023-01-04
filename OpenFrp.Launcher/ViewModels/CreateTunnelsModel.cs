@@ -195,7 +195,7 @@ namespace OpenFrp.Launcher.ViewModels
         }
 
         [ObservableProperty]
-        public Core.Api.OfApiModel.Request.CreateProxyData config = new();
+        public Core.Api.OfApiModel.Request.EditTunnelData config = new();
 
         [ObservableProperty]
         public ObservableCollection<Core.Api.OfApiModel.Response.NodesModel.NodeInfo> nodesList = new();

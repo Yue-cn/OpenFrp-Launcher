@@ -109,7 +109,7 @@ namespace OpenFrp.Core.Api
         /// <summary>
         /// Api交互 - 获取用户隧道
         /// </summary>
-        public static async ValueTask<Response.UserProxiesModel> GetUserProxies()
+        public static async ValueTask<Response.UserTunnelModel> GetUserProxies()
         {
             if (!LoginState)
             {
@@ -121,7 +121,7 @@ namespace OpenFrp.Core.Api
             }
             else
             {
-                var result = await POST<Response.UserProxiesModel>(
+                var result = await POST<Response.UserTunnelModel>(
                     OfApiUrl.UserProxies,
                     new Request.SessionData(
                         Session).ToStringContent()
@@ -130,7 +130,7 @@ namespace OpenFrp.Core.Api
                 {
                     result.Data.List.ForEach((item) =>
                     {
-                        item.ProxyType = item.ProxyType?.ToUpper();
+                        item.TunnelType = item.TunnelType?.ToUpper();
                     });
                 }
                 return result;
@@ -140,8 +140,8 @@ namespace OpenFrp.Core.Api
         public static async ValueTask<Response.BaseModel> RemoveProxy(int id)
         {
             return await POST<Response.BaseModel>(
-                    OfApiUrl.RemoveProxy,
-                    new Request.RemoveProxyData(
+                    OfApiUrl.RemoveTunnel,
+                    new Request.RemoveTunnelData(
                         Session,id).ToStringContent()
                     ) ?? new() { Message = "软件请求失败。" };
         }
@@ -151,15 +151,22 @@ namespace OpenFrp.Core.Api
             return await GET<Response.NodesModel>(OfApiUrl.NodeList) ?? 
                 new() { Message = "软件请求失败。" };
         }
-        public static async ValueTask<Response.BaseModel> CreateProxy(OfApiModel.Request.CreateProxyData data)
+        public static async ValueTask<Response.BaseModel> CreateProxy(OfApiModel.Request.EditTunnelData data)
         {
 
             return await POST<Response.BaseModel>(
-                    OfApiUrl.CreateProxy,
+                    OfApiUrl.CreateTunnel,
                     data.ToStringContent()
                     ) ?? new() { Message = "软件请求失败。" };
         }
 
+        public static async ValueTask<Response.BaseModel> EditProxy(OfApiModel.Request.EditTunnelData data)
+        {
+            return await POST<Response.BaseModel>(
+                OfApiUrl.EditTunnel,
+                data.ToStringContent()
+                ) ?? new() { Message = "软件请求失败。" };
+        }
 
 
         public static async ValueTask<T?> POST<T>(string url,StringContent body)
@@ -255,9 +262,12 @@ namespace OpenFrp.Core.Api
                 handle.Proxy = null;
                 handle.UseProxy = false;
             }
-            HttpClient client = new(handle);
+            HttpClient client = new(handle)
+            {
+                Timeout = new TimeSpan(0, 0, 0, 10)
+            };
 
-            client.Timeout = new TimeSpan(0,0,0,10);
+            
 
             try
             {

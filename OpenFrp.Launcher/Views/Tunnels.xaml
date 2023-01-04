@@ -22,7 +22,6 @@
 
                 <ui:AppBarButton
                     Command="{Binding RefreshCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ui:Page, AncestorLevel=1}}"
                     Icon="Refresh"
                     Label="刷新" />
                 <ui:AppBarButton
@@ -42,22 +41,22 @@
                     Margin="-8"
                     Padding="8"
                     Focusable="False"
-                    ItemsSource="{Binding UserProxies}"
+                    ItemsSource="{Binding UserTunnels}"
                     PreviewMouseWheel="GridView_PreviewMouseWheel"
                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <ui:GridView.ItemTemplate>
                         <DataTemplate>
                             <Border
-                                Width="350"
+                                Width="375"
                                 Height="225"
                                 Padding="28"
                                 IsEnabled="{Binding IsEnabled}">
                                 <Grid>
                                     <ui:SimpleStackPanel>
-                                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding ProxyName}" />
+                                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding TunnelName}" />
                                         <TextBlock Style="{StaticResource BodyTextBlockStyle}">
                                             <Run Text="{Binding NodeName}" /><LineBreak />
-                                            <Run Text="{Binding ProxyType, StringFormat={}{0}穿透}" />
+                                            <Run Text="{Binding TunnelType, StringFormat={}{0}穿透}" />
                                             <Run>
                                                 <MultiBinding StringFormat="{}{0}:{1}">
                                                     <Binding Path="LocalAddress" />
@@ -80,16 +79,22 @@
                                     </ui:SimpleStackPanel>
                                     <ui:CommandBar HorizontalAlignment="Left" VerticalAlignment="Bottom">
                                         <ui:AppBarButton
-                                            Command="{Binding DataContext.CopyLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                                            Command="{Binding Path=DataContext.CopyLinkCommand, RelativeSource={RelativeSource AncestorType=ui:GridView}}"
                                             CommandParameter="{Binding ConnectAddress}"
                                             Icon="Copy"
                                             Label="复制连接" />
-                                        <ui:AppBarButton Icon="&#xe967;" Label="操控台" />
+
                                         <ui:AppBarButton
-                                            Command="{Binding DataContext.RemoveProxyCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
-                                            CommandParameter="{Binding ProxyId}"
+                                            Command="{Binding Path=DataContext.EditTunnelCommand, RelativeSource={RelativeSource AncestorType=ui:GridView}}"
+                                            CommandParameter="{Binding}"
+                                            Icon="Edit"
+                                            Label="编辑隧道" />
+                                        <ui:AppBarButton
+                                            Command="{Binding Path=DataContext.RemoveTunnelCommand, RelativeSource={RelativeSource AncestorType=ui:GridView}}"
+                                            CommandParameter="{Binding TunnelId}"
                                             Icon="Remove"
                                             Label="删除" />
+
                                     </ui:CommandBar>
                                     <ui:ToggleSwitch
                                         HorizontalAlignment="Right"
@@ -108,8 +113,8 @@
                             <Setter Property="AutomationProperties.Name">
                                 <Setter.Value>
                                     <MultiBinding StringFormat="隧道名称: {0},映射对象:{1}连接,{2}:{3},开启状态:{4}">
-                                        <Binding Path="ProxyName" />
-                                        <Binding Path="ProxyType" />
+                                        <Binding Path="TunnelName" />
+                                        <Binding Path="TunnelType" />
                                         <Binding Path="LocalAddress" />
                                         <Binding Path="LocalPort" />
                                         <Binding Path="isRuuning" />

@@ -37,7 +37,7 @@ namespace OpenFrp.Launcher.Views
         {
             base.OnInitialized(e);
             RefreshNodeList();
-            Of_TunnelConfig.ProxyConfig = TunnelsModel.Config = new();
+            TunnelsModel.Config = Of_TunnelConfig.ProxyConfig =  new();
         }
         private async void RefreshNodeList()
         {

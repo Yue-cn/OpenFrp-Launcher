@@ -49,7 +49,7 @@
                                     ui:ControlHelper.Header="隧道名称"
                                     ui:ControlHelper.PlaceholderText="不填为随机"
                                     MaxLength="20"
-                                    Text="{Binding ProxyConfig.ProxyName, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                    Text="{Binding ProxyConfig.TunnelName, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                                 <ui:NumberBox
                                     Name="Of_RemotePort_Box"
                                     ui:ControlHelper.Header="远程端口"
@@ -58,7 +58,7 @@
                                     Maximum="65535"
                                     Minimum="1" />
                                 <ui:NumberBox
-                                    Name="Of_LocalPort_Box"
+                                    x:Name="Of_LocalPort_Box"
                                     ui:ControlHelper.Header="本地端口"
                                     ui:ControlHelper.PlaceholderText="25565"
                                     Maximum="65535"

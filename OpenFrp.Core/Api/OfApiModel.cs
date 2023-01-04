@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Navigation;
 using static OpenFrp.Core.Api.OfApiModel.Response;
 using static OpenFrp.Core.ModelHelper;
 
@@ -36,7 +37,7 @@ namespace OpenFrp.Core.Api
                 public string? UserName { get; set; }
 
                 [JsonProperty("password")]
-                public string? Password { get; set; } 
+                public string? Password { get; set; }
             }
             /// <summary>
             /// 大部分功能请求时的 BODY
@@ -59,26 +60,26 @@ namespace OpenFrp.Core.Api
             /// <summary>
             /// 移除隧道时的Body
             /// </summary>
-            public class RemoveProxyData : SessionData
+            public class RemoveTunnelData : SessionData
             {
-                public RemoveProxyData(string? session,int id) : base(session)
+                public RemoveTunnelData(string? session, int id) : base(session)
                 {
-                    ProxyID = id;
+                    TunnelID = id;
                 }
 
                 [JsonProperty("proxy_id")]
-                public int ProxyID { get; set; }
+                public int TunnelID { get; set; }
             }
             /// <summary>
             /// 创建隧道时的Body
             /// </summary>
-            public class CreateProxyData : SessionData
+            public class EditTunnelData : SessionData
             {
                 /// <summary>
                 /// 隧道名称
                 /// </summary>
                 [JsonProperty("name")]
-                public string? ProxyName { get; set; }
+                public string? TunnelName { get; set; }
                 /// <summary>
                 /// 隧道所在的节点ID
                 /// </summary>
@@ -98,7 +99,7 @@ namespace OpenFrp.Core.Api
                 /// 远程端口
                 /// </summary>
                 [JsonProperty("remote_port")]
-                public int RemotePort { get; set; }
+                public int? RemotePort { get; set; }
                 /// <summary>
                 /// 绑定的域名
                 /// </summary>
@@ -147,14 +148,18 @@ namespace OpenFrp.Core.Api
                 /// 隧道类型
                 /// </summary>
                 [JsonProperty("type")]
-                public string? ProxyType { get; set; }
+                public string? TunnelType { get; set; }
                 /// <summary>
                 /// Proxy Protocol Version
                 /// </summary>
                 [JsonIgnore]
                 public int ProxyProtocolVersion { get; set; }
-                
+
+                [JsonProperty("proxy_id")]
+                public int? TunnelID { get; set; }
+
             }
+
 
 
         }
@@ -281,15 +286,15 @@ namespace OpenFrp.Core.Api
             /// <summary>
             /// 用户隧道模型
             /// </summary>
-            public class UserProxiesModel : BaseModel
+            public class UserTunnelModel : BaseModel
             {
                 /// <summary>
                 /// 用户隧道列表
                 /// </summary>
                 [JsonProperty("data")]
-                public new UserProxiesDataModel Data { get; set; } = new();
+                public new UserTunnelsDataModel Data { get; set; } = new();
 
-                public class UserProxiesDataModel
+                public class UserTunnelsDataModel
                 {
                     [JsonProperty("total")]
                     public int Count { get; set; }
@@ -297,10 +302,10 @@ namespace OpenFrp.Core.Api
                     /// 列表
                     /// </summary>
                     [JsonProperty("list")]
-                    public List<UserProxies> List { get; set; } = new();
+                    public List<UserTunnel> List { get; set; } = new();
                     
                 }
-                public class UserProxies
+                public class UserTunnel
                 {
                     /// <summary>
                     /// 内部专用 - 是否运行中
@@ -317,7 +322,7 @@ namespace OpenFrp.Core.Api
                     /// 远程端口号
                     /// </summary>
                     [JsonProperty("remotePort")]
-                    public int RemotePort { get; set; }
+                    public int? RemotePort { get; set; }
                     /// <summary>
                     /// 自定义属性
                     /// </summary>
@@ -326,8 +331,15 @@ namespace OpenFrp.Core.Api
                     /// <summary>
                     /// 域名列表
                     /// </summary>
+                    [JsonIgnore]
+                    public string[] Domains { get; set; } = new string[0];
+
                     [JsonProperty("domain")]
-                    public string[] Domains { get; set; } = new string[]{};
+                    public string _domains
+                    {
+                        get => JsonConvert.SerializeObject(Domains);
+                        set => Domains = JsonConvert.DeserializeObject<string[]>(value) ?? new string[0];
+                    }
                     /// <summary>
                     /// 节点名称
                     /// </summary>
@@ -343,12 +355,22 @@ namespace OpenFrp.Core.Api
                     /// 隧道 ID
                     /// </summary>
                     [JsonProperty("id")]
-                    public int ProxyId { get; set; }
+                    public int TunnelId { get; set; }
                     /// <summary>
                     /// 在隧道头部加上的X-From-Where
                     /// </summary>
+                    [JsonProperty("locations")]
+                    public string? URLRoute { get; set; }
+                    /// <summary>
+                    /// 请求来源
+                    /// </summary>
                     [JsonProperty("headerXFromWhere")]
-                    public string? X_From_Where { get; set; }
+                    public string? RequestFrom { get; set; }
+                    /// <summary>
+                    /// 请求密码
+                    /// </summary>
+                    [JsonProperty("sk")]
+                    public string? RequestPassword { get; set; }
 
                     /// <summary>
                     /// 上次开启
@@ -375,12 +397,12 @@ namespace OpenFrp.Core.Api
                     /// 隧道名称
                     /// </summary>
                     [JsonProperty("proxyName")]
-                    public string? ProxyName { get; set; }
+                    public string? TunnelName { get; set; }
                     /// <summary>
                     /// 隧道类型
                     /// </summary>
                     [JsonProperty("proxyType")]
-                    public string? ProxyType { get; set; }
+                    public string? TunnelType { get; set; }
 
                     /// <summary>
                     /// 是否在线
@@ -395,13 +417,18 @@ namespace OpenFrp.Core.Api
                     /// <summary>
                     /// 是否开启数据压缩
                     /// </summary>
-                    [JsonProperty("useComperssion")]
+                    [JsonProperty("useCompression")]
                     public bool ComperssionMode { get; set; }
                     /// <summary>
                     /// 是否有加密传输
                     /// </summary>
                     [JsonProperty("useEncryption")]
                     public bool EncryptionMode { get; set; }
+
+                    [JsonProperty("hostHeaderRewrite")]
+                    public string? HostRewrite { get; set; }
+
+
                 }
             }
             /// <summary>

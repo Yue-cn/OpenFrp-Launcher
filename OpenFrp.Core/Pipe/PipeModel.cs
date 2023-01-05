@@ -40,7 +40,11 @@ namespace OpenFrp.Core.Pipe
             /// <summary>
             /// 关闭
             /// </summary>
-            Close_Frpc = 6
+            Close_Frpc = 6,
+            /// <summary>
+            /// FRPC 主动关闭
+            /// </summary>
+            Frpc_Closed = 7,
         }
         public class BaseModel : MessagePraser<BaseModel>
         {
@@ -77,6 +81,7 @@ namespace OpenFrp.Core.Pipe
                 /// 用户信息模型
                 /// </summary>
                 public Api.OfApiModel.Response.UserInfoModel.UserInfoDataModel? UserDataModel { get; set; }
+
                 /// <summary>
                 /// 应用的 AppSession iD
                 /// </summary>
@@ -90,11 +95,12 @@ namespace OpenFrp.Core.Pipe
 
             public class FrpModel
             {
-                [JsonProperty("id")]
-                public int Id { get; set; }
 
                 [JsonProperty("runningIds")]
-                public int[] RunningId { get; set; } = new int[0];
+                public int[]? RunningId { get; set; }
+
+                [JsonProperty("tunnel")]
+                public Api.OfApiModel.Response.UserTunnelModel.UserTunnel? Tunnel { get; set; }
             }
         }
         public class RequestModel : BaseModel

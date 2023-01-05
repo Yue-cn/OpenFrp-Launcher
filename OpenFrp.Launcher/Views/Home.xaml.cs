@@ -99,7 +99,7 @@ namespace OpenFrp.Launcher.Views
             }
             else
             {
-
+                while(HomeModel.UserInfoData is null) { await Task.Delay(500); }
                 HomeModel.UserInfoViewModels = new()
                 {
                     new()

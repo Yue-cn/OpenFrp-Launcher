@@ -190,12 +190,15 @@ namespace OpenFrp.Core
                             }; break;
                         case "rp":
                             {
-                                foreach (var item in App.ConsoleHelper.RunningProxies)
+                                foreach (var item in App.ConsoleHelper.RunningTunnels)
                                 {
                                     Console.WriteLine($"Key: {item.Key} , Value: {item.Value}");
                                 }
-                            }
-                            break;
+                            }; break;
+                        case "debug":
+                            {
+                                Debugger.Launch();
+                            };break;
                     }
                 }
             }

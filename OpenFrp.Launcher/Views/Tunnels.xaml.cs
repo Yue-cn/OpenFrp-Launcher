@@ -89,25 +89,35 @@ namespace OpenFrp.Launcher.Views
             Of_Tunnels_ListLoader.ShowContent();
         }
 
+        private bool isChanging { get; set; }
+
         private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
+
             ToggleSwitch switcher = (ToggleSwitch)sender;
             var proxy = (Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel)switcher.DataContext;
             e.Handled = false;
+            if (isChanging) return;
+            isChanging = true;
             if (switcher.IsOn)
             {
+                isChanging = true;
                 var resp = await OfAppHelper.PipeClient.PushMessageAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
                     FrpMessage = new()
                     {
-                        Id = proxy.TunnelId
+                        Tunnel = proxy
                     }
                 });
                 // PUSH Server
-                switcher.IsOn = resp.Flag;
+                if (resp.Flag)
+                {
+                    switcher.IsOn = true;
+                    OfAppHelper.RunningIds.Add(proxy.TunnelId);
+                }else switcher.IsOn = false;
 
-                OfAppHelper.RunningIds.Add(proxy.TunnelId);
+                isChanging = false;
             }
             // 关闭
             else
@@ -117,11 +127,15 @@ namespace OpenFrp.Launcher.Views
                     Action = Core.Pipe.PipeModel.OfAction.Close_Frpc,
                     FrpMessage = new()
                     {
-                        Id = proxy.TunnelId
+                        Tunnel = proxy
                     }
                 });
-                switcher.IsOn = !resp.Flag;
-                OfAppHelper.RunningIds.Remove(proxy.TunnelId);
+                if (resp.Flag)
+                {
+                    switcher.IsOn = false;
+                    OfAppHelper.RunningIds.Remove(proxy.TunnelId);
+                }else switcher.IsOn = true;
+                isChanging = false;
             }
 
         }

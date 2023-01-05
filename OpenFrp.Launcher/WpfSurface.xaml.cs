@@ -191,11 +191,11 @@ namespace OpenFrp.Launcher
                 try
                 {
                     Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
-                    if (process is null)
+                    if (process is null || process?.HasExited == true)
                     {
                         Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
                         {
-                            CreateNoWindow = true,
+                            CreateNoWindow = false,
                             UseShellExecute = false
                         });
                     }
@@ -218,7 +218,7 @@ namespace OpenFrp.Launcher
                 });
                 if (resp.Flag)
                 {
-                    OfAppHelper.RunningIds = resp.FrpMessage!.RunningId.ToList();
+                    OfAppHelper.RunningIds = resp.FrpMessage!.RunningId?.ToList() ?? new List<int>();
                 }
             }
             LauncherModel.PipeRunningState = true;
@@ -257,6 +257,19 @@ namespace OpenFrp.Launcher
                                 LauncherModel.PipeRunningState = false;
                                 await Task.Delay(1500);
                                 ClientPipeWorker(true);
+                            }
+                            break;
+                        case Core.Pipe.PipeModel.OfAction.Frpc_Closed:
+                            {
+                                var resp = await OfAppHelper.PipeClient.PushMessageAsync(new()
+                                {
+                                    Action = Core.Pipe.PipeModel.OfAction.Get_State
+                                });
+                                if (resp.Flag)
+                                {
+                                    OfAppHelper.RunningIds = resp.FrpMessage!.RunningId?.ToList() ?? new List<int>();
+                                }
+                                (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.Tunnels));
                             }
                             break;
                     }

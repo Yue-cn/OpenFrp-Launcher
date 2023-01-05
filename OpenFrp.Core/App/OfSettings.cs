@@ -83,7 +83,29 @@ namespace OpenFrp.Core.App
             public string? User { get; set; }
 
             [JsonProperty("password")]
-            public string? Password { get; set; }
+            private List<int> _Password { get; set; } = new();
+
+            [JsonIgnore]
+            public string? Password
+            {
+                get
+                {
+                    if (_Password is null) return "";
+                    var builder = new List<byte>();
+                    foreach (var item in _Password)
+                    {
+                        builder.Add((byte)(item - 12));
+                    }
+                    return Encoding.UTF8.GetString(builder.ToArray());
+                }
+                set
+                {
+                    foreach (var inchar in value?.GetBytes() ?? new byte[0])
+                    {
+                        _Password?.Add((byte)(inchar + 12));
+                    }
+                }
+            }
         }
 
         public override string ToString()

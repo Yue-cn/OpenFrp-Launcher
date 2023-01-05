@@ -130,7 +130,7 @@ namespace OpenFrp.Core.Pipe
                             Action = PipeModel.OfAction.Get_State,
                             FrpMessage = new()
                             {
-                                RunningId = ConsoleHelper.RunningProxies.Keys.ToArray()
+                                RunningId = ConsoleHelper.RunningTunnels.Keys.ToArray()
                             }
                         };
                     };
@@ -172,14 +172,9 @@ namespace OpenFrp.Core.Pipe
                                 Action = PipeModel.OfAction.Start_Frpc
                             };
                         }
-                        if (!ConsoleHelper.RunningProxies.ContainsKey(request.FrpMessage!.Id))
-                        ConsoleHelper.RunningProxies.Add(request.FrpMessage!.Id, OfApi.UserInfoDataModel!.UserToken ?? "");
+                        
                         // 开启Frpc
-                        return new()
-                        {
-                            Flag = true,
-                            Action = PipeModel.OfAction.Start_Frpc
-                        };
+                        return ConsoleHelper.Launch(request.FrpMessage.Tunnel!);
                     }
                 case PipeModel.OfAction.Close_Frpc:
                     {
@@ -187,14 +182,9 @@ namespace OpenFrp.Core.Pipe
                         {
                             //正常来说 不会出现此情况
                         }
-                        if (ConsoleHelper.RunningProxies.ContainsKey(request.FrpMessage!.Id))
-                            ConsoleHelper.RunningProxies.Remove(request.FrpMessage!.Id);
+                        
                         // 关闭Frpc
-                        return new()
-                        {
-                            Flag = true,
-                            Action = PipeModel.OfAction.Close_Frpc
-                        };
+                        return ConsoleHelper.Stop(request.FrpMessage!.Tunnel!);
                     }
                 default:
                     {

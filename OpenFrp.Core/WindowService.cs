@@ -59,7 +59,7 @@ namespace OpenFrp.Core
                             },
                             FrpMessage = new()
                             {
-                                RunningId = ConsoleHelper.RunningProxies.Keys.ToArray()
+                                RunningId = ConsoleHelper.RunningTunnels.Keys.ToArray()
                             },
                             Message = er
                         };

@@ -34,15 +34,6 @@ namespace OpenFrp.Launcher.ViewModels
             };
             if(await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-                if ((await OfAppHelper.PipeClient.PushMessageAsync(new()
-                {
-                    Action = Core.Pipe.PipeModel.OfAction.Close_Server,
-                    Message = "关闭。"
-                })).Action == Core.Pipe.PipeModel.OfAction.Server_Closed)
-                {
-                    if (OfAppHelper.LauncherViewModel is not null)
-                        OfAppHelper.LauncherViewModel.PipeRunningState = false;
-                }
                 Process.Start(new ProcessStartInfo(Utils.CorePath, "--frpcp")
                 {
                     UseShellExecute = false,

@@ -145,6 +145,13 @@ namespace OpenFrp.Core
         /// 存储文件目录
         /// </summary>
         public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
+
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p9aj2";
+
+        public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
+
+        public static string Frpc { get; } = Path.Combine(ApplicationPath, "frpc", $"{FrpcPlatForm}.exe");
+
         #endregion
 
         /// <summary>
@@ -188,9 +195,7 @@ namespace OpenFrp.Core
             }
         }
 
-        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p9aj2";
-
-        public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
+        
 
     }
 }

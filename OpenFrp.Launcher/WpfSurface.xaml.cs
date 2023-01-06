@@ -59,6 +59,7 @@ namespace OpenFrp.Launcher
                         "Home" => typeof(Views.Home),
                         "About" => typeof(Views.About),
                         "Tunnels" => typeof(Views.Tunnels),
+                        "Logs" => typeof(Views.Logs),
                         _ => null
                     };
                 }
@@ -67,7 +68,10 @@ namespace OpenFrp.Launcher
             };
             OfApp_RootFrame.Navigating += (s, e) =>
             {
-                if (e.Uri is null) OfApp_RootFrame.RemoveBackEntry();
+                if (e.Uri is null)
+                {
+                    OfApp_RootFrame.RemoveBackEntry();
+                }
                 else { e.Cancel = true; }
             };
 

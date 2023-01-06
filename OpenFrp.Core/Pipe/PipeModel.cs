@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenFrp.Core.Api;
+using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,16 @@ namespace OpenFrp.Core.Pipe
             /// FRPC 主动关闭
             /// </summary>
             Frpc_Closed = 7,
+            /// <summary>
+            /// 获取日志
+            /// </summary>
+            Get_Logs = 8,
+            /// <summary>
+            /// 推送日志
+            /// </summary>
+            Push_Logs = 9,
+
+            Push_Config = 10
         }
         public class BaseModel : MessagePraser<BaseModel>
         {
@@ -75,6 +86,12 @@ namespace OpenFrp.Core.Pipe
             [JsonProperty("frp")]
             public FrpModel? FrpMessage { get; set; }
 
+            [JsonProperty("log")]
+            public LogModel? LogMessage { get; set; }
+
+            [JsonProperty("config")]
+            public OfSettings? Config { get; set; }
+
             public class AuthModel
             {
                 /// <summary>
@@ -101,6 +118,12 @@ namespace OpenFrp.Core.Pipe
 
                 [JsonProperty("tunnel")]
                 public Api.OfApiModel.Response.UserTunnelModel.UserTunnel? Tunnel { get; set; }
+            }
+
+            public class LogModel
+            {
+                [JsonProperty("logs")]
+                public Dictionary<string, List<App.LogsModel>>? LogsList { get; set; }
             }
         }
         public class RequestModel : BaseModel

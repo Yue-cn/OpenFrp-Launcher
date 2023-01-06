@@ -186,6 +186,36 @@ namespace OpenFrp.Core.Pipe
                         // 关闭Frpc
                         return ConsoleHelper.Stop(request.FrpMessage!.Tunnel!);
                     }
+                case PipeModel.OfAction.Get_Logs:
+                    {
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.Get_Logs,
+                            Flag = true,
+                            LogMessage = new()
+                            {
+                                LogsList =  LogHelper.LogsList
+                            }
+                        };
+                    }
+                case PipeModel.OfAction.Push_Logs:
+                    {
+                        LogHelper.LogsList.Concat(request.LogMessage!.LogsList).ToDictionary(k => k.Key, v => v.Value);  
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.Push_Logs,
+                            Flag = true
+                        };
+                    }
+                case PipeModel.OfAction.Push_Config:
+                    {
+                        OfSettings.Instance = request.Config!;
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.Push_Config,
+                            Flag = true
+                        };
+                    };
                 default:
                     {
                         return new() { Message = "Action Not Found" };

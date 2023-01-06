@@ -11,7 +11,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    Title="WpfSurface"
+    Title="OpenFrp Launcher"
     MinWidth="540"
     MinHeight="640"
     d:DesignHeight="732.24"
@@ -40,6 +40,10 @@
                     Content="隧道"
                     Icon="&#xe71d;"
                     Tag="Tunnels" />
+                <ui:NavigationViewItem
+                    Content="日志"
+                    Icon="&#xe8a4;"
+                    Tag="Logs" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
@@ -148,8 +152,10 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontSize="13"
+                    IsHitTestVisible="False"
+                    HorizontalAlignment="Left"
                     SnapsToDevicePixels="True"
-                    Text="Title Align" />
+                    Text="OpenFrp Launcher Preview" />
 
             </Grid>
         </Grid>
@@ -162,7 +168,10 @@
             VerticalAlignment="Bottom"
             Spacing="8">
             <Grid>
-                <Border CornerRadius="4" Opacity="1" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}" />
+                <Border
+                    Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="4"
+                    Opacity="1" />
                 <ui:InfoBar
                     Title="Launcher"
                     IsOpen="True"
@@ -171,9 +180,8 @@
                     <ui:InfoBar.ActionButton>
                         <Button
                             HorizontalAlignment="Right"
-                            Content="安装"
                             Command="{Binding InstallFrpcCommand}"
-                            
+                            Content="安装"
                             Style="{StaticResource AccentButtonStyle}" />
                     </ui:InfoBar.ActionButton>
                     <ui:InfoBar.Style>
@@ -186,15 +194,15 @@
                                         <BeginStoryboard>
                                             <Storyboard>
                                                 <DoubleAnimation
-                                                EasingFunction="{StaticResource BaseEase}"
-                                                Storyboard.TargetProperty="Opacity"
-                                                To="0"
-                                                Duration="0:0:.2" />
+                                                    EasingFunction="{StaticResource BaseEase}"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="0"
+                                                    Duration="0:0:.2" />
                                                 <ThicknessAnimation
-                                                EasingFunction="{StaticResource BaseEase}"
-                                                Storyboard.TargetProperty="Margin"
-                                                To="0,-48,0,0"
-                                                Duration="0:0:.2" />
+                                                    EasingFunction="{StaticResource BaseEase}"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="0,-48,0,0"
+                                                    Duration="0:0:.2" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
@@ -202,15 +210,15 @@
                                         <BeginStoryboard>
                                             <Storyboard>
                                                 <DoubleAnimation
-                                                EasingFunction="{StaticResource BaseEase}"
-                                                Storyboard.TargetProperty="Opacity"
-                                                To="1"
-                                                Duration="0:0:.2" />
+                                                    EasingFunction="{StaticResource BaseEase}"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="1"
+                                                    Duration="0:0:.2" />
                                                 <ThicknessAnimation
-                                                EasingFunction="{StaticResource BaseEase}"
-                                                Storyboard.TargetProperty="Margin"
-                                                To="0,0,0,0"
-                                                Duration="0:0:.2" />
+                                                    EasingFunction="{StaticResource BaseEase}"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="0,0,0,0"
+                                                    Duration="0:0:.2" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.ExitActions>

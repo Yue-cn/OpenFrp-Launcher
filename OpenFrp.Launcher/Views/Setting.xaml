@@ -83,6 +83,15 @@
                     IsOn="{Binding BypassProxy}"
                     Style="{StaticResource LeftLabelToggleSwitchStyle}" />
             </of:SettingItem>
+            <of:SettingItem Title="通知推送" Message="当隧道开启成功时，可以为您自动输出连接地址。">
+                <of:SettingItem.Icon>
+                    <ui:FontIcon FontSize="24" Glyph="&#xe8bd;" />
+                </of:SettingItem.Icon>
+                <ui:ToggleSwitch
+                    Margin="0,0,-12,0"
+                    IsOn="{Binding ToastState}"
+                    Style="{StaticResource LeftLabelToggleSwitchStyle}" />
+            </of:SettingItem>
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

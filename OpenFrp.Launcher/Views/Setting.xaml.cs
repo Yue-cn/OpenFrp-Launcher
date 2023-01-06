@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenFrp.Core.App;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,14 @@ namespace OpenFrp.Launcher.Views
         {
             InitializeComponent();
             this.DataContext = OfAppHelper.SettingViewModel;
+            this.Unloaded += async (sender, args) =>
+            {
+                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Push_Config,
+                    Config = OfSettings.Instance
+                });
+            };
         }
 
     }

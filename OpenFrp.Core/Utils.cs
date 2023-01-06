@@ -1,4 +1,5 @@
-﻿using OpenFrp.Core.App;
+﻿using ModernWpf;
+using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -151,6 +152,8 @@ namespace OpenFrp.Core
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 
         public static string Frpc { get; } = Path.Combine(ApplicationPath, "frpc", $"{FrpcPlatForm}.exe");
+
+        public static bool isSupportToast { get; } = OSVersionHelper.IsWindows10OrGreater || OSVersionHelper.IsWindows11OrGreater;
 
         #endregion
 

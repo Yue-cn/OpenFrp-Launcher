@@ -20,6 +20,9 @@ namespace OpenFrp.Core.App
         /// 设置实例
         /// </summary>
         public static OfSettings Instance { get; set; } = new();
+
+        #region Property
+
         /// <summary>
         /// 应用的主题 (Private to Set)
         /// </summary>
@@ -56,11 +59,22 @@ namespace OpenFrp.Core.App
         /// </summary>
         [JsonProperty("frpcVersion")]
         public string FRPClientVersion { get; set; } = "OpenFRP_0.46.0_e9886afa_20221227 **";
+
+        [JsonProperty("istoastEnabled")]
+        public bool IsToastEnable { get; set; } = true && Utils.isSupportToast;
         /// <summary>
         /// 用户的账户
         /// </summary>
         [JsonProperty("account")]
         public AccountModel Account { get; set; } = new();
+        /// <summary>
+        /// 操控台设置
+        /// </summary>
+        [JsonProperty("console")]
+        public ConsoleModel Console { get; set; } = new();
+
+        #endregion
+
         /// <summary>
         /// 账户模型
         /// </summary>
@@ -107,12 +121,25 @@ namespace OpenFrp.Core.App
                 }
             }
         }
+        /// <summary>
+        /// 操控台模型
+        /// </summary>
+        public class ConsoleModel
+        {
+            [JsonProperty("fontSize")]
+            public double FontSize { get; set; } = 14;
 
+            [JsonProperty("fontName")]
+            public string FontName { get; set; } = "微软雅黑";
+        }
+
+        /// <summary>
+        /// 将对象转为 JSON 文本
+        /// </summary>
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);
         }
-
         /// <summary>
         /// 读取配置
         /// </summary>
@@ -160,3 +187,4 @@ namespace OpenFrp.Core.App
         DeamonService
     }
 }
+ 

@@ -45,6 +45,11 @@ namespace OpenFrp.Launcher.ViewModels
             get => OpenFrp.Core.App.OfSettings.Instance.BypassProxy;
             set => OpenFrp.Core.App.OfSettings.Instance.BypassProxy = value;
         }
+        public bool ToastState
+        {
+            get => OpenFrp.Core.App.OfSettings.Instance.IsToastEnable;
+            set => OpenFrp.Core.App.OfSettings.Instance.IsToastEnable = value;
+        }
 
         /// <summary>
         /// 登录状态 (实际使用请改为<see cref="LoginState"/>)
@@ -128,7 +133,6 @@ namespace OpenFrp.Launcher.ViewModels
             if ((await OfAppHelper.PipeClient.PushMessageAsync(new()
             {
                 Action = Core.Pipe.PipeModel.OfAction.Close_Server,
-                Message = "关闭。"
             })).Action == Core.Pipe.PipeModel.OfAction.Server_Closed)
             {
                 if (OfAppHelper.LauncherViewModel is not null)

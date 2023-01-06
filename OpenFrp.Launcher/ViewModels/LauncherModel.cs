@@ -34,12 +34,18 @@ namespace OpenFrp.Launcher.ViewModels
             };
             if(await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
+                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                });
+
                 Process.Start(new ProcessStartInfo(Utils.CorePath, "--frpcp")
                 {
                     UseShellExecute = false,
                     Verb = "runas"
                 });
-                Environment.Exit(0);
+
+                Application.Current.Shutdown();
             }
             
         }

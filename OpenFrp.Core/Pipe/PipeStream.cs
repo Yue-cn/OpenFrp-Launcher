@@ -18,7 +18,7 @@ namespace OpenFrp.Core.Pipe
         /// <summary>
         /// 缓存区块大小
         /// </summary>
-        public int BufferSize { get; set; } = 1536;
+        public int BufferSize { get; set; } = 10536;
 
         public PipeStream() { }
 
@@ -82,7 +82,7 @@ namespace OpenFrp.Core.Pipe
         {
             await PushMessageAsync(request);
             string str = (await Reviced()).GetString(true);
-            Utils.Debug(str);
+            Debug.WriteLine(str);
             return JsonConvert.DeserializeObject<PipeModel.ResponseModel>(str) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }

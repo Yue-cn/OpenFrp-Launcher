@@ -27,6 +27,7 @@
                 <ResourceDictionary Source="./Controls/Card.xaml" />
                 <ResourceDictionary Source="./Controls/Expander.xaml" />
                 <ResourceDictionary Source="./Controls/TunnelConfig.xaml" />
+                <ResourceDictionary Source="./Controls/SelectableTextBlock.xaml" />
 
 
 

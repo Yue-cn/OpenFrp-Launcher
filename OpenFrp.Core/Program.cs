@@ -1,4 +1,5 @@
-﻿using OpenFrp.Core.Api;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using OpenFrp.Core.Api;
 using OpenFrp.Core.Api.OfApiModel;
 using OpenFrp.Core.App;
 using System;
@@ -6,6 +7,7 @@ using System.Configuration.Install;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Channels;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Windows;
@@ -44,6 +46,33 @@ namespace OpenFrp.Core
 
             if (args.Length is 1)
             {
+                AppDomain.CurrentDomain.UnhandledException += (se, c) =>
+                {
+                    Console.WriteLine(c.ExceptionObject);
+                };
+                if (OfSettings.Instance.IsToastEnable)
+                {
+                    ToastNotificationManagerCompat.OnActivated += (args) =>
+                    {
+                        if (string.IsNullOrEmpty(args.Argument)) return;
+                        if (args.Argument.IndexOf("--cl") != -1)
+                        {
+                            try
+                            {
+                                var thread = new Thread(() =>
+                                {
+                                    Clipboard.SetText(args.Argument.Split(' ')[1]);
+                                });
+                                thread.SetApartmentState(ApartmentState.STA);
+                                thread.IsBackground = true;
+                                thread.Start();
+                            }
+                            catch { }
+                        }
+                    };
+                    
+                }
+
                 switch (args[0])
                 {
                     case "--install":await InstallService();break;
@@ -51,6 +80,7 @@ namespace OpenFrp.Core
                     case "--ws":await LocalPipeWorker();break;
                     case "--frpcp":await InstallFrpc();break;
                 }
+                if (OfSettings.Instance.IsToastEnable) ToastNotificationManagerCompat.Uninstall();
             }
             else if (Utils.ServicesMode)
             {

@@ -1,38 +1,49 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace OpenFrp.Core.App
 {
-    internal class LogHelper
+    public class LogHelper
     {
-        public static Dictionary<string, List<LogsModel>> LogsList { get; set; } = new();
+        public static List<LogContent> AllLogs { get; set; } = new();
 
-
+        public static ConsoleWrapper[] GetAllWrapper()
+        {
+            return new ConsoleWrapper[]
+            {
+                new()
+                {
+                    UserTunnelModel = new()
+                    {
+                        TunnelName = "全部"  
+                    },
+                    Content = AllLogs
+                },
+                
+            }.Concat(ConsoleHelper.ConsoleWrappers.Values.ToArray()).ToArray();
+        }
     }
-
-    public class LogsModel
+    public class LogContent
     {
-        /// <summary>
-        /// 等级
-        /// </summary>
-        [JsonProperty("level")]
-        public LogsLevel Level { get; set; }
+        public LogContent() { }
 
-        /// <summary>
-        /// 内容
-        /// </summary>
+        public LogContent(string? content,TraceLevel level)
+        {
+            Content = content;
+            Level = level;
+        }
+
         [JsonProperty("content")]
         public string? Content { get; set; }
+
+        [JsonProperty("level")]
+        public TraceLevel Level { get; set; }
     }
 
-    public enum LogsLevel
-    {
-        Info,
-        Error,
-        Warning,
-    }
 }

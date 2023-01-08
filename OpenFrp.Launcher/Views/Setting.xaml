@@ -92,6 +92,11 @@
                     IsOn="{Binding ToastState}"
                     Style="{StaticResource LeftLabelToggleSwitchStyle}" />
             </of:SettingItem>
+            <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                <Run Text="CFU统一识别码编码：DLPYU2N4" />
+                <LineBreak />
+                <Run Text="Preview 2.0.0,Launcher,[p9aj2]" />
+            </TextBlock>
         </ui:SimpleStackPanel>
     </of:BaseView>
 </ui:Page>

@@ -133,7 +133,7 @@ namespace OpenFrp.Core
         /// <summary>
         /// 配置文件的文件目录
         /// </summary>
-        public static string ApplicationConfigPath { get; } = Path.Combine(ApplicationPath,"config.json");
+        public static string ApplicationConfigPath { get; } = Path.Combine(AppTempleFilesPath,"config.json");
         /// <summary>
         /// Core 文件
         /// </summary>
@@ -145,13 +145,20 @@ namespace OpenFrp.Core
         /// <summary>
         /// 存储文件目录
         /// </summary>
-        public static string AppTempleFilesPath { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"OfApp.Launcher");
+        public static string AppTempleFilesPath
+        {
+            get
+            {
+                string str = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                return Path.Combine(str, "OfApp.Launcher");
+            }
+        }
 
         public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p9aj2";
 
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 
-        public static string Frpc { get; } = Path.Combine(ApplicationPath, "frpc", $"{FrpcPlatForm}.exe");
+        public static string Frpc { get; } = Path.Combine(AppTempleFilesPath, "frpc", $"{FrpcPlatForm}.exe");
 
         public static bool isSupportToast { get; } = OSVersionHelper.IsWindows10OrGreater || OSVersionHelper.IsWindows11OrGreater;
 
@@ -164,8 +171,13 @@ namespace OpenFrp.Core
         {
             if (!Utils.ServicesMode)
             {
-                Console.WriteLine($"[{DateTimeOffset.Now}] {s}");
+                Console.WriteLine(s);
             }
+        }
+
+        internal static void Log(string s)
+        {
+            LogHelper.AllLogs.Add(new LogContent($"[{DateTimeOffset.Now}] {s}", TraceLevel.Verbose));
         }
         /// <summary>
         /// 启动器写日志
@@ -174,27 +186,50 @@ namespace OpenFrp.Core
         /// <summary>
         /// 检查服务是否开启
         /// </summary>
-        public static void CheckService()
+        public static bool CheckService()
         {
             using var service = new ServiceController("OpenFrp Launcher Service");
             if (!service.CanStop)
             {
-                Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                try
                 {
-                    Verb = "runas",
-                    CreateNoWindow = true
-                });
+                    Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                    {
+                        Verb = "runas",
+                        CreateNoWindow = true
+                    });
+                    return true;
+                }
+                catch { }
             }
+            return false;
         }
+
+
         public static void StopService()
         {
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
             {
-                Process.Start(new ProcessStartInfo("sc", "stop \"OpenFrp Launcher Service\"")
+                try
                 {
-                    Verb = "runas",
-                    CreateNoWindow = true
-                });
+                    Process.Start(new ProcessStartInfo("sc", "stop \"OpenFrp Launcher Service\"")
+                    {
+                        Verb = "runas",
+                        CreateNoWindow = true
+                    });
+                }
+                catch { }
+            }
+            else
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo("cmd", "/c taskkill /f /im OpenFrp.Core.exe")
+                    {
+                        CreateNoWindow = false
+                    });
+                }
+                catch { }
             }
         }
 

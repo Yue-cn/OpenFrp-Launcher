@@ -41,6 +41,7 @@
                     Margin="-8"
                     Padding="8"
                     Focusable="False"
+                    IsEnabled="{Binding PipeRunningState}"
                     ItemsSource="{Binding UserTunnels}"
                     PreviewMouseWheel="GridView_PreviewMouseWheel"
                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -88,12 +89,34 @@
                                             Command="{Binding Path=DataContext.EditTunnelCommand, RelativeSource={RelativeSource AncestorType=ui:GridView}}"
                                             CommandParameter="{Binding}"
                                             Icon="Edit"
-                                            Label="编辑隧道" />
+                                            Label="编辑隧道">
+                                            <ui:AppBarButton.Style>
+                                                <Style TargetType="ui:AppBarButton">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding isRuuning}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+
+                                            </ui:AppBarButton.Style>
+                                        </ui:AppBarButton>
                                         <ui:AppBarButton
                                             Command="{Binding Path=DataContext.RemoveTunnelCommand, RelativeSource={RelativeSource AncestorType=ui:GridView}}"
                                             CommandParameter="{Binding TunnelId}"
                                             Icon="Remove"
-                                            Label="删除" />
+                                            Label="删除">
+                                            <ui:AppBarButton.Style>
+                                                <Style TargetType="ui:AppBarButton">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding isRuuning}" Value="True">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+
+                                            </ui:AppBarButton.Style>
+                                        </ui:AppBarButton>
 
                                     </ui:CommandBar>
                                     <ui:ToggleSwitch

@@ -23,8 +23,6 @@ namespace OpenFrp.Launcher.Views
         public Logs()
         {
             InitializeComponent();
-
-            //PreviewContent
         }
 
         ViewModels.LogModel LogModel
@@ -45,12 +43,14 @@ namespace OpenFrp.Launcher.Views
                 LogModel?.RefreshList(this);
                 await Task.Delay(1500);
             }
+            
         }
 
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Items.GetBindingExpression(ItemsRepeater.ItemsSourceProperty)?.UpdateTarget();
+            Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+            
         }
     }
 }

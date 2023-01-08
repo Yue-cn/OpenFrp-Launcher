@@ -5,6 +5,7 @@ using OpenFrp.Core.App;
 using OpenFrp.Launcher.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -43,8 +44,33 @@ namespace OpenFrp.Launcher
 
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
+
             await OfSettings.ReadConfig();
 
+            
+
+            OfAppHelper.TaskbarIcon.ContextMenu = new()
+            {
+                Items =
+                {
+                    CreateItemWithAction("退出启动器",
+                        App.Current.Shutdown,
+                        new FontIcon(){Glyph = "\ue89f"}),
+                    CreateItemWithAction("彻底退出", async () =>
+                    {
+                        await OfAppHelper.PipeClient.PushMessageAsync(new()
+                        {
+                            Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                        });
+                        App.Current.Shutdown();
+                    },new FontIcon(){Glyph = "\ue8bb"})
+                }
+            };
+            OfAppHelper.TaskbarIcon.TrayMouseDoubleClick += (sender, args) =>
+            {
+                Visibility = Visibility.Visible;
+                Activate();
+            };
             OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
                 Type? page = null;
@@ -79,15 +105,97 @@ namespace OpenFrp.Launcher
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
             ClientPipeWorker();
-            // 启动器 自动登录逻辑
-            await OfAppHelper.RequestLogin();
-
-
             // 启动器更新逻辑
             CheckUpdate();
+            // 启动器 自动登录逻辑
+            await OfAppHelper.RequestLogin();
+            // 自动启动 FRPC
+            AutoStartup();
+
+            
+
 
         }
-
+        
+        private async void AutoStartup()
+        {
+            if (OfSettings.Instance.AutoRunTunnel.Count == 0) return;
+            var resp = await OfApi.GetUserProxies();
+            if (resp.Flag)
+            {
+                foreach (var tunnel in resp.Data.List)
+                {
+                    OfSettings.Instance.AutoRunTunnel.ForEach(async (tunnelId) =>
+                    {
+                        if (tunnelId == tunnel.TunnelId)
+                        {
+                            OfAppHelper.RunningIds.Add(tunnelId);
+                            var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                            {
+                                Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
+                                FrpMessage = new()
+                                {
+                                    Tunnel = tunnel
+                                }
+                            });
+                            if (!resp.Flag)
+                            {
+                                // $"由于以下原因,FRPC无法开机自启: {resp.Message}"
+                                await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                                {
+                                    Action = Core.Pipe.PipeModel.OfAction.Push_Logs,
+                                    PushLog = $"由于以下原因,FRPC无法开机自启: {resp.Message}"
+                                });
+                            }
+                            return;
+                        }
+                    });
+                    
+                }
+            }
+        }
+        private MenuItem CreateItemWithAction(string name, Action action, object icon)
+        {
+            var app2 = new MenuItem() { Header = name, Icon = icon };
+            app2.Click += (sender, args) => action();
+            return app2;
+        }
+        /// <summary>
+        /// 窗口关闭
+        /// </summary>
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true;
+            if (OfSettings.Instance.HasIconTips)
+            {
+                var dialog = new ContentDialog()
+                {
+                    CloseButtonText = "确定",
+                    DefaultButton = ContentDialogButton.Close,
+                    Title = "OpenFrp Launcher",
+                    Content = new SimpleStackPanel()
+                    {
+                        Children =
+                        {
+                            new Image()
+                            {
+                                Source = new BitmapImage(new Uri("pack://application:,,,/OpenFrp.Launcher;component/Resourecs/notip.png")),
+                                Width = 300,
+                                Stretch = Stretch.UniformToFill
+                            },
+                            new TextBlock(new Run("本软件已创建图标在您的任务栏上。"))
+                        },
+                        Spacing = 8
+                    }
+                };
+                await dialog.ShowAsync();
+                OfSettings.Instance.HasIconTips = false;
+            }
+            Visibility = Visibility.Collapsed;
+        }
+        /// <summary>
+        /// 检测更新
+        /// </summary>
         internal async void CheckUpdate()
         {
             var update = await Update.CheckUpdate();
@@ -187,8 +295,10 @@ namespace OpenFrp.Launcher
                 }
             }
         }
-
-        private async void ClientPipeWorker(bool restart = false)
+        /// <summary>
+        /// Pipe Service
+        /// </summary>
+        internal async void ClientPipeWorker(bool restart = false)
         {
             if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
             {
@@ -245,7 +355,9 @@ namespace OpenFrp.Launcher
             }
 
         }
-
+        /// <summary>
+        /// Pipe Service
+        /// </summary>
         private void ServerPipeWorker()
         {
             OfAppHelper.PipeServer.Start(true);

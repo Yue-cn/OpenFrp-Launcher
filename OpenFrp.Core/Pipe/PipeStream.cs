@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -18,13 +19,16 @@ namespace OpenFrp.Core.Pipe
         /// <summary>
         /// 缓存区块大小
         /// </summary>
-        public int BufferSize { get; set; } = 10536;
+        public int BufferSize { get; set; } = 1048576;
+
+        public bool isExceptioned { get; set; } = false;
 
         public PipeStream() { }
 
         public PipeStream(System.IO.Pipes.PipeStream? appStream)
         {
             AppStream = appStream;
+            
         }
 
         public async ValueTask<byte[]> Reviced()
@@ -41,7 +45,7 @@ namespace OpenFrp.Core.Pipe
                             return buffer;
                         }
                     }
-                    catch { }
+                    catch {  }
                 }
                 return new byte[0];
             });
@@ -62,7 +66,7 @@ namespace OpenFrp.Core.Pipe
                         byte[] bytes = message.ToString().GetBytes();
                         AppStream.Write(bytes, 0, bytes.Length);
                     }
-                    catch { }
+                    catch {  }
                 }
             });
         }
@@ -82,7 +86,10 @@ namespace OpenFrp.Core.Pipe
         {
             await PushMessageAsync(request);
             string str = (await Reviced()).GetString(true);
-            Debug.WriteLine(str);
+            if (str.Length == BufferSize)
+            {
+                // 数据过大
+            }
             return JsonConvert.DeserializeObject<PipeModel.ResponseModel>(str) ??
                 new() { Message = "后台处理错误,请稍后重试。" };
         }

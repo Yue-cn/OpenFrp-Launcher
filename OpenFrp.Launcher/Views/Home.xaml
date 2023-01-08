@@ -9,7 +9,7 @@
     xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="Home"
-    d:DesignHeight="954"
+    d:DesignHeight="2051.305"
     d:DesignWidth="1176"
     mc:Ignorable="d">
     <ui:Page.DataContext>
@@ -299,6 +299,7 @@
                     </Grid>
                 </of:ElementLoader>
             </of:Card>
+
             <TextBlock
                 Margin="0,16,0,0"
                 HorizontalAlignment="Center"

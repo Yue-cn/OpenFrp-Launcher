@@ -27,10 +27,13 @@ namespace OpenFrp.Launcher.Views
             this.DataContext = OfAppHelper.SettingViewModel;
             this.Unloaded += async (sender, args) =>
             {
+                var sb = new OfSettings();
+                sb = OfSettings.Instance;
+                sb.AutoRunTunnel = null!;
                 await OfAppHelper.PipeClient.PushMessageAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.Push_Config,
-                    Config = OfSettings.Instance
+                    Config = sb
                 });
             };
         }

@@ -12,7 +12,7 @@
     xmlns:model="clr-namespace:OpenFrp.Launcher.ViewModels"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="OpenFrp Launcher"
-    MinWidth="540"
+    MinWidth="550"
     MinHeight="640"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
@@ -148,12 +148,12 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
+                </Grid.Style>   
                 <TextBlock
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     FontSize="13"
                     IsHitTestVisible="False"
-                    HorizontalAlignment="Left"
                     SnapsToDevicePixels="True"
                     Text="OpenFrp Launcher Preview" />
 
@@ -168,6 +168,48 @@
             VerticalAlignment="Bottom"
             Spacing="8">
             <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="IsHitTestVisible" Value="True" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFrpchasUpdate}" Value="False">
+                                <Setter Property="IsHitTestVisible" Value="False" />
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:.2" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,-48,0,0"
+                                                Duration="0:0:.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:.2" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource BaseEase}"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="0,0,0,0"
+                                                Duration="0:0:.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <Border
                     Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
                     CornerRadius="4"
@@ -184,48 +226,6 @@
                             Content="安装"
                             Style="{StaticResource AccentButtonStyle}" />
                     </ui:InfoBar.ActionButton>
-                    <ui:InfoBar.Style>
-                        <Style TargetType="ui:InfoBar">
-                            <Setter Property="IsHitTestVisible" Value="True" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsFrpchasUpdate}" Value="False">
-                                    <Setter Property="IsHitTestVisible" Value="False" />
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation
-                                                    EasingFunction="{StaticResource BaseEase}"
-                                                    Storyboard.TargetProperty="Opacity"
-                                                    To="0"
-                                                    Duration="0:0:.2" />
-                                                <ThicknessAnimation
-                                                    EasingFunction="{StaticResource BaseEase}"
-                                                    Storyboard.TargetProperty="Margin"
-                                                    To="0,-48,0,0"
-                                                    Duration="0:0:.2" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                    <DataTrigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation
-                                                    EasingFunction="{StaticResource BaseEase}"
-                                                    Storyboard.TargetProperty="Opacity"
-                                                    To="1"
-                                                    Duration="0:0:.2" />
-                                                <ThicknessAnimation
-                                                    EasingFunction="{StaticResource BaseEase}"
-                                                    Storyboard.TargetProperty="Margin"
-                                                    To="0,0,0,0"
-                                                    Duration="0:0:.2" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.ExitActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ui:InfoBar.Style>
                 </ui:InfoBar>
             </Grid>
 

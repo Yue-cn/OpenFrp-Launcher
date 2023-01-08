@@ -8,8 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
-using Windows.Media.Core;
 
 namespace OpenFrp.Core.Api
 {
@@ -222,7 +220,7 @@ namespace OpenFrp.Core.Api
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Utils.Log(ex.ToString());
             }
             return default;
         }
@@ -257,7 +255,7 @@ namespace OpenFrp.Core.Api
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Utils.Log(ex.ToString());
             }
             return default;
         }
@@ -290,7 +288,7 @@ namespace OpenFrp.Core.Api
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Utils.Log(ex.ToString());
             }
             return default;
         }

@@ -3,50 +3,73 @@ using CommunityToolkit.Mvvm.Input;
 using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace OpenFrp.Launcher.ViewModels
 {
     public partial class LogModel : ObservableObject
     {
+
+
+
+
+
+
+
+
         [ObservableProperty]
-        public Dictionary<string, List<LogsModel>> logsList = new();
+        public ConsoleWrapper[] consoleWrappers = new ConsoleWrapper[] {};
 
-        public List<LogsModel> LogValue
-        {
-            get
-            {
-                if (LogsList.ContainsKey(SelectedLog))
-                {
-                    return LogsList[SelectedLog];
-                }
-                return new();
-            }
 
-        }
+        [ObservableProperty]
+        public int selectedIndex;
+
         [RelayCommand]
-        async internal void RefreshList(Views.Logs page)
+        internal async void RefreshList(Views.Logs page)
         {
             var resp = await OfAppHelper.PipeClient.PushMessageAsync(new()
             {
-                Action = Core.Pipe.PipeModel.OfAction.Get_Logs
+                Action = Core.Pipe.PipeModel.OfAction.Get_Logs,
             });
-            if (resp.LogMessage?.LogsList is null || resp.LogMessage?.LogsList.Count == 0) return;
-            LogsList = resp.LogMessage?.LogsList!;
+            consoleWrappers = resp.Logs?.ConsoleWrappers ?? new ConsoleWrapper[] {};
 
-            page.Items.GetBindingExpression(ItemsRepeater.ItemsSourceProperty)?.UpdateTarget();
+            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+
+            //var item = ((ConsoleWrapper)page.selectBox.SelectedValue);
+
+            page.selectBox.GetBindingExpression(ComboBox.SelectedIndexProperty)?.UpdateTarget();
+            int num = int.Parse(SelectedIndex.ToString());
+            page.selectBox.GetBindingExpression(ComboBox.ItemsSourceProperty)?.UpdateTarget();
+
+            SelectedIndex = page.selectBox.SelectedIndex = num;
+
+
+        }
+
+        public List<LogContent> WrapperValue
+        {
+            get
+            {
+                if (SelectedIndex != -1 && ConsoleWrappers?.Length >= SelectedIndex && ConsoleWrappers?.Length != 0)
+                {
+                    return ConsoleWrappers?[SelectedIndex].Content ?? new();
+                }
+                return new();
+            }
         }
 
 
-        public OfSettings.ConsoleModel ConsoleWrapper
+        public OfSettings.ConsoleModel ConsoleModel
         {
             get => OfSettings.Instance.Console;
             set => OfSettings.Instance.Console = value;
         }
 
-        [ObservableProperty]
-        public string selectedLog = "";
+
     }
 }

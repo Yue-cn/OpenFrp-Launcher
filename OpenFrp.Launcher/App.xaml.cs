@@ -44,6 +44,7 @@ namespace OpenFrp.Launcher
         protected override async void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
+            OfSettings.Instance.AutoRunTunnel = OfAppHelper.RunningIds;
             await OfSettings.Instance.WriteConfig();
         }
 

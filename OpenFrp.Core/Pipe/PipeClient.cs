@@ -27,11 +27,13 @@ namespace OpenFrp.Core.Pipe
         {
             if (State)
             {
-                
-                return await base.PushMessageWithRequestAsync(request) ??
+                var resp = await base.PushMessageWithRequestAsync(request);
+                //if (isExceptioned) { State = isExceptioned = false; }
+
+                return resp ??
                     new() { Message = "后台处理错误,请稍后重试。" };
             }
-            return new() { Message = "尚未连接到后台,请稍后重试。" };
+            return new() { Message = "Unlogin,无法连接到守护进程。" };
         }
     }
 }

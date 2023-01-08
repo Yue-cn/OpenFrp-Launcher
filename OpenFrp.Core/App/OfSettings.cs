@@ -58,10 +58,17 @@ namespace OpenFrp.Core.App
         /// Frpc的版本
         /// </summary>
         [JsonProperty("frpcVersion")]
-        public string FRPClientVersion { get; set; } = "OpenFRP_0.46.0_e9886afa_20221227 **";
+        public string FRPClientVersion { get; set; } = "**";
 
         [JsonProperty("istoastEnabled")]
         public bool IsToastEnable { get; set; } = true && Utils.isSupportToast;
+
+        [JsonProperty("arts")]
+        public List<int> AutoRunTunnel { get; set; } = new();
+
+        [JsonProperty("hasTips")]
+        public bool HasIconTips { get; set; } = true;
+
         /// <summary>
         /// 用户的账户
         /// </summary>

@@ -33,6 +33,7 @@ namespace OpenFrp.Core
 
         internal async static Task Main(string[] args)
         {
+            //Debugger.Launch();
             /*
                 特此谢明: SakuraFrp
              */
@@ -50,7 +51,7 @@ namespace OpenFrp.Core
                 {
                     Console.WriteLine(c.ExceptionObject);
                 };
-                if (OfSettings.Instance.IsToastEnable)
+                if (OfSettings.Instance.IsToastEnable && false)
                 {
                     ToastNotificationManagerCompat.OnActivated += (args) =>
                     {
@@ -80,14 +81,11 @@ namespace OpenFrp.Core
                     case "--ws":await LocalPipeWorker();break;
                     case "--frpcp":await InstallFrpc();break;
                 }
-                if (OfSettings.Instance.IsToastEnable) ToastNotificationManagerCompat.Uninstall();
+                //if (OfSettings.Instance.IsToastEnable) ToastNotificationManagerCompat.Uninstall();
             }
             else if (Utils.ServicesMode)
             {
-                if (OfSettings.Instance.WorkMode == WorkMode.DeamonService)
-                {
-                    ServiceBase.Run(new WindowService());
-                }
+                ServiceBase.Run(new WindowService());
             }
         }
         /// <summary>
@@ -132,6 +130,10 @@ namespace OpenFrp.Core
                     OfSettings.Instance.WorkMode = WorkMode.DeamonService;
 
                     await OfSettings.Instance.WriteConfig();
+
+                    await Task.Delay(1500);
+
+                    Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
                 }
                 catch (Exception ex)
                 {
@@ -164,6 +166,7 @@ namespace OpenFrp.Core
                 ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
                 OfSettings.Instance.WorkMode = WorkMode.DeamonProcess;
                 await OfSettings.Instance.WriteConfig();
+                Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
             }
         }
         /// <summary>
@@ -174,6 +177,9 @@ namespace OpenFrp.Core
             // 服务端
             var appServer = new Pipe.PipeServer();
             appServer.Start();
+
+            
+            
             // 连接启动器用的。
             // 既然这里连接成功了，那么下方的可以与前台交互了。
             var appClient = new Pipe.PipeClient();
@@ -220,7 +226,7 @@ namespace OpenFrp.Core
                             }; break;
                         case "rp":
                             {
-                                foreach (var item in App.ConsoleHelper.RunningTunnels)
+                                foreach (var item in App.ConsoleHelper.ConsoleWrappers)
                                 {
                                     Console.WriteLine($"Key: {item.Key} , Value: {item.Value}");
                                 }
@@ -249,8 +255,8 @@ namespace OpenFrp.Core
                 return;
             }
             using var zip = new ZipArchive(File.OpenRead(file));
-            Directory.CreateDirectory(Path.Combine(Utils.ApplicationPath, "frpc"));
-            var dir = new DirectoryInfo(Path.Combine(Utils.ApplicationPath, "frpc"));
+            Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
+            var dir = new DirectoryInfo(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
             var acl = dir.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
             acl.SetAccessRule(new System.Security.AccessControl.FileSystemAccessRule(
                 new SecurityIdentifier(WellKnownSidType.LocalServiceSid, null),
@@ -259,14 +265,16 @@ namespace OpenFrp.Core
                 System.Security.AccessControl.PropagationFlags.None,
                 System.Security.AccessControl.AccessControlType.Allow));
             dir.SetAccessControl(acl);
-            if (File.Exists(Path.Combine(Utils.ApplicationPath, "frpc", $"{Utils.FrpcPlatForm}.exe")))
+            if (File.Exists(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe")))
             {
-                File.Delete(Path.Combine(Utils.ApplicationPath, "frpc", $"{Utils.FrpcPlatForm}.exe"));
+                File.Delete(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe"));
             }
             
-            zip.ExtractToDirectory(Path.Combine(Utils.ApplicationPath, "frpc"));
+            zip.ExtractToDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
             OfSettings.Instance.FRPClientVersion = updater.Content!;
             await OfSettings.Instance.WriteConfig();
+
+            Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
 
 
         }

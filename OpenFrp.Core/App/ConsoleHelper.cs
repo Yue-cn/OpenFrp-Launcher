@@ -8,174 +8,130 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.ApplicationModel.VoiceCommands;
+using OpenFrp.Core.Pipe.PipeModel;
+using Newtonsoft.Json;
 
 namespace OpenFrp.Core.App
 {
     public class ConsoleHelper
     {
-        public static Dictionary<int,string> RunningTunnels { get; set; } = new Dictionary<int,string>();
+        public static Dictionary<int, ConsoleWrapper> ConsoleWrappers { get; set; } = new();
 
-        public static Dictionary<int,Process> RunningTunnelsWithProcess { get; set; } = new Dictionary<int,Process>();
-
-        public static Pipe.PipeModel.ResponseModel Launch(Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
+        public static ResponseModel Launch(Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
         {
-            if (!File.Exists(Utils.Frpc))
+            if (!ConsoleWrappers.ContainsKey(tunnel.TunnelId))
             {
-                return new()
+                if (!File.Exists(Utils.Frpc) || !OfApi.LoginState)
                 {
-                    Action = Pipe.PipeModel.OfAction.Start_Frpc,
-                    Message = "找不到FRPC",
-                };
-            }
-            else if (!OfApi.LoginState)
-            {
-                return new()
-                {
-                    Action = Pipe.PipeModel.OfAction.Start_Frpc,
-                    Message = "您尚未登录。",
-                };
-            }
-            else
-            {
+                    Utils.Log($"早不到文件,{Utils.Frpc}");
+                    return new(OfAction.Start_Frpc,false,"找不到 FRPC 文件");
+                }
                 try
                 {
-                    //Debugger.Break();
-                    new Thread(() =>
+
+
+                    var frpc = new Process()
                     {
-                        try
+                        StartInfo = new()
                         {
-                            string hashName = ($"{tunnel.NodeName}-{tunnel.NodeID}-{tunnel.TunnelId}").GetMD5();
-                            if (LogHelper.LogsList.ContainsKey(hashName)) LogHelper.LogsList.Remove(hashName);
-                            LogHelper.LogsList.Add(hashName, new());
-                            var process = new Process()
-                            {
-                                StartInfo = new ProcessStartInfo(Utils.Frpc, $"-u {OfApi.UserInfoDataModel?.UserToken} -n -p {tunnel.TunnelId}")
-                                {
-                                    CreateNoWindow = false,
-                                    RedirectStandardError = true,
-                                    RedirectStandardInput = true,
-                                    RedirectStandardOutput = true,
-                                    UseShellExecute = false,
-                                    WorkingDirectory = Path.Combine(Utils.ApplicationPath, "frpc"),
-                                    StandardErrorEncoding = Encoding.UTF8,
-                                    StandardOutputEncoding = Encoding.UTF8,
-                                },
-                                EnableRaisingEvents = true
-                            };
-
-                            process.OutputDataReceived += (sender, args) => Output(args.Data, LogsLevel.Info, hashName,tunnel);
-                            process.ErrorDataReceived += (sender, args) => Output(args.Data, LogsLevel.Error, hashName,tunnel);
-                            process.Exited += (sender, args) =>
-                            {
-                                Output($"进程已退出，返回值 {process.ExitCode};", LogsLevel.Warning, hashName,tunnel);
-                                Launch(tunnel);
-                            };
-
-                            if (process.Start())
-                            {
-
-                                process.BeginOutputReadLine();
-                                process.BeginErrorReadLine();
-                                if (!RunningTunnels.ContainsKey(tunnel.TunnelId) &&
-                                    !RunningTunnelsWithProcess.ContainsKey(tunnel.TunnelId))
-                                {
-                                    RunningTunnelsWithProcess.Add(tunnel.TunnelId, process);
-                                    RunningTunnels.Add(tunnel.TunnelId, hashName);
-                                }
-
-                            }
-                        }
-                        catch {  }
-                    }).Start();
-                    return new()
-                    {
-                        Action = Pipe.PipeModel.OfAction.Start_Frpc,
-                        Flag = true,
+                            FileName = Utils.Frpc,
+                            Arguments = $"-n -u {OfApi.UserInfoDataModel?.UserToken} -p {tunnel.TunnelId}",
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                            RedirectStandardError = true,
+                            RedirectStandardInput = true,
+                            RedirectStandardOutput = true,
+                            StandardErrorEncoding = Encoding.UTF8,
+                            StandardOutputEncoding = Encoding.UTF8,
+                        },
+                        EnableRaisingEvents = true
                     };
-                }
-                catch(Exception ex)
-                {
-                    return new()
+
+                    ConsoleWrappers.Add(tunnel.TunnelId, new()
                     {
-                        Action = Pipe.PipeModel.OfAction.Start_Frpc,
-                        Message = ex.ToString()
-                    };
-                }
-            }
-        }
-
-        public static Pipe.PipeModel.ResponseModel Stop(Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
-        {
-            
-            try
-            {
-                
-                if (RunningTunnelsWithProcess.ContainsKey(tunnel.TunnelId))
-                {
-                    if (!RunningTunnelsWithProcess[tunnel.TunnelId].HasExited)
-                    {
-                        RunningTunnelsWithProcess[tunnel.TunnelId].EnableRaisingEvents = false;
-
-                        RunningTunnelsWithProcess[tunnel.TunnelId].Kill();
-                        
-                    }
-                    RunningTunnelsWithProcess.Remove(tunnel.TunnelId);
-                }
-                if (RunningTunnels.ContainsKey(tunnel.TunnelId))
-                {
-                    RunningTunnels.Remove(tunnel.TunnelId);
-                }
-                return new()
-                {
-                    Action = Pipe.PipeModel.OfAction.Close_Frpc,
-                    Flag = true
-                };
-            }
-            catch { }
-            return new()
-            {
-                Flag = false,
-                Action = Pipe.PipeModel.OfAction.Close_Frpc
-            };
-        }
-
-
-
-        static void Output(string? data, LogsLevel level,string dicName, Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
-        {
-            if (data is null) return;
-            
-            if (data?.IndexOf("启动成功") != -1)
-            {
-                Debugger.Break();
-                new ToastContentBuilder()
-                    .AddText("OpenFrp Launcher")
-                    .AddText($"隧道 {tunnel.TunnelName} 启动成功!")
-                    .AddButton(new ToastButton("复制连接", $"--cl {tunnel.ConnectAddress}"))
-                    .AddButton(new ToastButton("确定", "--ok"))
-                    .Show();
-            }
-            else if (data?.IndexOf("启动失败") != -1)
-            {
-                new ToastContentBuilder()
-                    .AddText("OpenFrp Launcher")
-                    .AddText($"隧道 {tunnel.TunnelName} 失败!!!")
-                    .AddText(data ?? "")
-                    
-                    .Show();
-            }
-            if (!Utils.ServicesMode)
-            {
-                try
-                {
-                    LogHelper.LogsList[dicName].Add(new()
-                    {
-                        Level = level,
-                        Content = data
+                        UserTunnelModel = tunnel,
+                        Process = frpc
                     });
+
+                    frpc.OutputDataReceived += (sender, e) => Output(e.Data, TraceLevel.Info, tunnel.TunnelId);
+                    frpc.ErrorDataReceived+= (sender, e) => Output(e.Data, TraceLevel.Error, tunnel.TunnelId);
+
+                    if (!frpc.Start()) return new(OfAction.Start_Frpc, false, "FRPC 启动失败");
+
+                    frpc.BeginErrorReadLine();
+                    frpc.BeginOutputReadLine();
+
+                    frpc.Exited += (sender, e) =>
+                    {
+                        if (ConsoleWrappers.ContainsKey(tunnel.TunnelId))
+                        {
+                            ConsoleWrappers.Remove(tunnel.TunnelId);
+                        }
+                            
+                        Launch(tunnel);
+                    };
+
+                    return new(OfAction.Start_Frpc, true, "启动成功");
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    return new(OfAction.Start_Frpc, false, ex.ToString());
+                }
+
             }
+            return new(OfAction.Start_Frpc, false, "对应隧道已启动。");
         }
+
+        public static bool Stop(int id)
+        {
+            if (ConsoleWrappers.ContainsKey(id))
+            {
+                if (ConsoleWrappers[id].Process is Process process)
+                {
+                    if (!process.HasExited)
+                    {
+                        process.EnableRaisingEvents = false;
+                        process.Kill();
+                    }
+                    
+                }
+                ConsoleWrappers.Remove(id);
+                
+            }
+            return true;
+        }
+
+
+        static void Output(string? data,TraceLevel level,int tunnelId)
+        {
+            if (data is not null)
+            {
+                if (ConsoleWrappers.ContainsKey(tunnelId))
+                {
+                    ConsoleWrappers[tunnelId].Append(data, level);   
+                }   
+            }
+            
+        }
+    }
+    /// <summary>
+    /// 操控台应用 - 实例
+    /// </summary>
+    public class ConsoleWrapper
+    {
+        [JsonProperty("tunnel")]
+        public Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel? UserTunnelModel { get; set; }
+
+        public List<LogContent> Content { get; set; } = new();
+
+        internal void Append(string data,TraceLevel level)
+        {
+            Content.Add(new(data, level));
+            LogHelper.AllLogs.Add(new(data, level));
+        }
+
+        [JsonIgnore]
+        public Process? Process { get; set; }
     }
 }

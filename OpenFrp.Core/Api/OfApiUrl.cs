@@ -8,16 +8,6 @@ namespace OpenFrp.Core.Api
 {
     public class OfApiUrl
     {
-#if !DEBUG
-        /// <summary>
-        /// 测试时 内网专用 API 当然可以改自己的
-        /// </summary>
-        public const string BaseUrl = @"http://192.168.31.74";
-        /// <summary>
-        /// 启动器用的Url
-        /// </summary>
-        public const string LauncherApiUrl = @"http://192.168.31.74";
-#else
         /// <summary>
         /// 正式使用时，切回官方 Api
         /// </summary>
@@ -26,7 +16,6 @@ namespace OpenFrp.Core.Api
         /// 启动器用的Url
         /// </summary>
         public const string LauncherApiUrl = @"https://yueapi.zyghit.cn";
-#endif
 
 
         /// <summary>

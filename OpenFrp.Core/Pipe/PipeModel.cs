@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using static OpenFrp.Core.ModelHelper;
 
+/*
+   Author: 越(Yue)
+   Github: https://github.com/Yue_cn/
+ */
 namespace OpenFrp.Core.Pipe
 {
     namespace PipeModel
@@ -17,48 +21,63 @@ namespace OpenFrp.Core.Pipe
             /// <summary>
             /// 获取状态。
             /// </summary>
-            Get_State = 0,
+            Get_State,
             /// <summary>
             /// 服务器已关闭。
             /// </summary>
-            Server_Closed = 1,
+            Server_Closed,
             /// <summary>
             /// 让服务器关闭。
             /// </summary>
-            Close_Server = 2,
+            Close_Server,
             /// <summary>
             /// 推送登录状态
             /// </summary>
-            LoginState_Push = 3,
+            LoginState_Push,
             /// <summary>
             /// 登出。
             /// </summary>
-            LoginState_Logout = 4,
+            LoginState_Logout,
             /// <summary>
             /// 开启
             /// </summary>
-            Start_Frpc = 5,
+            Start_Frpc,
             /// <summary>
             /// 关闭
             /// </summary>
-            Close_Frpc = 6,
+            Close_Frpc,
             /// <summary>
             /// FRPC 主动关闭
             /// </summary>
-            Frpc_Closed = 7,
+            Frpc_Closed,
             /// <summary>
             /// 获取日志
             /// </summary>
-            Get_Logs = 8,
+            Get_Logs,
             /// <summary>
             /// 推送日志
             /// </summary>
-            Push_Logs = 9,
-
-            Push_Config = 10
+            Push_Logs,
+            /// <summary>
+            /// 推送配置
+            /// </summary>
+            Push_Config
         }
         public class BaseModel : MessagePraser<BaseModel>
         {
+            public BaseModel()
+            {
+
+            }
+            public BaseModel(OfAction action, bool flag, string message)
+            {
+                Action = action;
+                Flag = flag;
+                Message = message;
+            }
+
+
+
             /// <summary>
             /// 所操作的行为
             /// </summary>
@@ -82,13 +101,15 @@ namespace OpenFrp.Core.Pipe
             /// </summary>
             [JsonProperty("auth")]
             public AuthModel? AuthMessage { get; set; }
-
+            /// <summary>
+            /// FRP信息 (开启 / 关闭 / 查询运行状态)
+            /// </summary>
             [JsonProperty("frp")]
             public FrpModel? FrpMessage { get; set; }
 
-            [JsonProperty("log")]
-            public LogModel? LogMessage { get; set; }
-
+            /// <summary>
+            /// 配置文件
+            /// </summary>
             [JsonProperty("config")]
             public OfSettings? Config { get; set; }
 
@@ -120,23 +141,50 @@ namespace OpenFrp.Core.Pipe
                 public Api.OfApiModel.Response.UserTunnelModel.UserTunnel? Tunnel { get; set; }
             }
 
-            public class LogModel
-            {
-                [JsonProperty("logs")]
-                public Dictionary<string, List<App.LogsModel>>? LogsList { get; set; }
-            }
+
         }
         public class RequestModel : BaseModel
         {
+
+            public RequestModel()
+            {
+
+            }
+
+            public RequestModel(OfAction action, bool flag, string message) : base(action, flag, message)
+            {
+
+            }
             /// <summary>
             /// 服务端 反馈 - 是否成功
             /// </summary>
             [JsonProperty("flag")]
             internal new bool Flag { get; set; }
+
+            [JsonProperty("pushLogs")]
+            public string? PushLog { get; set; }
         }
         public class ResponseModel : BaseModel
         {
+            public ResponseModel()
+            {
 
+            }
+
+            public ResponseModel(OfAction action, bool flag, string message) : base(action, flag, message)
+            {
+
+            }
+
+            [JsonProperty("logs")]
+            public LogsModel? Logs { get; set; }
+
+
+            public class LogsModel
+            {
+                [JsonProperty("consoleWrapppers")]
+                public ConsoleWrapper[]? ConsoleWrappers { get; set; }
+            }
         }
     }
 }

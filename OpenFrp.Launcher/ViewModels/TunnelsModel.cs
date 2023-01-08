@@ -19,6 +19,24 @@ namespace OpenFrp.Launcher.ViewModels
     public partial class TunnelsModel : ObservableObject
     {
 
+        public TunnelsModel()
+        {
+            if (OfAppHelper.LauncherViewModel is not null)
+            {
+                OfAppHelper.LauncherViewModel.PropertyChanged += (sender, e) =>
+                {
+                    OnPropertyChanged("PipeRunningState");
+                };
+            }
+        }
+
+
+        public bool PipeRunningState
+        {
+            get => OfAppHelper.LauncherViewModel?.PipeRunningState ?? false;
+        }
+
+
         #region Tunnel Page
         [ObservableProperty]
         public ObservableCollection<OpenFrp.Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel> userTunnels = new();
@@ -146,8 +164,9 @@ namespace OpenFrp.Launcher.ViewModels
                 dialog.PrimaryButtonClick += async (sender, req) =>
                 {
                     loader.Focus();
-                    await Task.Delay(150);
+                    
                     dialog.IsPrimaryButtonEnabled = !(req.Cancel = true);
+                    await Task.Delay(150);
                     loader.ShowLoader();
                     var config = configControl.GetConfig(true);
                     config.TunnelID = proxy.TunnelId;

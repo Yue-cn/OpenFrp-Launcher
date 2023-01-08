@@ -110,12 +110,23 @@ namespace OpenFrp.Launcher.Views
                         Tunnel = proxy
                     }
                 });
+
+                if (resp.Message.IndexOf("Unlogin") != -1)
+                {
+                    OfAppHelper.RestartProcess();
+                }
+
                 // PUSH Server
                 if (resp.Flag)
                 {
                     switcher.IsOn = true;
                     OfAppHelper.RunningIds.Add(proxy.TunnelId);
-                }else switcher.IsOn = false;
+                }
+                else
+                {
+                    switcher.IsOn = false;
+                    MessageBox.Show(resp.Message);
+                }
 
                 isChanging = false;
             }
@@ -130,11 +141,20 @@ namespace OpenFrp.Launcher.Views
                         Tunnel = proxy
                     }
                 });
+                if (resp.Message.IndexOf("Unlogin") != -1)
+                {
+                    OfAppHelper.RestartProcess();
+                }
                 if (resp.Flag)
                 {
                     switcher.IsOn = false;
                     OfAppHelper.RunningIds.Remove(proxy.TunnelId);
-                }else switcher.IsOn = true;
+                }
+                else
+                {
+                    switcher.IsOn = true;
+                    MessageBox.Show(resp.Message);
+                }
                 isChanging = false;
             }
 

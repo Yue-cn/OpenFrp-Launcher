@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Pipes;
 using System.Security.AccessControl;
-using Windows.ApplicationModel.VoiceCommands;
-using Windows.UI.WebUI;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.App;
+
 
 namespace OpenFrp.Core.Pipe
 {
@@ -28,14 +27,17 @@ namespace OpenFrp.Core.Pipe
 
         public void Start(bool push = false)
         {
+            //Debugger.Break();
             PipeSecurity pipeSecurity = new PipeSecurity();
             pipeSecurity.SetAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, AccessControlType.Allow));
-            Utils.Debug("Appplication Startup!!");
+            
             _push = push;
             AppStream = _server = new NamedPipeServerStream(Utils.PipeRouteName + (push ? "_PUSH" : ""), PipeDirection.InOut,12,PipeTransmissionMode.Byte,PipeOptions.Asynchronous,BufferSize,BufferSize,pipeSecurity);
             Utils.Debug($"PipeRouteName: {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
+            Utils.Log($"Pipe_RouteName : {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
             // 开始侦听连接
             Utils.Debug("开始侦听！");
+            isExceptioned = false;
             BeginLisenting();
         }
 
@@ -48,6 +50,7 @@ namespace OpenFrp.Core.Pipe
 
         private bool BeginLisenting()
         {
+            isExceptioned = false;
             if (_server is not null)
             {
 
@@ -59,6 +62,7 @@ namespace OpenFrp.Core.Pipe
                 {
                     _server.Close();
                     Start(_push);
+                    isExceptioned = State = false;
                     return false;
                 }
                 State = true;
@@ -88,19 +92,26 @@ namespace OpenFrp.Core.Pipe
                         State = false;
                         break;
                     }
-                    Utils.Debug($"接受到数据 ! Data Content: {response}");
+                    Utils.Debug($"接受到数据 !");
+
+                    PipeModel.ResponseModel resp;
 
                     if (RequestFunction is not null)
                     {
-                        await PushMessageAsync(RequestFunction(response.Action, response));
+                        resp = RequestFunction(response.Action, response);
+                        
                     }
                     else
                     {
-                        await PushMessageAsync(Execute(response.Action, response));
+                        resp = Execute(response.Action, response);
                     }
 
-                    Utils.Debug("发送数据。");
+                    await PushMessageAsync(resp);
+                    Utils.Debug("发送数据.");
+
                     
+                    //if (isExceptioned) { State = isExceptioned = false;  }
+
                     if (response.Action == PipeModel.OfAction.Close_Server)
                     {
                         _server?.Disconnect();
@@ -122,6 +133,7 @@ namespace OpenFrp.Core.Pipe
 
             switch (action)
             {
+                // 获取服务器的状态 / 信息
                 case PipeModel.OfAction.Get_State:
                     {
                         return new() 
@@ -130,18 +142,26 @@ namespace OpenFrp.Core.Pipe
                             Action = PipeModel.OfAction.Get_State,
                             FrpMessage = new()
                             {
-                                RunningId = ConsoleHelper.RunningTunnels.Keys.ToArray()
+                                RunningId = ConsoleHelper.ConsoleWrappers.Keys.ToArray()
                             }
                         };
                     };
+                // 服务器关闭了
                 case PipeModel.OfAction.Close_Server:
                     {
+                        foreach (int item in ConsoleHelper.ConsoleWrappers.Keys.ToArray())
+                        {
+                            OfSettings.Instance.AutoRunTunnel.Add(item);
+                            ConsoleHelper.Stop(item);
+                        }
                         return new()
                         {
                             Action = PipeModel.OfAction.Server_Closed,
                             Flag = true
                         };
+                        
                     }
+                // 推送登录信息
                 case PipeModel.OfAction.LoginState_Push:
                     {
                         OfApi.Authorization = request.AuthMessage?.Authorization;
@@ -153,6 +173,7 @@ namespace OpenFrp.Core.Pipe
                             Flag = true
                         };
                     }
+                // 推送登出信息
                 case PipeModel.OfAction.LoginState_Logout:
                     {
                         OfApi.ClearAccount();
@@ -162,60 +183,48 @@ namespace OpenFrp.Core.Pipe
                             Action = PipeModel.OfAction.LoginState_Logout,
                         };
                     }
-                case PipeModel.OfAction.Start_Frpc:
-                    {
-                        if (OfApi.UserInfoDataModel is null || request.FrpMessage is null)
-                        {
-                            return new()
-                            {
-                                Flag = false,
-                                Action = PipeModel.OfAction.Start_Frpc
-                            };
-                        }
-                        
-                        // 开启Frpc
-                        return ConsoleHelper.Launch(request.FrpMessage.Tunnel!);
-                    }
-                case PipeModel.OfAction.Close_Frpc:
-                    {
-                        if (OfApi.UserInfoDataModel is null || request.FrpMessage is null)
-                        {
-                            //正常来说 不会出现此情况
-                        }
-                        
-                        // 关闭Frpc
-                        return ConsoleHelper.Stop(request.FrpMessage!.Tunnel!);
-                    }
-                case PipeModel.OfAction.Get_Logs:
-                    {
-                        return new()
-                        {
-                            Action = PipeModel.OfAction.Get_Logs,
-                            Flag = true,
-                            LogMessage = new()
-                            {
-                                LogsList =  LogHelper.LogsList
-                            }
-                        };
-                    }
-                case PipeModel.OfAction.Push_Logs:
-                    {
-                        LogHelper.LogsList.Concat(request.LogMessage!.LogsList).ToDictionary(k => k.Key, v => v.Value);  
-                        return new()
-                        {
-                            Action = PipeModel.OfAction.Push_Logs,
-                            Flag = true
-                        };
-                    }
+                // 推送配置
                 case PipeModel.OfAction.Push_Config:
                     {
+                        var ww = OfSettings.Instance.AutoRunTunnel.ToList();
                         OfSettings.Instance = request.Config!;
+                        OfSettings.Instance.AutoRunTunnel = ww;
                         return new()
                         {
                             Action = PipeModel.OfAction.Push_Config,
                             Flag = true
                         };
                     };
+                // 开启 FRPC
+                case PipeModel.OfAction.Start_Frpc:
+                    {
+                        return ConsoleHelper.Launch(request.FrpMessage!.Tunnel!);
+                    }
+                // 关闭 FRPC
+                case PipeModel.OfAction.Close_Frpc:
+                    {
+                        return new (PipeModel.OfAction.Close_Frpc, ConsoleHelper.Stop(request.FrpMessage!.Tunnel!.TunnelId),"");
+                    }
+                // 推送 LOG
+                case PipeModel.OfAction.Get_Logs:
+                    {
+                        return new()
+                        {
+                            Action = PipeModel.OfAction.Get_Logs,
+                            Flag = true,
+                            Logs = new()
+                            {
+                                ConsoleWrappers = LogHelper.GetAllWrapper()
+                            }
+                        };
+                    }
+                // 上传 LOG
+                case PipeModel.OfAction.Push_Logs:
+                    {
+                        Utils.Log(request.PushLog ?? "");
+                        return new(PipeModel.OfAction.Push_Logs, true, "");
+                    };
+
                 default:
                     {
                         return new() { Message = "Action Not Found" };

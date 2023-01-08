@@ -1,8 +1,11 @@
-﻿using OpenFrp.Core.Api;
+﻿using OpenFrp.Core;
+using OpenFrp.Core.Api;
 using OpenFrp.Core.Api.OfApiModel;
 using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +36,21 @@ namespace OpenFrp.Launcher
         /// 管道 - PUSH
         /// </summary>
         public static OpenFrp.Core.Pipe.PipeServer PipeServer { get; set; } = new();
+
+        public static Hardcodet.Wpf.TaskbarNotification.TaskbarIcon TaskbarIcon = new()
+        {
+            Icon = new System.Drawing.Icon(Path.Combine(Utils.ApplicationPath,"favicon.ico")),
+            ToolTipText = "OpenFrp Launcher正在运行，单击显示窗口。"
+        };
+
+        public static void RestartProcess()
+        {
+            Utils.StopService();
+            
+
+            LauncherViewModel.PipeRunningState = false;
+            (App.Current.MainWindow as WpfSurface)?.ClientPipeWorker(true);
+        }
 
         internal static bool isLoading { get; set; }
         /// <summary>
@@ -118,7 +136,7 @@ namespace OpenFrp.Launcher
                             SettingViewModel.LoginState = true;
                             OfApi.Authorization = result.AuthMessage?.Authorization;
                             OfApi.Session = result.AuthMessage?.UserSession;
-                            RunningIds = result.FrpMessage!.RunningId.ToList();
+                            RunningIds = result.FrpMessage?.RunningId?.ToList() ?? new List<int>();
                         }
                     }
                 }

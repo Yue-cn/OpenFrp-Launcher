@@ -24,7 +24,7 @@ namespace OpenFrp.Core.App
             {
                 if (!File.Exists(Utils.Frpc) || !OfApi.LoginState)
                 {
-                    Utils.Log($"早不到文件,{Utils.Frpc}");
+                    Utils.Log($"找不到文件,{Utils.Frpc}");
                     return new(OfAction.Start_Frpc,false,"找不到 FRPC 文件");
                 }
                 try
@@ -55,7 +55,7 @@ namespace OpenFrp.Core.App
                     });
 
                     frpc.OutputDataReceived += (sender, e) => Output(e.Data, TraceLevel.Info, tunnel.TunnelId);
-                    frpc.ErrorDataReceived+= (sender, e) => Output(e.Data, TraceLevel.Error, tunnel.TunnelId);
+                    frpc.ErrorDataReceived += (sender, e) => Output(e.Data, TraceLevel.Error, tunnel.TunnelId);
 
                     if (!frpc.Start()) return new(OfAction.Start_Frpc, false, "FRPC 启动失败");
 
@@ -103,14 +103,72 @@ namespace OpenFrp.Core.App
         }
 
 
-        static void Output(string? data,TraceLevel level,int tunnelId)
+        static async void Output(string? data,TraceLevel level,int tunnelId)
         {
             if (data is not null)
             {
+
                 if (ConsoleWrappers.ContainsKey(tunnelId))
                 {
-                    ConsoleWrappers[tunnelId].Append(data, level);   
-                }   
+                    ConsoleWrappers[tunnelId].Append(data, level);
+                    if (Utils.ServicesMode) return;
+                    if (OfSettings.Instance.NotifiyMode == NotifiyMode.ToastNotification && Utils.isSupportToast)
+                    {
+                        if (data.Contains("启动成功"))
+                        {
+                            new ToastContentBuilder()
+                                .AddText($"隧道 {ConsoleWrappers[tunnelId].UserTunnelModel?.TunnelName} 启动成功!")
+                                .AddText($"点击复制按钮，分享给你的朋友吧!")
+                                .AddAttributionText($"{ConsoleWrappers[tunnelId].UserTunnelModel?.TunnelType},{ConsoleWrappers[tunnelId].UserTunnelModel?.LocalAddress}:{ConsoleWrappers[tunnelId].UserTunnelModel?.LocalPort}")
+                                .AddButton("复制连接", ToastActivationType.Foreground, $"--cl {ConsoleWrappers[tunnelId].UserTunnelModel?.ConnectAddress}")
+                                .AddButton("确定", ToastActivationType.Foreground, "")
+                                .Show();
+                        }
+                        else if (data.Contains("启动失败"))
+                        {
+                            new ToastContentBuilder()
+                                .AddText($"隧道 {ConsoleWrappers[tunnelId].UserTunnelModel?.TunnelName} 启动失败。")
+                                .AddText(data)
+                                .AddAttributionText($"远程端口: {ConsoleWrappers[tunnelId].UserTunnelModel?.RemotePort}")
+                                .AddButton("确定", ToastActivationType.Foreground, "")
+                                .Show();
+                        }
+                    }
+                    else if (OfSettings.Instance.NotifiyMode is NotifiyMode.NotifiyIcon)
+                    {
+                        if (Utils.ClientWorker is not null && Utils.ClientWorker.State)
+                        {
+                            if (data.Contains("启动成功"))
+                            {
+                                await Utils.ClientWorker.PushMessageAsync(new()
+                                {
+                                    Action = OfAction.Push_AppNotifiy,
+                                    ToastContent = new()
+                                    {
+                                        IsSuccessful = true,
+                                        UserTunnel = ConsoleWrappers[tunnelId].UserTunnelModel
+                                    }
+                                });
+                            }
+                            else if (data.Contains("启动失败"))
+                            {
+                                await Utils.ClientWorker.PushMessageAsync(new()
+                                {
+                                    Action = OfAction.Push_AppNotifiy,
+                                    ToastContent = new()
+                                    {
+                                        Data = data,
+                                        IsSuccessful = false,
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+
+                    // 此处不考虑 系统服务 模式下的通知
+
+                }
             }
             
         }

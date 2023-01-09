@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:OpenFrp.Launcher"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    StartupUri="WpfSurface.xaml">
+    >
 
     <Application.Resources>
         <ResourceDictionary>

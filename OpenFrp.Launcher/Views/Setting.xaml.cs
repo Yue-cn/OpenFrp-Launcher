@@ -29,7 +29,7 @@ namespace OpenFrp.Launcher.Views
             {
                 var sb = new OfSettings();
                 sb = OfSettings.Instance;
-                sb.AutoRunTunnel = null!;
+                sb.AutoRunTunnel = new()!;
                 await OfAppHelper.PipeClient.PushMessageAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.Push_Config,

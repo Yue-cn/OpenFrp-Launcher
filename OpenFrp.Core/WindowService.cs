@@ -18,7 +18,7 @@ namespace OpenFrp.Core
     /// </summary>
     public class WindowService : ServiceBase
     {
-        private Pipe.PipeClient appClient { get; set; } = new Pipe.PipeClient();
+        
 
         protected override async void OnStart(string[] args)
         {
@@ -41,7 +41,8 @@ namespace OpenFrp.Core
             var appServer = new Pipe.PipeServer();
             appServer.Start();
 
-            await Task.Delay(1500);
+            Utils.ClientWorker = new();
+            await Task.Delay(1000);
 
             
             var res1 = await OfApi.Login(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
@@ -74,7 +75,8 @@ namespace OpenFrp.Core
                     }
                 });
             }
-            
+
+            await Task.Delay(500);
 
             // 更改部分请求
             appServer.RequestFunction = (request, model) =>
@@ -101,8 +103,11 @@ namespace OpenFrp.Core
                     default: return appServer.Execute(request, model);
                 }
             };
-
-            await appClient.Start(true);
+            if (Utils.ClientWorker is not null)
+            {
+                await Utils.ClientWorker.Start(true);
+            }
+            
 
             
 
@@ -110,12 +115,19 @@ namespace OpenFrp.Core
         protected override void OnStop()
         {
             //OfSettings.Instance.AutoRunTunnel = //ConsoleHelper.RunningTunnels.Keys.ToList();
-            if (appClient.State)
+            if (Utils.ClientWorker?.State == true)
             {
-                appClient.PushMessageAsync(new Pipe.PipeModel.RequestModel()
+                Utils.ClientWorker?.PushMessageAsync(new Pipe.PipeModel.RequestModel()
                 {
                     Action = Pipe.PipeModel.OfAction.Server_Closed
                 }).GetAwaiter().GetResult();
+            }
+            if (ConsoleHelper.ConsoleWrappers.Count != 0)
+            {
+                foreach (var item in ConsoleHelper.ConsoleWrappers.Keys.ToArray())
+                {
+                    ConsoleHelper.Stop(item);
+                }
             }
         }
     }

@@ -20,6 +20,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.UI.WebUI;
+using Microsoft.Toolkit.Uwp.Notifications;
+using OpenFrp.Launcher.Views;
+using System.Windows.Markup;
 
 namespace OpenFrp.Launcher
 {
@@ -42,12 +45,14 @@ namespace OpenFrp.Launcher
         {
             base.OnInitialized(e);
 
+
+
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
 
-            await OfSettings.ReadConfig();
+            //await OfSettings.ReadConfig();
 
-            
+
 
             OfAppHelper.TaskbarIcon.ContextMenu = new()
             {
@@ -119,7 +124,7 @@ namespace OpenFrp.Launcher
         
         private async void AutoStartup()
         {
-            if (OfSettings.Instance.AutoRunTunnel.Count == 0) return;
+            if (OfSettings.Instance.AutoRunTunnel.Count == 0 || OfSettings.Instance.WorkMode == WorkMode.DeamonService) return;
             var resp = await OfApi.GetUserProxies();
             if (resp.Flag)
             {
@@ -129,7 +134,8 @@ namespace OpenFrp.Launcher
                     {
                         if (tunnelId == tunnel.TunnelId)
                         {
-                            OfAppHelper.RunningIds.Add(tunnelId);
+                            if (!OfAppHelper.RunningIds.Contains(tunnelId))
+                                OfAppHelper.RunningIds.Add(tunnelId);
                             var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
                             {
                                 Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
@@ -154,6 +160,7 @@ namespace OpenFrp.Launcher
                 }
             }
         }
+
         private MenuItem CreateItemWithAction(string name, Action action, object icon)
         {
             var app2 = new MenuItem() { Header = name, Icon = icon };
@@ -300,26 +307,7 @@ namespace OpenFrp.Launcher
         /// </summary>
         internal async void ClientPipeWorker(bool restart = false)
         {
-            if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
-            {
-                try
-                {
-                    Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
-                    if (process is null || process?.HasExited == true)
-                    {
-                        Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
-                        {
-                            CreateNoWindow = false,
-                            UseShellExecute = false
-                        });
-                    }
-                }
-                catch { }
-            }
-            else
-            {
-                Utils.CheckService();
-            }
+            
 
             await OfAppHelper.PipeClient.Start();
             
@@ -386,6 +374,17 @@ namespace OpenFrp.Launcher
                                     OfAppHelper.RunningIds = resp.FrpMessage!.RunningId?.ToList() ?? new List<int>();
                                 }
                                 (App.Current.MainWindow as WpfSurface)?.OfApp_RootFrame.Navigate(typeof(Views.Tunnels));
+                            }break;
+                        case Core.Pipe.PipeModel.OfAction.Push_AppNotifiy:
+                            {
+                                if (model.ToastContent?.IsSuccessful == true)
+                                {
+                                    OfAppHelper.TaskbarIcon.ShowBalloonTip($"隧道 {model.ToastContent?.UserTunnel?.TunnelName} 启动成功!", $"使用 {model.ToastContent?.UserTunnel?.ConnectAddress} 来连接到你的隧道。", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                                }
+                                else
+                                {
+                                    OfAppHelper.TaskbarIcon.ShowBalloonTip($"隧道 {model.ToastContent?.UserTunnel?.TunnelName} 启动失败!", model.ToastContent?.Data, Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
+                                }
                             }
                             break;
                     }

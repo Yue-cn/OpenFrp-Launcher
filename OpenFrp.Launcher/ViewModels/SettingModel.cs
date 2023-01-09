@@ -45,11 +45,12 @@ namespace OpenFrp.Launcher.ViewModels
             get => OpenFrp.Core.App.OfSettings.Instance.BypassProxy;
             set => OpenFrp.Core.App.OfSettings.Instance.BypassProxy = value;
         }
-        public bool ToastState
+        public int ToastMode
         {
-            get => OpenFrp.Core.App.OfSettings.Instance.IsToastEnable;
-            set => OpenFrp.Core.App.OfSettings.Instance.IsToastEnable = value;
+            get => (int)OpenFrp.Core.App.OfSettings.Instance.NotifiyMode;
+            set => OpenFrp.Core.App.OfSettings.Instance.NotifiyMode = (NotifiyMode)value;
         }
+        public bool isSupportedToast { get; } = Utils.isSupportToast;
 
         /// <summary>
         /// 登录状态 (实际使用请改为<see cref="LoginState"/>)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
+using ModernWpf;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.Api.OfApiModel;
 using OpenFrp.Core.App;
@@ -51,7 +52,7 @@ namespace OpenFrp.Core
                 {
                     Console.WriteLine(c.ExceptionObject);
                 };
-                if (OfSettings.Instance.IsToastEnable && false)
+                if (Utils.isSupportToast)
                 {
                     ToastNotificationManagerCompat.OnActivated += (args) =>
                     {
@@ -71,20 +72,22 @@ namespace OpenFrp.Core
                             catch { }
                         }
                     };
-                    
                 }
 
                 switch (args[0])
                 {
                     case "--install":await InstallService();break;
                     case "--uninstall":await UninstallService();break;
+                    case "--force-uninstall":await ForceUninstallService();break;
                     case "--ws":await LocalPipeWorker();break;
+
                     case "--frpcp":await InstallFrpc();break;
                 }
-                //if (OfSettings.Instance.IsToastEnable) ToastNotificationManagerCompat.Uninstall();
+                if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
             }
             else if (Utils.ServicesMode)
             {
+                // Debugger.Launch();
                 ServiceBase.Run(new WindowService());
             }
         }
@@ -131,7 +134,7 @@ namespace OpenFrp.Core
 
                     await OfSettings.Instance.WriteConfig();
 
-                    await Task.Delay(1500);
+                    await Task.Delay(3250);
 
                     Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
                 }
@@ -170,6 +173,43 @@ namespace OpenFrp.Core
             }
         }
         /// <summary>
+        /// 强制卸载
+        /// </summary>
+        private static async ValueTask ForceUninstallService()
+        {
+            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--uninstall")
+                    {
+                        CreateNoWindow = false,
+                        Verb = "runas"
+                    });
+
+                }
+                catch { }
+            }
+            else
+            {
+                await Task.Yield();
+                if (isServiceInstalled())
+                {
+                    ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
+                }
+            }
+        }
+        private static bool isServiceInstalled()
+        {
+            ServiceController[] services = ServiceController.GetServices();
+            foreach (var service in services)
+            {
+                if (service.ServiceName == "OpenFrp Launcher Service") return true;
+            }
+            return false;
+        }
+        /// <summary>
         /// Launcher - 管道交互
         /// </summary>
         private static async ValueTask LocalPipeWorker()
@@ -182,15 +222,16 @@ namespace OpenFrp.Core
             
             // 连接启动器用的。
             // 既然这里连接成功了，那么下方的可以与前台交互了。
-            var appClient = new Pipe.PipeClient();
-            //await appClient.Start(true);
+
             if (!Utils.ServicesMode)
             {
+                Utils.ClientWorker = new Pipe.PipeClient();
+                //await Utils.ClientWorker.Start(true);
                 // 退出事件
                 SetConsoleCtrlHandler((ctrl) =>
                 {
                     // 如果有客户端连接，那么这里需要推送。
-                    appClient.PushMessageAsync(new Pipe.PipeModel.RequestModel()
+                    Utils.ClientWorker.PushMessageAsync(new Pipe.PipeModel.RequestModel()
                     {
                         Action = Pipe.PipeModel.OfAction.Server_Closed
                     }).GetAwaiter().GetResult();
@@ -203,7 +244,7 @@ namespace OpenFrp.Core
                     {
                         case Pipe.PipeModel.OfAction.Get_State:
                             {
-                                new Thread(async () => await appClient.Start(true)).Start();
+                                new Thread(async () => await Utils.ClientWorker.Start(true)).Start();
                                 goto default;
                             };
                         default: return appServer.Execute(request, model);

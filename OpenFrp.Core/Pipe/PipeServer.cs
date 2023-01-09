@@ -151,7 +151,8 @@ namespace OpenFrp.Core.Pipe
                     {
                         foreach (int item in ConsoleHelper.ConsoleWrappers.Keys.ToArray())
                         {
-                            OfSettings.Instance.AutoRunTunnel.Add(item);
+                            if (!OfSettings.Instance.AutoRunTunnel.Contains(item))
+                                OfSettings.Instance.AutoRunTunnel.Add(item);
                             ConsoleHelper.Stop(item);
                         }
                         return new()
@@ -208,6 +209,8 @@ namespace OpenFrp.Core.Pipe
                 // 推送 LOG
                 case PipeModel.OfAction.Get_Logs:
                     {
+                        if (LogHelper.AllLogs.Count > 200) LogHelper.AllLogs.Clear();
+
                         return new()
                         {
                             Action = PipeModel.OfAction.Get_Logs,
@@ -217,6 +220,7 @@ namespace OpenFrp.Core.Pipe
                                 ConsoleWrappers = LogHelper.GetAllWrapper()
                             }
                         };
+                        
                     }
                 // 上传 LOG
                 case PipeModel.OfAction.Push_Logs:

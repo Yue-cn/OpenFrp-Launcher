@@ -60,8 +60,8 @@ namespace OpenFrp.Core.App
         [JsonProperty("frpcVersion")]
         public string FRPClientVersion { get; set; } = "**";
 
-        [JsonProperty("istoastEnabled")]
-        public bool IsToastEnable { get; set; } = true && Utils.isSupportToast;
+        [JsonProperty("notifiyMode")]
+        public NotifiyMode NotifiyMode { get; set; } = Utils.isSupportToast ? NotifiyMode.ToastNotification : NotifiyMode.NotifiyIcon;
 
         [JsonProperty("arts")]
         public List<int> AutoRunTunnel { get; set; } = new();
@@ -192,6 +192,21 @@ namespace OpenFrp.Core.App
     {
         DeamonProcess,
         DeamonService
+    }
+    public enum NotifiyMode
+    {
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disabled,
+        /// <summary>
+        /// Windows 7 以及更高版本
+        /// </summary>
+        NotifiyIcon,
+        /// <summary>
+        /// Windows 10 以及更高版本
+        /// </summary>
+        ToastNotification
     }
 }
  

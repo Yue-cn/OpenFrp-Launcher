@@ -120,7 +120,8 @@ namespace OpenFrp.Launcher.Views
                 if (resp.Flag)
                 {
                     switcher.IsOn = true;
-                    OfAppHelper.RunningIds.Add(proxy.TunnelId);
+                    if (!OfAppHelper.RunningIds.Contains(proxy.TunnelId))
+                        OfAppHelper.RunningIds.Add(proxy.TunnelId);
                 }
                 else
                 {
@@ -148,7 +149,8 @@ namespace OpenFrp.Launcher.Views
                 if (resp.Flag)
                 {
                     switcher.IsOn = false;
-                    OfAppHelper.RunningIds.Remove(proxy.TunnelId);
+                    if (OfAppHelper.RunningIds.Contains(proxy.TunnelId))
+                        OfAppHelper.RunningIds.Remove(proxy.TunnelId);
                 }
                 else
                 {

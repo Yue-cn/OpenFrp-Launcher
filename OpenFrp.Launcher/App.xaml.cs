@@ -1,4 +1,6 @@
-﻿using OpenFrp.Core.App;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using OpenFrp.Core;
+using OpenFrp.Core.App;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -23,13 +25,18 @@ namespace OpenFrp.Launcher
         /// <summary>
         /// 应用启动时
         /// </summary>
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-
+            
             if (isSupportDarkMode)
             {
                 Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
                 Launcher.Properties.UxTheme.ShouldSystemUseDarkMode();
+            }
+
+            if (Process.GetProcessesByName("OpenFrp.Launcher").Length > 1)
+            {
+                Environment.Exit(0);
             }
             if (!Debugger.IsAttached)
             {
@@ -38,12 +45,36 @@ namespace OpenFrp.Launcher
                     MessageBox.Show(s.ExceptionObject.ToString());
                 };
             }
-            
+            await OfSettings.ReadConfig();
+            // App 运行前 守护进程检测 未开启无法进入应用
+            if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
+            {
+                try
+                {
+                    Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
+                    if (process is null || process?.HasExited == true)
+                    {
+                        Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
+                        {
+                            CreateNoWindow = true,
+                            UseShellExecute = false
+                        });
+                    }
+                }
+                catch { }
+            }
+            else
+            {
+                if (!Utils.CheckService()) await Task.Delay(3250);  
+            }
+            var wind = new WpfSurface();
+            wind.Show();
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
+            
             OfSettings.Instance.AutoRunTunnel = OfAppHelper.RunningIds;
             await OfSettings.Instance.WriteConfig();
         }

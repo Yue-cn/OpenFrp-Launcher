@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Newtonsoft.Json;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.App;
 using System;
@@ -61,7 +62,11 @@ namespace OpenFrp.Core.Pipe
             /// <summary>
             /// 推送配置
             /// </summary>
-            Push_Config
+            Push_Config,
+            /// <summary>
+            /// 推送通知 (在服务模式下,通知无法使用，只能借助客户端。)
+            /// </summary>
+            Push_AppNotifiy
         }
         public class BaseModel : MessagePraser<BaseModel>
         {
@@ -163,6 +168,21 @@ namespace OpenFrp.Core.Pipe
 
             [JsonProperty("pushLogs")]
             public string? PushLog { get; set; }
+
+            [JsonProperty("toast")]
+            public ToastContentModel? ToastContent { get; set; }
+
+            public class ToastContentModel
+            {
+                [JsonProperty("success")]
+                public bool IsSuccessful { get; set; }
+
+                [JsonProperty("userTunnel")]
+                public Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel? UserTunnel { get; set; }
+
+                [JsonProperty("data")]
+                public string? Data { get; set; }
+            }
         }
         public class ResponseModel : BaseModel
         {

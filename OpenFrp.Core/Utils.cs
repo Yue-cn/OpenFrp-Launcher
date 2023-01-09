@@ -1,4 +1,5 @@
-﻿using ModernWpf;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using ModernWpf;
 using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
@@ -111,6 +112,11 @@ namespace OpenFrp.Core
         #endregion
 
         #region Helper Args
+
+        /// <summary>
+        /// 客户端 交互 - 管道 (仅内部可用)
+        /// </summary>
+        internal static Pipe.PipeClient? ClientWorker { get; set; }
         /// <summary>
         /// 应用主窗口（操控台返回 Null)
         /// </summary>
@@ -154,7 +160,7 @@ namespace OpenFrp.Core
             }
         }
 
-        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p9aj2";
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p95aw";
 
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 
@@ -163,6 +169,8 @@ namespace OpenFrp.Core
         public static bool isSupportToast { get; } = OSVersionHelper.IsWindows10OrGreater || OSVersionHelper.IsWindows11OrGreater;
 
         #endregion
+
+
 
         /// <summary>
         /// 写日志
@@ -174,7 +182,10 @@ namespace OpenFrp.Core
                 Console.WriteLine(s);
             }
         }
-
+        /// <summary>
+        /// 写入 LOG
+        /// </summary>
+        /// <param name="s"></param>
         internal static void Log(string s)
         {
             LogHelper.AllLogs.Add(new LogContent($"[{DateTimeOffset.Now}] {s}", TraceLevel.Verbose));
@@ -191,6 +202,7 @@ namespace OpenFrp.Core
             using var service = new ServiceController("OpenFrp Launcher Service");
             if (!service.CanStop)
             {
+                // 不能被停止 说明没开启
                 try
                 {
                     Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
@@ -198,14 +210,15 @@ namespace OpenFrp.Core
                         Verb = "runas",
                         CreateNoWindow = true
                     });
-                    return true;
+                    return false;
                 }
                 catch { }
             }
-            return false;
+            return true;
         }
-
-
+        /// <summary>
+        /// 停止服务
+        /// </summary>
         public static void StopService()
         {
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
@@ -232,6 +245,8 @@ namespace OpenFrp.Core
                 catch { }
             }
         }
+
+
 
         
 

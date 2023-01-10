@@ -28,6 +28,7 @@
         <ui:NavigationView
             xmlns:pages="clr-namespace:OpenFrp.Launcher.Views"
             x:Name="OfApp_NavigationView"
+            IsPaneOpen="False"
             IsTitleBarAutoPaddingEnabled="False"
             OpenPaneLength="225">
             <ui:NavigationView.MenuItems>
@@ -148,7 +149,7 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>   
+                </Grid.Style>
                 <TextBlock
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"

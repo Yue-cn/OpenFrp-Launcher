@@ -529,9 +529,21 @@ namespace OpenFrp.Core.Api
                             }
                         }
                     }
-
+                    /// <summary>
+                    /// 是否为表头 (内部用)
+                    /// </summary>
                     [JsonIgnore]
                     public bool isHeader { get; set; }
+                    /// <summary>
+                    /// 宽带
+                    /// </summary>
+                    [JsonProperty("bandwidth")]
+                    public int NetworkSpeed { get; set; }
+                    /// <summary>
+                    /// 速率翻倍
+                    /// </summary>
+                    [JsonProperty("bandwidthMagnification")]
+                    public double SppedMagnification { get; set; }
                 }
                 /// <summary>
                 /// 节点在世界的位置

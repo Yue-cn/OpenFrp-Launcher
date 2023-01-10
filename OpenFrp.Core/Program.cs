@@ -255,8 +255,9 @@ namespace OpenFrp.Core
             var updater = await Update.CheckUpdate();
             if (string.IsNullOrEmpty(updater.DownloadUrl) || updater.UpdateFor != Update.UpdateFor.FRPC)
             {
-                Console.WriteLine($"API 请求失败:::");
-                return;
+                Console.WriteLine($"API 请求失败,请将截图发送到用户交流群内:::");
+                Console.ReadKey();
+                Environment.Exit(0);
             }
             string file = Path.Combine(Utils.AppTempleFilesPath, $"{updater.DownloadUrl!.GetMD5()}.zip");
             var flag = await Update.DownloadWithProgress(updater.DownloadUrl!, file, (sender, e) =>

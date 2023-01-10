@@ -85,7 +85,7 @@
             </of:SettingItem>
             <of:SettingItem Title="启动器开机自启" Message="默认进入桌面后挂入后台,如有RDP需要建议改用系统服务模式。">
                 <of:SettingItem.Icon>
-                    <ui:FontIcon FontSize="24" Glyph="&#xee4a;" />
+                    <ui:SymbolIcon FontSize="24" Symbol="Play" />
                 </of:SettingItem.Icon>
                 <ui:ToggleSwitch
                     Margin="0,0,-12,0"
@@ -103,10 +103,44 @@
                     <ComboBoxItem Content="Toast(Win10+)" IsEnabled="{Binding isSupportedToast}" />
                 </ComboBox>
             </of:SettingItem>
+            <of:Expander>
+                <of:Expander.Header>
+                    <ui:SimpleStackPanel
+                        Height="65"
+                        Margin="4,0,0,0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <ui:FontIcon FontSize="24" Glyph="&#xe756;" />
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="操控台设置" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="字体，字体大小。" />
+                        </TextBlock>
+                    </ui:SimpleStackPanel>
+                </of:Expander.Header>
+                <Grid MinHeight="175">
+                    <ui:SimpleStackPanel Margin="40,0,0,0" Spacing="8">
+                        <ComboBox
+                            MinWidth="200"
+                            ui:ControlHelper.Header="字体"
+                            Loaded="ComboBox_Loaded" />
+                        <ui:NumberBox
+                            MinWidth="200"
+                            HorizontalAlignment="Left"
+                            ui:ControlHelper.Header="字体大小"
+                            Maximum="100"
+                            Minimum="1"
+                            SpinButtonPlacementMode="Inline"
+                            Text="14"
+                            Value="{Binding ConsoleSettng.FontSize}" />
+                    </ui:SimpleStackPanel>
+                </Grid>
+            </of:Expander>
             <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                 <Run Text="CFU统一识别码编码：DLPYU2N4" />
                 <LineBreak />
-                <Run Text="Preview 2.0.0,Launcher,[r10wd2]" />
+                <Run Text="Preview 2.0.0,Launcher,[r10wd3]" />
             </TextBlock>
         </ui:SimpleStackPanel>
     </of:BaseView>

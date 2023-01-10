@@ -26,17 +26,21 @@ namespace OpenFrp.Core
             await Task.Delay(1000);
 
             // 五次重连 都失败那么Pass
-            int linkCount = 0;
-            while(!await GetLink() || linkCount >= 5)
+            if (OfSettings.Instance.Account.HasAccount)
             {
-                linkCount++;
-                Utils.Log($"登录失败,重试 {linkCount} 次，共5次。等待 {3 * linkCount}s.", TraceLevel.Warning);
-                
-                await Task.Delay(3000 * linkCount);
-            };
+                int linkCount = 0;
+                while (!await GetLink() && linkCount <= 5)
+                {
+                    linkCount++;
+                    Utils.Log($"登录失败,重试 {linkCount} 次，共5次。等待 {3 * linkCount}s.", TraceLevel.Warning);
 
-            if (linkCount >= 5) Utils.Log("五次登录都失败了，是否已连接到互联网???", TraceLevel.Error);
-            else Utils.Log("登录成功!!!");
+                    await Task.Delay(3000 * linkCount);
+                };
+
+                if (linkCount >= 5) Utils.Log("五次登录都失败了，是否已连接到互联网???", TraceLevel.Error);
+                else Utils.Log("登录成功!!!");
+            }
+
 
 
             // 更改部分请求
@@ -76,6 +80,7 @@ namespace OpenFrp.Core
         {
             try
             {
+  
                 var res1 = await OfApi.Login(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
                 var res2 = await OfApi.GetUserInfo();
                 if (!res1.Flag || !res2.Flag)

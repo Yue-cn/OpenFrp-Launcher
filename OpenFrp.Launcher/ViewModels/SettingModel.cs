@@ -55,6 +55,12 @@ namespace OpenFrp.Launcher.ViewModels
             get => (int)OpenFrp.Core.App.OfSettings.Instance.NotifiyMode;
             set => OpenFrp.Core.App.OfSettings.Instance.NotifiyMode = (NotifiyMode)value;
         }
+        public OpenFrp.Core.App.OfSettings.ConsoleModel ConsoleSettng
+        {
+            get => OpenFrp.Core.App.OfSettings.Instance.Console;
+            set => OpenFrp.Core.App.OfSettings.Instance.Console = value;
+        }
+
         public bool isSupportedToast { get; } = Utils.isSupportToast;
 
         /// <summary>

@@ -1,7 +1,10 @@
 ﻿using OpenFrp.Core;
 using OpenFrp.Core.App;
+using OpenFrp.Launcher.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -22,6 +26,12 @@ namespace OpenFrp.Launcher.Views
     /// </summary>
     public partial class Setting : Page
     {
+        public SettingModel Model
+        {
+            get => (SettingModel)DataContext;
+            set => DataContext = value;
+        }
+
         public Setting()
         {
             InitializeComponent();
@@ -61,6 +71,43 @@ namespace OpenFrp.Launcher.Views
                 }
 
             }
+        }
+        /// <summary>
+        /// 字体列表
+        /// </summary>
+        private void ComboBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            var list = Fonts.SystemFontFamilies.ToArray();
+            if (sender is ComboBox box)
+            {
+                if (list != null)
+                {
+                    var items = new List<ComboBoxItem>();
+                    var lang = XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag);
+                    int count = 0;
+                    for (int i = 0; i < list.Length; i++)
+                    {
+                        string fontName = list[i].FamilyNames.ContainsKey(lang) ? list[i].FamilyNames[lang] : list[i].ToString();
+                        if (fontName == Model.ConsoleSettng.FontName) count = i;
+                        items.Add(new ComboBoxItem()
+                        {
+                            Content = fontName,
+                            FontFamily = list[i],
+                            IsSelected = (fontName == Model.ConsoleSettng.FontName)
+                        });
+                    }
+                    box.ItemsSource = items;
+                    box.SelectedIndex = count;
+                }
+                box.SelectionChanged += (sender, args) =>
+                {
+                    if (box.SelectedValue is ComboBoxItem item)
+                    {
+                        Model.ConsoleSettng.FontName = item.Content.ToString();
+                    }
+                };
+            }
+
         }
     }
 }

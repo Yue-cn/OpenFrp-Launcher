@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace OpenFrp.Launcher.ViewModels
 {
@@ -89,5 +92,26 @@ namespace OpenFrp.Launcher.ViewModels
         }
 
 
+    }
+
+    public class FontFamilyConvert : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string str)
+            {
+                return new FontFamily(str);
+            }
+            return new FontFamily("微软雅黑");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is FontFamily fam)
+            {
+                return fam.ToString();
+            }
+            return "微软雅黑";
+        }
     }
 }

@@ -94,6 +94,13 @@
                                                             <DataTrigger Binding="{Binding isVipNode}" Value="False">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                             </DataTrigger>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding DataContext.UserInfoData.Group, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}" Value="normal" />
+                                                                    <Condition Binding="{Binding isVipNode}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                                                            </MultiDataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </TextBlock.Style>
@@ -168,6 +175,11 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
+                                        <!--  宽带 (+速率)  -->
+                                        <TextBlock>
+                                            <Run Text="{Binding NetworkSpeed, StringFormat={}{0}Mbps}" />
+                                            <Run Text="{Binding SppedMagnification, StringFormat=x {0}}" />
+                                        </TextBlock>
                                     </ui:SimpleStackPanel>
                                     <ui:SimpleStackPanel />
                                 </Grid>
@@ -186,6 +198,7 @@
                                             <Condition Binding="{Binding DataContext.UserInfoData.Group, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}" Value="normal" />
                                             <Condition Binding="{Binding isVipNode}" Value="True" />
                                         </MultiDataTrigger.Conditions>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                         <Setter Property="IsEnabled" Value="False" />
                                     </MultiDataTrigger>
                                     <DataTrigger Binding="{Binding Status}" Value="200">
@@ -193,7 +206,7 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding isFully}" Value="True">
                                         <Setter Property="IsEnabled" Value="False" />
-                                        <Setter Property="Opacity" Value="0.6" />
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding isHeader}" Value="True">
                                         <Setter Property="IsEnabled" Value="False" />

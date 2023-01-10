@@ -156,11 +156,11 @@ namespace OpenFrp.Core
             get
             {
                 string str = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-                return Path.Combine(str, "OfApp.Launcher");
+                return Path.Combine(str, "OpenFrp Launcher");
             }
         }
 
-        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p95aw";
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].p95aw2";
 
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 

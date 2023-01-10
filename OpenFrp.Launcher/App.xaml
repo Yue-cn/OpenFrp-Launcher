@@ -14,9 +14,9 @@
                 <ui:ThemeResources />
 
 
-                <ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
+                <!--<ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
                 <ResourceDictionary Source="/ModernWpf;component/ThemeResources/Light.xaml" />
-                <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />
+                <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />-->
                 <ResourceDictionary Source="/ModernWpf.Controls;component/ToggleSwitch/ToggleSwitch.xaml" />
 
                 <!--  App Custom Resourecs  -->

@@ -19,12 +19,18 @@ namespace OpenFrp.Core.App
             if (resp.Flag && resp.Data is not null)
             {
                 var updateInfo = JsonConvert.DeserializeObject<Response.UpdateInfo>(resp.Data)!;
+
+                if (updateInfo.LatestVersion is null)
+                {
+                    return new UpdateInfo(UpdateFor.None);
+                }
+
                 if (updateInfo.LauncherInfo.LatestVersion?.GetMD5() != Utils.ApplicationVersions.GetMD5())
                 {
                     // 启动器有新版本
                     return new UpdateInfo(UpdateFor.Launcher,updateInfo.LauncherInfo.Content,updateInfo.LauncherInfo.DownloadUrl);
                 }
-                if (updateInfo.LatestVersion?.Substring(1, updateInfo.LatestVersion.Length - 2).GetMD5() != OfSettings.Instance.FRPClientVersion.GetMD5())
+                if (updateInfo.LatestVersion.Substring(1, updateInfo.LatestVersion.Length - 2).GetMD5() != OfSettings.Instance.FRPClientVersion.GetMD5())
                 {
                     // FRPC 有更新
                     return new UpdateInfo(UpdateFor.FRPC, updateInfo.LatestVersion!.Substring(1, updateInfo.LatestVersion.Length - 2), $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient{updateInfo.LatestVersion}/{Utils.FrpcPlatForm}.zip");

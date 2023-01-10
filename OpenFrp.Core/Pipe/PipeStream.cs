@@ -19,9 +19,7 @@ namespace OpenFrp.Core.Pipe
         /// <summary>
         /// 缓存区块大小
         /// </summary>
-        public int BufferSize { get; set; } = 1048576;
-
-        public bool isExceptioned { get; set; } = false;
+        public int BufferSize { get; set; } = 2097152;
 
         public PipeStream() { }
 

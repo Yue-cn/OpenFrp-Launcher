@@ -50,7 +50,10 @@ namespace OpenFrp.Core
             {
                 AppDomain.CurrentDomain.UnhandledException += (se, c) =>
                 {
-                    Console.WriteLine(c.ExceptionObject);
+                    if (!Utils.ServicesMode)
+                    {
+                        MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception");
+                    }
                 };
                 if (Utils.isSupportToast)
                 {
@@ -284,6 +287,11 @@ namespace OpenFrp.Core
         private static async ValueTask InstallFrpc()
         {
             var updater = await Update.CheckUpdate();
+            if (string.IsNullOrEmpty(updater.DownloadUrl) || updater.UpdateFor != Update.UpdateFor.FRPC)
+            {
+                Console.WriteLine($"API 请求失败:::");
+                return;
+            }
             string file = Path.Combine(Utils.AppTempleFilesPath, $"{updater.DownloadUrl!.GetMD5()}.zip");
             var flag = await Update.DownloadWithProgress(updater.DownloadUrl!, file, (sender, e) =>
             {

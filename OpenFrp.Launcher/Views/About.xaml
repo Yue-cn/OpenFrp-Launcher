@@ -145,6 +145,44 @@
                     </ui:SimpleStackPanel>
                 </Grid>
             </of:Expander>
+            <of:Expander>
+                <of:Expander.Header>
+                    <ui:SimpleStackPanel
+                        Height="65"
+                        Margin="4,0,0,0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <ui:FontIcon FontSize="24" Glyph="&#xe74c;" />
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="开源项目使用表" />
+                        </TextBlock>
+                    </ui:SimpleStackPanel>
+                </of:Expander.Header>
+                <Grid MinHeight="185">
+                    <WrapPanel>
+                        <TextBlock Margin="0,0,24,0">
+                            <Run Text="ModernWpf" /><LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="0.10.0 (Moded)" /><LineBreak />
+                        </TextBlock>
+                        <TextBlock Margin="0,0,24,0">
+                            <Run Text="CommunityToolkit.Mvvm" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="Release 8.0.0" /><LineBreak /></TextBlock>
+                        <TextBlock Margin="0,0,24,0">
+                            <Run Text="Hardcodet.NotifyIcon.Wpf" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="Release 1.1.0" /><LineBreak /></TextBlock>
+                        <TextBlock Margin="0,0,24,0">
+                            <Run Text="Microsoft.Toolkit.Uwp.Notifications" />
+                            <LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="Release 7.1.3" /><LineBreak /></TextBlock>
+                        <TextBlock Margin="0,0,24,0">
+                            <Run Text="Newtonsoft.Json" /><LineBreak />
+                            <Run Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="Release 13.0.2" /><LineBreak /></TextBlock>
+                    </WrapPanel>
+                </Grid>
+            </of:Expander>
             <ui:HyperlinkButton
                 Padding="10,8"
                 HorizontalContentAlignment="Left"
@@ -154,7 +192,10 @@
                     <TextBlock Text="GPL-3 Document" />
                 </ui:SimpleStackPanel>
             </ui:HyperlinkButton>
-            <ui:HyperlinkButton Command="{Binding CheckUpdateCommand}" Padding="10,8" HorizontalContentAlignment="Left">
+            <ui:HyperlinkButton
+                Padding="10,8"
+                HorizontalContentAlignment="Left"
+                Command="{Binding CheckUpdateCommand}">
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="8">
                     <ui:SymbolIcon Symbol="Up" />
                     <TextBlock Text="检查更新" />

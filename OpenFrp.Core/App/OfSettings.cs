@@ -54,6 +54,8 @@ namespace OpenFrp.Core.App
         /// </summary>
         [JsonProperty("bypassProxy")]
         public bool BypassProxy { get; set; } = true;
+
+        
         /// <summary>
         /// Frpc的版本
         /// </summary>

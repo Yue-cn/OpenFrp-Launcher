@@ -13,7 +13,7 @@
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="OpenFrp Launcher"
     MinWidth="550"
-    MinHeight="640"
+    MinHeight="490"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
     ui:ThemeManager.RequestedTheme="Light"

@@ -46,13 +46,29 @@ namespace OpenFrp.Launcher
             base.OnInitialized(e);
 
 
-
+            GC.RegisterForFullGCNotification(46, 23);
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
 
             //await OfSettings.ReadConfig();
 
+            if (!File.Exists(Utils.Frpc))
+            {
+                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                });
 
+                Process.Start(new ProcessStartInfo(Utils.CorePath, "--frpcp")
+                {
+                    UseShellExecute = false,
+                    Verb = "runas"
+                });
+
+                Application.Current.Shutdown();
+
+                return;
+            }
 
             OfAppHelper.TaskbarIcon.ContextMenu = new()
             {
@@ -267,6 +283,9 @@ namespace OpenFrp.Launcher
                         }
    
                         dialog.Content = "下载失败。";
+                        dialog.PrimaryButtonText = "";
+                        dialog.CloseButtonText = "确定";
+                        if (File.Exists(file)) { File.Delete(file); }
                     };
                     await dialog.ShowAsync();
 

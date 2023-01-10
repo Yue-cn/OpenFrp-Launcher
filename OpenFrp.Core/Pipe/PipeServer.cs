@@ -28,7 +28,7 @@ namespace OpenFrp.Core.Pipe
         public void Start(bool push = false)
         {
             //Debugger.Break();
-            PipeSecurity pipeSecurity = new PipeSecurity();
+            PipeSecurity pipeSecurity = new();
             pipeSecurity.SetAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, AccessControlType.Allow));
             
             _push = push;
@@ -37,7 +37,6 @@ namespace OpenFrp.Core.Pipe
             Utils.Log($"Pipe_RouteName : {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
             // 开始侦听连接
             Utils.Debug("开始侦听！");
-            isExceptioned = false;
             BeginLisenting();
         }
 
@@ -50,7 +49,6 @@ namespace OpenFrp.Core.Pipe
 
         private bool BeginLisenting()
         {
-            isExceptioned = false;
             if (_server is not null)
             {
 
@@ -62,7 +60,7 @@ namespace OpenFrp.Core.Pipe
                 {
                     _server.Close();
                     Start(_push);
-                    isExceptioned = State = false;
+                    State = false;
                     return false;
                 }
                 State = true;
@@ -209,7 +207,14 @@ namespace OpenFrp.Core.Pipe
                 // 推送 LOG
                 case PipeModel.OfAction.Get_Logs:
                     {
-                        if (LogHelper.AllLogs.Count > 200) LogHelper.AllLogs.Clear();
+                        if (LogHelper.AllLogs.Count > 500)
+                        {
+                            ConsoleHelper.ConsoleWrappers.Values.ToList().ForEach(item =>
+                            {
+                                item.Content.Clear();
+                            });
+                            LogHelper.AllLogs.Clear();
+                        }
 
                         return new()
                         {

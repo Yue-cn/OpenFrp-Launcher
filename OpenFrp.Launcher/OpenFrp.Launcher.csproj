@@ -55,4 +55,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\OpenFrp.Core\OpenFrp.Core.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="Microsoft.CSharp" />
+	</ItemGroup>
 </Project>

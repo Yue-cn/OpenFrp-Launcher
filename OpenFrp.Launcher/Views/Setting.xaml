@@ -106,7 +106,7 @@
             <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                 <Run Text="CFU统一识别码编码：DLPYU2N4" />
                 <LineBreak />
-                <Run Text="Preview 2.0.0,Launcher,[p95aw2]" />
+                <Run Text="Preview 2.0.0,Launcher,[r10wd2]" />
             </TextBlock>
         </ui:SimpleStackPanel>
     </of:BaseView>

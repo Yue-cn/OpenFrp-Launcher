@@ -153,7 +153,7 @@ namespace OpenFrp.Core
             OfSettings.Instance.WorkMode = WorkMode.DeamonProcess;
             await OfSettings.Instance.WriteConfig();
             Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
-
+            
         }
         /// <summary>
         /// 强制卸载
@@ -170,6 +170,7 @@ namespace OpenFrp.Core
                 if (Utils.IsServiceInstalled())
                 {
                     ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
+                    Directory.Delete(Utils.AppTempleFilesPath, true);
                 }
             }
         }
@@ -250,6 +251,7 @@ namespace OpenFrp.Core
         /// </summary>
         private static async ValueTask InstallFrpc()
         {
+            Console.Title = "OpenFrp Launcher 正在下载 FRPC,请耐心等待。 - www.openfrp.net";
             var updater = await Update.CheckUpdate();
             if (string.IsNullOrEmpty(updater.DownloadUrl) || updater.UpdateFor != Update.UpdateFor.FRPC)
             {

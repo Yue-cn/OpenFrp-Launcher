@@ -51,7 +51,7 @@
                     <ui:FontIcon FontSize="24" Glyph="&#xe912;" />
                 </of:SettingItem.Icon>
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="8">
-                    <ui:HyperlinkButton NavigateUri="https://www.openfrp.net">
+                    <ui:HyperlinkButton NavigateUri="https://blog.loliwa.ml/2023/01/10/What-is-FRP-Services/">
                         <ui:SimpleStackPanel Orientation="Horizontal" Spacing="4">
                             <ui:FontIcon VerticalAlignment="Center" Glyph="&#xe71b;" />
                             <TextBlock VerticalAlignment="Center" Text="详情" />
@@ -82,6 +82,16 @@
                     Margin="0,0,-12,0"
                     IsOn="{Binding BypassProxy}"
                     Style="{StaticResource LeftLabelToggleSwitchStyle}" />
+            </of:SettingItem>
+            <of:SettingItem Title="启动器开机自启" Message="默认进入桌面后挂入后台,如有RDP需要建议改用系统服务模式。">
+                <of:SettingItem.Icon>
+                    <ui:FontIcon FontSize="24" Glyph="&#xee4a;" />
+                </of:SettingItem.Icon>
+                <ui:ToggleSwitch
+                    Margin="0,0,-12,0"
+                    IsOn="{Binding AutoLaunchUp}"
+                    Style="{StaticResource LeftLabelToggleSwitchStyle}"
+                    Toggled="AutoLaunch_Changed" />
             </of:SettingItem>
             <of:SettingItem Title="通知推送" Message="当隧道开启成功时，可以为您自动输出连接地址。">
                 <of:SettingItem.Icon>

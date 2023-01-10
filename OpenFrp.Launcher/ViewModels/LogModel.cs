@@ -17,7 +17,6 @@ namespace OpenFrp.Launcher.ViewModels
         [ObservableProperty]
         public ConsoleWrapper[] consoleWrappers = new ConsoleWrapper[] {};
 
-
         [ObservableProperty]
         public int selectedIndex;
 
@@ -49,7 +48,7 @@ namespace OpenFrp.Launcher.ViewModels
                 Action = Core.Pipe.PipeModel.OfAction.Clear_Logs,
             });
             ConsoleWrappers?.ToList().ForEach(item => item.Content.Clear());
-            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+            RefreshList(page);
         }
 
         [RelayCommand]
@@ -68,7 +67,7 @@ namespace OpenFrp.Launcher.ViewModels
                 });
                 ConsoleWrappers?[SelectedIndex].Content.Clear();
             }
-            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+            RefreshList(page);
         }
 
         public List<LogContent> WrapperValue
@@ -82,7 +81,6 @@ namespace OpenFrp.Launcher.ViewModels
                 return new();
             }
         }
-
 
         public OfSettings.ConsoleModel ConsoleModel
         {

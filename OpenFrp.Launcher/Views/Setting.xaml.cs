@@ -1,6 +1,8 @@
-﻿using OpenFrp.Core.App;
+﻿using OpenFrp.Core;
+using OpenFrp.Core.App;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OpenFrp.Launcher.Views
 {
@@ -38,5 +39,29 @@ namespace OpenFrp.Launcher.Views
             };
         }
 
+        private void AutoLaunch_Changed(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch tg)
+            {
+                string file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), $"{Utils.PipeRouteName}.lnk");
+                if (tg.IsOn)
+                {
+                    var shortcut = (IWshRuntimeLibrary.IWshShortcut)new IWshRuntimeLibrary.WshShell().CreateShortcut(file);
+                    shortcut.TargetPath = Utils.ExcutableName;
+                    shortcut.Arguments = "--minimize";
+                    shortcut.Description = "OpenFrp Launcher 开机自启动";
+                    shortcut.Save();
+                }
+                else
+                {
+                    if (File.Exists(file))
+                    {
+                        File.Delete(file);
+                    }
+                }
+
+            }
+        }
     }
 }
+

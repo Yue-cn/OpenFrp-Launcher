@@ -80,7 +80,12 @@ namespace OpenFrp.Launcher
                 if (!Utils.CheckService()) await Task.Delay(3250);  
             }
             var wind = new WpfSurface();
-            wind.Show();
+
+            if (e.Args.FirstOrDefault() is not "--minimize")
+            {
+                wind.Show();
+            }
+            
         }
 
         protected override async void OnExit(ExitEventArgs e)

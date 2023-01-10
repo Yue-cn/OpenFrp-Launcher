@@ -45,6 +45,11 @@ namespace OpenFrp.Launcher.ViewModels
             get => OpenFrp.Core.App.OfSettings.Instance.BypassProxy;
             set => OpenFrp.Core.App.OfSettings.Instance.BypassProxy = value;
         }
+        public bool AutoLaunchUp
+        {
+            get => OpenFrp.Core.App.OfSettings.Instance.AutoLaunchUp;
+            set => OpenFrp.Core.App.OfSettings.Instance.AutoLaunchUp = value;
+        }
         public int ToastMode
         {
             get => (int)OpenFrp.Core.App.OfSettings.Instance.NotifiyMode;

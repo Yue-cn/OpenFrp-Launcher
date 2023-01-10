@@ -34,6 +34,7 @@ namespace OpenFrp.Core
                 
                 await Task.Delay(3000 * linkCount);
             };
+
             if (linkCount >= 5) Utils.Log("五次登录都失败了，是否已连接到互联网???", TraceLevel.Error);
             else Utils.Log("登录成功!!!");
 

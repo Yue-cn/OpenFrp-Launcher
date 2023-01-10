@@ -68,6 +68,9 @@ namespace OpenFrp.Core.App
         [JsonProperty("arts")]
         public List<int> AutoRunTunnel { get; set; } = new();
 
+        [JsonProperty("autoLaunchup")]
+        public bool AutoLaunchUp { get; set; } = false;
+
         [JsonProperty("hasTips")]
         public bool HasIconTips { get; set; } = true;
 

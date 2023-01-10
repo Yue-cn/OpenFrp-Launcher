@@ -211,7 +211,7 @@ namespace OpenFrp.Core.Api
                 /// 个人的用户信息
                 /// </summary>
                 [JsonProperty("data")]
-                public new UserInfoDataModel Data { get; set; } = new();
+                public new UserInfoDataModel? Data { get; set; } 
 
                 public class UserInfoDataModel
                 {

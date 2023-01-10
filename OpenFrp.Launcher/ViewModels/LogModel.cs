@@ -14,14 +14,6 @@ namespace OpenFrp.Launcher.ViewModels
 {
     public partial class LogModel : ObservableObject
     {
-
-
-
-
-
-
-
-
         [ObservableProperty]
         public ConsoleWrapper[] consoleWrappers = new ConsoleWrapper[] {};
 
@@ -47,8 +39,36 @@ namespace OpenFrp.Launcher.ViewModels
             page.selectBox.GetBindingExpression(ComboBox.ItemsSourceProperty)?.UpdateTarget();
 
             SelectedIndex = page.selectBox.SelectedIndex = num;
+        }
 
+        [RelayCommand]
+        async void RemoveAllLogs(Views.Logs page)
+        {
+            await OfAppHelper.PipeClient.PushMessageAsync(new()
+            {
+                Action = Core.Pipe.PipeModel.OfAction.Clear_Logs,
+            });
+            ConsoleWrappers?.ToList().ForEach(item => item.Content.Clear());
+            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+        }
 
+        [RelayCommand]
+        async void RemoveSelectedLogs(Views.Logs page)
+        {
+
+            if (SelectedIndex != -1 && ConsoleWrappers?.Length >= SelectedIndex && ConsoleWrappers?.Length != 0)
+            {
+                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Clear_Logs,
+                    FrpMessage = new()
+                    {
+                        Tunnel = ConsoleWrappers?[SelectedIndex].UserTunnelModel
+                    }
+                });
+                ConsoleWrappers?[SelectedIndex].Content.Clear();
+            }
+            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
         }
 
         public List<LogContent> WrapperValue

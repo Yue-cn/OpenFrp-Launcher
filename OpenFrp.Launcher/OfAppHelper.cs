@@ -113,8 +113,9 @@ namespace OpenFrp.Launcher
 
         }
 
-        internal static async ValueTask RequestLogin()
+        internal static async ValueTask<bool> RequestLogin()
         {
+            // 有账户 走下面逻辑
             if (OfSettings.Instance.Account.HasAccount)
             {
                 if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
@@ -124,10 +125,9 @@ namespace OpenFrp.Launcher
                     {
                         Action = Core.Pipe.PipeModel.OfAction.Get_State
                     });
+                    // 从服务器中获取配置
                     if (result.Flag)
                     {
-
-                        
                         if (!string.IsNullOrEmpty(result.AuthMessage?.Authorization) &&
                             result.AuthMessage?.UserDataModel is not null)
                         {
@@ -137,20 +137,23 @@ namespace OpenFrp.Launcher
                             OfApi.Authorization = result.AuthMessage?.Authorization;
                             OfApi.Session = result.AuthMessage?.UserSession;
                             RunningIds = result.FrpMessage?.RunningId?.ToList() ?? new List<int>();
+                            return true;
                         }
                     }
+                    return false;
                 }
                 else
                 {
-                    //await Task.Delay(1000);
-
+                    // 守护进程
                     var result = await LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
                     if (result.Flag)
                     {
-
+                        return true;
                     }
+                    return false;
                 }
             }
+            return false;
         }
     }
 }

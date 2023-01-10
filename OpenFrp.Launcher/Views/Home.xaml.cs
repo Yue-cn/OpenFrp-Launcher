@@ -74,9 +74,12 @@ namespace OpenFrp.Launcher.Views
             {
                 await Task.Delay(500);
             }
+            // 如果为系统服 那么这里等待
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonService) await Task.Delay(1000);
+            // 如果没有登录
             if (!OfApi.LoginState)
             {
+                // 如果没有账户
                 if (!OfSettings.Instance.Account.HasAccount)
                 {
                     Of_Home_UserInfoLoader.ShowError();
@@ -99,7 +102,8 @@ namespace OpenFrp.Launcher.Views
             }
             else
             {
-                while(HomeModel.UserInfoData is null) { await Task.Delay(500); }
+                while(HomeModel.UserInfoData is null) { await Task.Delay(250); }
+
                 HomeModel.UserInfoViewModels = new()
                 {
                     new()
@@ -145,6 +149,7 @@ namespace OpenFrp.Launcher.Views
                         Content = $"{(HomeModel.UserInfoData.InputLimit / 1024) * 8} / {(HomeModel.UserInfoData.OutputLimit / 1024) * 8}"
                     },
                 };
+
                 Of_Home_UserInfoLoader.ShowContent();
             }
             

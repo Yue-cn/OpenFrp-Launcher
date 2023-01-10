@@ -33,6 +33,36 @@
                         CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
                         Icon="Refresh"
                         Label="刷新" />
+                    <ui:AppBarButton
+                        Command="{Binding RemoveAllLogsCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                        Icon="Remove"
+                        Label="清除所有日志">
+                        <ui:AppBarButton.Style>
+                            <Style TargetType="ui:AppBarButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedIndex}" Value="-1">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:AppBarButton.Style>
+                    </ui:AppBarButton>
+                    <ui:AppBarButton
+                        Command="{Binding RemoveSelectedLogsCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                        Icon="&#xed62;"
+                        Label="清除对应日志">
+                        <ui:AppBarButton.Style>
+                            <Style TargetType="ui:AppBarButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedIndex}" Value="-1">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:AppBarButton.Style>
+                    </ui:AppBarButton>
                 </ui:CommandBar>
                 <ComboBox
                     x:Name="selectBox"
@@ -60,16 +90,29 @@
                     TextElement.FontFamily="{Binding ConsoleModel.FontName}"
                     TextElement.FontSize="{Binding ConsoleModel.FontSize}"
                     VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="Items" ItemsSource="{Binding WrapperValue,Mode=OneWay}">
+                    <ItemsControl x:Name="Items" ItemsSource="{Binding WrapperValue, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
 
-                                <of:SelectableTextBlock Text="{Binding Content, Mode=OneTime}" TextWrapping="Wrap" />
+                                <of:SelectableTextBlock Text="{Binding Content, Mode=OneTime}" TextWrapping="Wrap">
+                                    <of:SelectableTextBlock.Style>
+                                        <Style TargetType="of:SelectableTextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Level}" Value="Error">
+                                                    <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level}" Value="Warning">
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </of:SelectableTextBlock.Style>
+                                </of:SelectableTextBlock>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <VirtualizingStackPanel IsItemsHost="True"/>
+                                <VirtualizingStackPanel IsItemsHost="True" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 

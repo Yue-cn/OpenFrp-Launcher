@@ -58,57 +58,7 @@ namespace OpenFrp.Core
 
 
         }
-        public static async ValueTask<OfProcessInfo[]> GetAliveNetworkLink()
-        {
-            var process = Process.Start(new ProcessStartInfo("netstat.exe", "-ano")
-            {
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            });
-            var dic = new Dictionary<string, string>();
-            var pool = new List<Task<OfProcessInfo>>();
-            foreach (var str in (await process.StandardOutput.ReadToEndAsync()).Split('\n'))
-            {
-                var args = str.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                if (args.Length < 3 || !(args[0] is "TCP" || args[0] is "UDP"))
-                {
-                    continue;
-                }
-                if (args[1][0] is '[') continue;
 
-
-                pool.Add(Task.Run<OfProcessInfo>(() =>
-                {
-                    string pid = args[0] is "UDP" ? args[3] : args[4];
-                    if (!dic.ContainsKey(pid))
-                    {
-                        dic[pid] = "[拒绝访问]";
-                        try
-                        {
-                            dic[pid] = Process.GetProcessById(Convert.ToInt32(pid)).ProcessName;
-                        }
-                        catch { }
-                    }
-                    return new()
-                    {
-                        ProcessName = dic[pid],
-                        Address = args[1].Split(':').First(),
-                        Port = Convert.ToInt32(args[1].Split(':').Last())
-                    };
-                }));
-            }
-
-            return await Task.WhenAll(pool);
-        }
-        public class OfProcessInfo
-        {
-            public string? Address { get; set; }
-
-            public int Port { get; set; }
-
-            public string? ProcessName { get; set; }
-        }
         #endregion
 
         #region Helper Args
@@ -170,8 +120,7 @@ namespace OpenFrp.Core
 
         #endregion
 
-
-
+        #region Application Addon
         /// <summary>
         /// 写日志
         /// </summary>
@@ -185,10 +134,9 @@ namespace OpenFrp.Core
         /// <summary>
         /// 写入 LOG
         /// </summary>
-        /// <param name="s"></param>
-        internal static void Log(string s)
+        internal static void Log(string s,TraceLevel level = TraceLevel.Info)
         {
-            LogHelper.AllLogs.Add(new LogContent($"[{DateTimeOffset.Now}] {s}", TraceLevel.Verbose));
+            LogHelper.AllLogs.Add(new LogContent($"[{DateTimeOffset.Now}] {s}", level));
         }
         /// <summary>
         /// 启动器写日志
@@ -199,20 +147,24 @@ namespace OpenFrp.Core
         /// </summary>
         public static bool CheckService()
         {
-            using var service = new ServiceController("OpenFrp Launcher Service");
-            if (!service.CanStop)
+            if (IsServiceInstalled())
             {
-                // 不能被停止 说明没开启
-                try
+                using var service = new ServiceController("OpenFrp Launcher Service");
+                if (!service.CanStop)
                 {
-                    Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                    // 不能被停止 说明没开启
+                    try
                     {
-                        Verb = "runas",
-                        CreateNoWindow = true
-                    });
-                    return false;
+                        Process.Start(new ProcessStartInfo("sc", "start \"OpenFrp Launcher Service\"")
+                        {
+                            Verb = "runas",
+                            CreateNoWindow = true
+                        });
+                        return false;
+                    }
+                    catch { }
                 }
-                catch { }
+                return true;
             }
             return true;
         }
@@ -221,7 +173,7 @@ namespace OpenFrp.Core
         /// </summary>
         public static void StopService()
         {
-            if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
+            if (IsServiceInstalled())
             {
                 try
                 {
@@ -245,10 +197,89 @@ namespace OpenFrp.Core
                 catch { }
             }
         }
+        /// <summary>
+        /// 服务是否已安装
+        /// </summary>
+        public static bool IsServiceInstalled()
+        {
+            ServiceController[] services = ServiceController.GetServices();
+            foreach (var service in services)
+            {
+                if (service.ServiceName == "OpenFrp Launcher Service") return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 以管理员权限运行
+        /// </summary>
+        public static bool RunAsAdmin(ProcessStartInfo psi)
+        {
+            try
+            {
+                psi.Verb = "as";
+                Process.Start(psi);
+                return true;
+            }
+            catch { }
+            return false;
+        }
+        /// <summary>
+        /// 列出所有网络连接
+        /// </summary>
+        /// <returns></returns>
+        public static async ValueTask<OfProcessInfo[]> GetAliveNetworkLink()
+        {
+            var process = Process.Start(new ProcessStartInfo("netstat.exe", "-ano")
+            {
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            });
+            var dic = new Dictionary<string, string>();
+            var pool = new List<Task<OfProcessInfo>>();
+            foreach (var str in (await process.StandardOutput.ReadToEndAsync()).Split('\n'))
+            {
+                var args = str.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                if (args.Length < 3 || !(args[0] is "TCP" || args[0] is "UDP"))
+                {
+                    continue;
+                }
+                if (args[1][0] is '[') continue;
 
 
+                pool.Add(Task.Run<OfProcessInfo>(() =>
+                {
+                    string pid = args[0] is "UDP" ? args[3] : args[4];
+                    if (!dic.ContainsKey(pid))
+                    {
+                        dic[pid] = "[拒绝访问]";
+                        try
+                        {
+                            dic[pid] = Process.GetProcessById(Convert.ToInt32(pid)).ProcessName;
+                        }
+                        catch { }
+                    }
+                    return new()
+                    {
+                        ProcessName = dic[pid],
+                        Address = args[1].Split(':').First(),
+                        Port = Convert.ToInt32(args[1].Split(':').Last())
+                    };
+                }));
+            }
 
-        
+            return await Task.WhenAll(pool);
+        }
 
+#endregion
+
+        public class OfProcessInfo
+        {
+            public string? Address { get; set; }
+
+            public int Port { get; set; }
+
+            public string? ProcessName { get; set; }
+        }
     }
 }

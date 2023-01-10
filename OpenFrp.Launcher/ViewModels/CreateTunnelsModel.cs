@@ -146,6 +146,7 @@ namespace OpenFrp.Launcher.ViewModels
         [RelayCommand]
         async void Sumbit(Views.CreateTunnel page)
         {
+            
             if (!hasDialog)
             {
                 hasDialog = true;

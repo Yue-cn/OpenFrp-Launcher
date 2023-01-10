@@ -4,8 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OpenFrp.Launcher"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:ui="http://schemas.modernwpf.com/2019"
-    >
+    xmlns:ui="http://schemas.modernwpf.com/2019">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -14,9 +13,9 @@
                 <ui:ThemeResources />
 
 
-                <!--<ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
+                <ResourceDictionary Source="/ModernWpf;component/DesignTime/SystemColors.xaml" />
                 <ResourceDictionary Source="/ModernWpf;component/ThemeResources/Light.xaml" />
-                <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />-->
+                <ResourceDictionary Source="/ModernWpf;component/ControlsResources.xaml" />
                 <ResourceDictionary Source="/ModernWpf.Controls;component/ToggleSwitch/ToggleSwitch.xaml" />
 
                 <!--  App Custom Resourecs  -->
@@ -72,7 +71,8 @@
             <DataTemplate x:Key="ProcessListTemplate">
                 <Border Padding="0,4,4,4">
                     <TextBlock HorizontalAlignment="Left">
-                        <Run Text="{Binding Address}" />:<Run Text="{Binding Port}" />
+                        <Run Text="{Binding Address}" />
+                        :<Run Text="{Binding Port}" />
                         -<Run Text="{Binding ProcessName}" />
                     </TextBlock>
                 </Border>

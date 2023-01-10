@@ -60,6 +60,10 @@ namespace OpenFrp.Core.Pipe
             /// </summary>
             Push_Logs,
             /// <summary>
+            /// 清空日志 (可定向)
+            /// </summary>
+            Clear_Logs,
+            /// <summary>
             /// 推送配置
             /// </summary>
             Push_Config,

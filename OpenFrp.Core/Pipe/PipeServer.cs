@@ -34,7 +34,7 @@ namespace OpenFrp.Core.Pipe
             _push = push;
             AppStream = _server = new NamedPipeServerStream(Utils.PipeRouteName + (push ? "_PUSH" : ""), PipeDirection.InOut,12,PipeTransmissionMode.Byte,PipeOptions.Asynchronous,BufferSize,BufferSize,pipeSecurity);
             Utils.Debug($"PipeRouteName: {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
-            Utils.Log($"Pipe_RouteName : {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
+            Utils.Log($"管道名称: {Utils.PipeRouteName + (push ? "_PUSH" : "")}");
             // 开始侦听连接
             Utils.Debug("开始侦听！");
             BeginLisenting();
@@ -69,6 +69,7 @@ namespace OpenFrp.Core.Pipe
             // 一般指的是服务器"对象"没了 一般不会走这里
             return false;
         }
+
         private async void OnConnected(IAsyncResult o)
         {
             Utils.Debug("获得连接 !!!");
@@ -128,7 +129,6 @@ namespace OpenFrp.Core.Pipe
 
         internal PipeModel.ResponseModel Execute(PipeModel.OfAction action, PipeModel.RequestModel request)
         {
-
             switch (action)
             {
                 // 获取服务器的状态 / 信息
@@ -233,7 +233,20 @@ namespace OpenFrp.Core.Pipe
                         Utils.Log(request.PushLog ?? "");
                         return new(PipeModel.OfAction.Push_Logs, true, "");
                     };
-
+                // 清除日志
+                case PipeModel.OfAction.Clear_Logs:
+                    {
+                        if (request.FrpMessage?.Tunnel is Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
+                        {
+                            ConsoleHelper.ConsoleWrappers[tunnel.TunnelId].Content.Clear();
+                        }
+                        else
+                        {
+                            ConsoleHelper.ConsoleWrappers.Values.ToList().ForEach(value => value.Content.Clear());
+                            LogHelper.AllLogs.Clear();
+                        }
+                        return new(PipeModel.OfAction.Clear_Logs, true, "");
+                    };
                 default:
                     {
                         return new() { Message = "Action Not Found" };

@@ -34,7 +34,6 @@ namespace OpenFrp.Core
 
         internal async static Task Main(string[] args)
         {
-            //Debugger.Launch();
             /*
                 特此谢明: SakuraFrp
              */
@@ -54,43 +53,39 @@ namespace OpenFrp.Core
                     {
                         MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception");
                     }
+                    if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
                 };
-                if (Utils.isSupportToast)
-                {
-                    ToastNotificationManagerCompat.OnActivated += (args) =>
-                    {
-                        if (string.IsNullOrEmpty(args.Argument)) return;
-                        if (args.Argument.IndexOf("--cl") != -1)
-                        {
-                            try
-                            {
-                                var thread = new Thread(() =>
-                                {
-                                    Clipboard.SetText(args.Argument.Split(' ')[1]);
-                                });
-                                thread.SetApartmentState(ApartmentState.STA);
-                                thread.IsBackground = true;
-                                thread.Start();
-                            }
-                            catch { }
-                        }
-                    };
-                }
 
+                if (Utils.isSupportToast) ToastNotificationManagerCompat.OnActivated += (args) =>
+                {
+                    if (string.IsNullOrEmpty(args.Argument)) return;
+                    if (args.Argument.IndexOf("--cl") != -1)
+                    {
+                        try
+                        {
+                            var thread = new Thread(() =>
+                            {
+                                Clipboard.SetText(args.Argument.Split(' ')[1]);
+                            });
+                            thread.SetApartmentState(ApartmentState.STA);
+                            thread.IsBackground = true;
+                            thread.Start();
+                        }
+                        catch { }
+                    }
+                };
                 switch (args[0])
                 {
                     case "--install":await InstallService();break;
                     case "--uninstall":await UninstallService();break;
-                    case "--force-uninstall":await ForceUninstallService();break;
+                    case "--force-uninstall":ForceUninstallService();break;
                     case "--ws":await LocalPipeWorker();break;
-
                     case "--frpcp":await InstallFrpc();break;
                 }
                 if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
             }
             else if (Utils.ServicesMode)
             {
-                // Debugger.Launch();
                 ServiceBase.Run(new WindowService());
             }
         }
@@ -99,21 +94,11 @@ namespace OpenFrp.Core
         /// </summary>
         private static async ValueTask InstallService()
         {
+            if (Utils.IsServiceInstalled()) return;
             WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--install")
-                    {
-                        CreateNoWindow = false,
-                        Verb = "runas"
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Utils.Debug(ex.ToString());
-                }
+                Utils.RunAsAdmin(new ProcessStartInfo(Utils.CorePath, "--install"));
             }
             else
             {
@@ -153,65 +138,42 @@ namespace OpenFrp.Core
         /// </summary>
         private static async ValueTask UninstallService()
         {
-            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            if (Utils.IsServiceInstalled())
             {
-                try
+                WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+                if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
                 {
-                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--uninstall")
-                    {
-                        CreateNoWindow = false,
-                        Verb = "runas"
-                    });
-                    
+                    Utils.RunAsAdmin(new ProcessStartInfo(Utils.CorePath, "--uninstall"));
                 }
-                catch { }
+                else
+                {
+                    ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
+                }
             }
-            else
-            {
-                ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
-                OfSettings.Instance.WorkMode = WorkMode.DeamonProcess;
-                await OfSettings.Instance.WriteConfig();
-                Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
-            }
+            OfSettings.Instance.WorkMode = WorkMode.DeamonProcess;
+            await OfSettings.Instance.WriteConfig();
+            Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
+
         }
         /// <summary>
         /// 强制卸载
         /// </summary>
-        private static async ValueTask ForceUninstallService()
+        private static void ForceUninstallService()
         {
             WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(Utils.CorePath, "--uninstall")
-                    {
-                        CreateNoWindow = false,
-                        Verb = "runas"
-                    });
-
-                }
-                catch { }
+                Utils.RunAsAdmin(new ProcessStartInfo(Utils.CorePath, "--uninstall"));
             }
             else
             {
-                await Task.Yield();
-                if (isServiceInstalled())
+                if (Utils.IsServiceInstalled())
                 {
                     ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
                 }
             }
         }
-        private static bool isServiceInstalled()
-        {
-            ServiceController[] services = ServiceController.GetServices();
-            foreach (var service in services)
-            {
-                if (service.ServiceName == "OpenFrp Launcher Service") return true;
-            }
-            return false;
-        }
+
         /// <summary>
         /// Launcher - 管道交互
         /// </summary>
@@ -283,7 +245,9 @@ namespace OpenFrp.Core
                 }
             }
         }
-
+        /// <summary>
+        /// 安装 FRPC
+        /// </summary>
         private static async ValueTask InstallFrpc()
         {
             var updater = await Update.CheckUpdate();

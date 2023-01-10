@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:ui="http://schemas.modernwpf.com/2019">
-    <Style TargetType="of:SelectableTextBlock">
+    <Style x:Key="SelectableTextBlockDefualtStyle" TargetType="of:SelectableTextBlock">
         <Setter Property="ContextMenu">
             <Setter.Value>
                 <ContextMenu>
@@ -19,5 +19,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style BasedOn="{StaticResource SelectableTextBlockDefualtStyle}" TargetType="of:SelectableTextBlock" />
 
 </ResourceDictionary>

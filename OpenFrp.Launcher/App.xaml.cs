@@ -38,6 +38,7 @@ namespace OpenFrp.Launcher
             {
                 Environment.Exit(0);
             }
+
             if (!Debugger.IsAttached)
             {
                 AppDomain.CurrentDomain.UnhandledException += (w, s) =>
@@ -45,7 +46,18 @@ namespace OpenFrp.Launcher
                     MessageBox.Show(s.ExceptionObject.ToString());
                 };
             }
+
             await OfSettings.ReadConfig();
+
+            if (!Utils.IsServiceInstalled() && OfSettings.Instance.WorkMode == WorkMode.DeamonService)
+            {
+                OfSettings.Instance.WorkMode = WorkMode.DeamonProcess;
+            }
+            else if (Utils.IsServiceInstalled() && OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
+            {
+                OfSettings.Instance.WorkMode = WorkMode.DeamonService;
+            }
+
             // App 运行前 守护进程检测 未开启无法进入应用
             if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
             {

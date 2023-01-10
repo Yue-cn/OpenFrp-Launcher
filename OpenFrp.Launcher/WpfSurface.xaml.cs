@@ -23,6 +23,8 @@ using Windows.UI.WebUI;
 using Microsoft.Toolkit.Uwp.Notifications;
 using OpenFrp.Launcher.Views;
 using System.Windows.Markup;
+using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 
 namespace OpenFrp.Launcher
 {
@@ -50,8 +52,6 @@ namespace OpenFrp.Launcher
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
 
-            //await OfSettings.ReadConfig();
-
             if (!File.Exists(Utils.Frpc))
             {
                 await OfAppHelper.PipeClient.PushMessageAsync(new()
@@ -72,8 +72,16 @@ namespace OpenFrp.Launcher
 
             OfAppHelper.TaskbarIcon.ContextMenu = new()
             {
+
                 Items =
                 {
+                    CreateItemWithAction("显示窗口", () =>
+                    {
+                        Visibility = Visibility.Visible;
+                        WindowState = WindowState.Normal;
+                        Activate();
+                    },new FontIcon(){Glyph = $"\ue73f"}),
+                    new Separator(),
                     CreateItemWithAction("退出启动器",
                         App.Current.Shutdown,
                         new FontIcon(){Glyph = "\ue89f"}),
@@ -85,11 +93,13 @@ namespace OpenFrp.Launcher
                         });
                         App.Current.Shutdown();
                     },new FontIcon(){Glyph = "\ue8bb"})
-                }
+                },
+                Placement = System.Windows.Controls.Primitives.PlacementMode.Right,
             };
-            OfAppHelper.TaskbarIcon.TrayMouseDoubleClick += (sender, args) =>
+            OfAppHelper.TaskbarIcon.TrayLeftMouseUp += (sender, args) =>
             {
                 Visibility = Visibility.Visible;
+                WindowState = WindowState.Normal;
                 Activate();
             };
             OfApp_NavigationView.ItemInvoked += (s, e) =>

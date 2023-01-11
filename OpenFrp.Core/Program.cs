@@ -51,7 +51,7 @@ namespace OpenFrp.Core
                 {
                     if (!Utils.ServicesMode)
                     {
-                        MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception");
+                        MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
                     }
                     if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
                 };

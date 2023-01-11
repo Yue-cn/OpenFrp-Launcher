@@ -58,18 +58,24 @@ namespace OpenFrp.Launcher.ViewModels
         async void RemoveSelectedLogs(Views.Logs page)
         {
 
-            if (SelectedIndex != -1 && ConsoleWrappers?.Length >= SelectedIndex && ConsoleWrappers?.Length != 0)
+            try
             {
-                await OfAppHelper.PipeClient.PushMessageAsync(new()
+                if (SelectedIndex != -1 &&
+                    ConsoleWrappers?.Length > SelectedIndex &&
+                    ConsoleWrappers?.Length != 0)
                 {
-                    Action = Core.Pipe.PipeModel.OfAction.Clear_Logs,
-                    FrpMessage = new()
+                    await OfAppHelper.PipeClient.PushMessageAsync(new()
                     {
-                        Tunnel = ConsoleWrappers?[SelectedIndex].UserTunnelModel
-                    }
-                });
-                ConsoleWrappers?[SelectedIndex].Content.Clear();
+                        Action = Core.Pipe.PipeModel.OfAction.Clear_Logs,
+                        FrpMessage = new()
+                        {
+                            Tunnel = ConsoleWrappers?[SelectedIndex].UserTunnelModel
+                        }
+                    });
+                    ConsoleWrappers?[SelectedIndex].Content.Clear();
+                }
             }
+            catch { }
             RefreshList(page);
         }
 

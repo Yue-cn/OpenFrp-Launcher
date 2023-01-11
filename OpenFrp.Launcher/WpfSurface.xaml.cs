@@ -23,6 +23,7 @@ using OpenFrp.Launcher.Views;
 using System.Windows.Markup;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
+using ModernWpf;
 
 namespace OpenFrp.Launcher
 {
@@ -68,9 +69,9 @@ namespace OpenFrp.Launcher
                 return;
             }
 
+            
             OfAppHelper.TaskbarIcon.ContextMenu = new()
             {
-
                 Items =
                 {
                     CreateItemWithAction("显示窗口", () =>

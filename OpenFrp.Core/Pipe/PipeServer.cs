@@ -238,7 +238,10 @@ namespace OpenFrp.Core.Pipe
                     {
                         if (request.FrpMessage?.Tunnel is Api.OfApiModel.Response.UserTunnelModel.UserTunnel tunnel)
                         {
-                            ConsoleHelper.ConsoleWrappers[tunnel.TunnelId].Content.Clear();
+                            if (ConsoleHelper.ConsoleWrappers.ContainsKey(tunnel.TunnelId))
+                            {
+                                ConsoleHelper.ConsoleWrappers[tunnel.TunnelId].Content.Clear();
+                            }
                         }
                         else
                         {

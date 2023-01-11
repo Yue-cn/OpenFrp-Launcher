@@ -81,11 +81,17 @@ namespace OpenFrp.Launcher
             }
             var wind = new WpfSurface();
 
-            if (e.Args.FirstOrDefault() is not "--minimize")
+            wind.ShowActivated = true;
+
+            wind.Show();
+
+            if (e.Args.FirstOrDefault() is "--minimize")
             {
-                wind.Show();
+                wind.Visibility = Visibility.Collapsed;
             }
-            
+
+
+
         }
 
         protected override async void OnExit(ExitEventArgs e)

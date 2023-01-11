@@ -270,28 +270,34 @@ namespace OpenFrp.Core
                 Console.ReadKey();
                 return;
             }
-            using var zip = new ZipArchive(File.OpenRead(file));
-            Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
-            var dir = new DirectoryInfo(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
-            var acl = dir.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
-            acl.SetAccessRule(new System.Security.AccessControl.FileSystemAccessRule(
-                new SecurityIdentifier(WellKnownSidType.LocalServiceSid, null),
-                System.Security.AccessControl.FileSystemRights.FullControl,
-                System.Security.AccessControl.InheritanceFlags.ObjectInherit,
-                System.Security.AccessControl.PropagationFlags.None,
-                System.Security.AccessControl.AccessControlType.Allow));
-            dir.SetAccessControl(acl);
-            if (File.Exists(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe")))
+            try
             {
-                File.Delete(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe"));
+                using var zip = new ZipArchive(File.OpenRead(file));
+                Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
+                var dir = new DirectoryInfo(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
+                var acl = dir.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
+                acl.SetAccessRule(new System.Security.AccessControl.FileSystemAccessRule(
+                    new SecurityIdentifier(WellKnownSidType.LocalServiceSid, null),
+                    System.Security.AccessControl.FileSystemRights.FullControl,
+                    System.Security.AccessControl.InheritanceFlags.ObjectInherit,
+                    System.Security.AccessControl.PropagationFlags.None,
+                    System.Security.AccessControl.AccessControlType.Allow));
+                dir.SetAccessControl(acl);
+                if (File.Exists(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe")))
+                {
+                    File.Delete(Path.Combine(Utils.AppTempleFilesPath, "frpc", $"{Utils.FrpcPlatForm}.exe"));
+                }
+
+                zip.ExtractToDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
+                OfSettings.Instance.FRPClientVersion = updater.Content!;
+                await OfSettings.Instance.WriteConfig();
+                Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
             }
-            
-            zip.ExtractToDirectory(Path.Combine(Utils.AppTempleFilesPath, "frpc"));
-            OfSettings.Instance.FRPClientVersion = updater.Content!;
-            await OfSettings.Instance.WriteConfig();
-
-            Process.Start(new ProcessStartInfo("explorer", Path.Combine(Utils.ApplicationPath, "OpenFrp.Launcher.exe")));
-
+            catch(Exception ex)
+            {
+                Console.WriteLine($"请将该日志发送到用户交流群内::: {ex}");
+                Console.ReadKey();
+            }
 
         }
     }

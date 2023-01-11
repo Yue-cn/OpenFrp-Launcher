@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using OpenFrp.Core;
+﻿using OpenFrp.Core;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.App;
 using OpenFrp.Launcher.ViewModels;
@@ -19,7 +18,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Windows.UI.WebUI;
 using Microsoft.Toolkit.Uwp.Notifications;
 using OpenFrp.Launcher.Views;
 using System.Windows.Markup;
@@ -51,7 +49,7 @@ namespace OpenFrp.Launcher
             GC.RegisterForFullGCNotification(46, 23);
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
-
+            ShowActivated = true;
             if (!File.Exists(Utils.Frpc))
             {
                 await OfAppHelper.PipeClient.PushMessageAsync(new()
@@ -79,7 +77,11 @@ namespace OpenFrp.Launcher
                     {
                         Visibility = Visibility.Visible;
                         WindowState = WindowState.Normal;
-                        Activate();
+                        
+                        if (this.IsLoaded)Activate();
+                        else Show();
+
+                        
                     },new FontIcon(){Glyph = $"\ue73f"}),
                     new Separator(),
                     CreateItemWithAction("退出启动器",
@@ -100,7 +102,8 @@ namespace OpenFrp.Launcher
             {
                 Visibility = Visibility.Visible;
                 WindowState = WindowState.Normal;
-                Activate();
+                if (this.IsLoaded) Activate();
+                else Show();
             };
             OfApp_NavigationView.ItemInvoked += (s, e) =>
             {
@@ -236,6 +239,10 @@ namespace OpenFrp.Launcher
             {
                 if (update.UpdateFor is Update.UpdateFor.Launcher)
                 {
+                    if (App.Current.MainWindow.Visibility == Visibility.Collapsed)
+                    {
+                        App.Current.MainWindow.Visibility = Visibility.Visible;
+                    }
                     var dialog = new ContentDialog()
                     {
                         DefaultButton = ContentDialogButton.Primary,
@@ -297,6 +304,7 @@ namespace OpenFrp.Launcher
                         dialog.CloseButtonText = "确定";
                         if (File.Exists(file)) { File.Delete(file); }
                     };
+
                     await dialog.ShowAsync();
 
                     async void Install()

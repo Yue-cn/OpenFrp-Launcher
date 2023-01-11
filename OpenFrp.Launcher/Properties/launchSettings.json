@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OpenFrp.Launcher": {
+      "commandName": "Project",
+      "commandLineArgs": "--minimize"
+    }
+  }
+}

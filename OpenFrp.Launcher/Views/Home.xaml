@@ -272,7 +272,7 @@
                                     <ui:CommandBar Margin="20,0" HorizontalAlignment="Left">
                                         <ui:AppBarButton
                                             Command="{Binding SigninCommand}"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ui:Page}}"
                                             Icon="Calendar"
                                             Label="签到" />
                                         <ui:AppBarButton

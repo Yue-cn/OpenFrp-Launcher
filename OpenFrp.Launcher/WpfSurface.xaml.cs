@@ -149,7 +149,7 @@ namespace OpenFrp.Launcher
             // 启动器 自动登录逻辑
             
 
-            await Task.Delay(1500);
+            await Task.Delay(3500);
             // 自动启动 FRPC
             AutoStartup();
 
@@ -172,31 +172,25 @@ namespace OpenFrp.Launcher
                     // 已经开启的隧道 就不需要再次开启了
                     if (!OfAppHelper.RunningIds.Contains(tunnel.TunnelId))
                     {
-                        OfSettings.Instance.AutoRunTunnel.ForEach(async (tunnelId) =>
+                        var lts = new List<Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel>();
+                        OfSettings.Instance.AutoRunTunnel.ForEach((tunnelId) =>
                         {
                             if (tunnelId == tunnel.TunnelId)
                             {
                                 if (!OfAppHelper.RunningIds.Contains(tunnelId))
                                     OfAppHelper.RunningIds.Add(tunnelId);
-                                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                                else
                                 {
-                                    Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
-                                    FrpMessage = new()
-                                    {
-                                        Tunnel = tunnel
-                                    }
-                                });
-                                if (!resp.Flag)
-                                {
-                                    // $"由于以下原因,FRPC无法开机自启: {resp.Message}"
-                                    await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
-                                    {
-                                        Action = Core.Pipe.PipeModel.OfAction.Push_Logs,
-                                        PushLog = $"由于以下原因,FRPC无法开机自启: {resp.Message}"
-                                    });
+                                    lts.Add(tunnel);
                                 }
+                                
                                 return;
                             }
+                        });
+                        var resp2 = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                        {
+                            Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
+                            LaunchTunnels = lts
                         });
                     }
                 }
@@ -260,7 +254,7 @@ namespace OpenFrp.Launcher
                     {
                         DefaultButton = ContentDialogButton.Primary,
                         Title = "启动器有更新啦",
-                        Content = new TextBlock(new Run(update.Content))
+                        Content = new TextBlock(new Run(update.Content + $"\n现在是 {Utils.ApplicationVersions}"))
                         {
                             Width = 350,
                             MinHeight = 150,

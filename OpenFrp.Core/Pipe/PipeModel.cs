@@ -116,6 +116,9 @@ namespace OpenFrp.Core.Pipe
             [JsonProperty("frp")]
             public FrpModel? FrpMessage { get; set; }
 
+            [JsonProperty("launchTunnels")]
+            public List<Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel> LaunchTunnels { get; set; } = new();
+
             /// <summary>
             /// 配置文件
             /// </summary>

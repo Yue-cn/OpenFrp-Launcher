@@ -197,6 +197,18 @@ namespace OpenFrp.Core.Pipe
                 // 开启 FRPC
                 case PipeModel.OfAction.Start_Frpc:
                     {
+                        if (request.LaunchTunnels.Count is not 0)
+                        {
+                            request.LaunchTunnels.ForEach(tunnel =>
+                            {
+                                var resq = ConsoleHelper.Launch(tunnel);
+                                if (!resq.Flag)
+                                {
+                                    LogHelper.AllLogs.Add(new($"由于以下原因,隧道 {tunnel.NodeName} 无法进行开机自启: {resq.Message}",System.Diagnostics.TraceLevel.Warning));
+                                }
+                            });
+                            return new(PipeModel.OfAction.Start_Frpc, true, "");
+                        }
                         return ConsoleHelper.Launch(request.FrpMessage!.Tunnel!);
                     }
                 // 关闭 FRPC

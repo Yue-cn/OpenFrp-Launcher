@@ -73,7 +73,7 @@ namespace OpenFrp.Launcher
                         {
                             process = Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
                             {
-                                CreateNoWindow = !true,
+                                CreateNoWindow = true,
                                 UseShellExecute = false
                             });
                             process.EnableRaisingEvents = true;

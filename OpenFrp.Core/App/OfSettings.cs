@@ -197,7 +197,8 @@ namespace OpenFrp.Core.App
         {
             try
             {
-                using var writer = new StreamWriter(Utils.ApplicationConfigPath);
+                using var writer = new StreamWriter(Utils.ApplicationConfigPath,false, Encoding.UTF8, bufferSize: 2048);
+                
                 await writer.WriteLineAsync(JsonConvert.SerializeObject(Instance));
             }
             catch(Exception ex)

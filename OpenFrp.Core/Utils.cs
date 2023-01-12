@@ -110,7 +110,7 @@ namespace OpenFrp.Core
             }
         }
 
-        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].k104w5";
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].k104w12";
 
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 
@@ -128,7 +128,7 @@ namespace OpenFrp.Core
         {
             if (!Utils.ServicesMode)
             {
-                Console.WriteLine(s);
+                Console.WriteLine("ww" + s);
             }
         }
         /// <summary>

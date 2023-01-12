@@ -83,6 +83,7 @@ namespace OpenFrp.Launcher.ViewModels
             get => OfAppHelper.LauncherViewModel?.PipeRunningState ?? false;
         }
 
+        public string AppVersion => Utils.ApplicationVersions;
 
         private bool _hasDialog { get; set; }
 

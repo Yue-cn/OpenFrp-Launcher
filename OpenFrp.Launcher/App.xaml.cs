@@ -22,6 +22,8 @@ namespace OpenFrp.Launcher
         private bool isSupportDarkMode = Environment.OSVersion.Version.Major == 10 && 
             Environment.OSVersion.Version.Build >= 17763;
        
+        private Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
+
         /// <summary>
         /// 应用启动时
         /// </summary>
@@ -63,14 +65,30 @@ namespace OpenFrp.Launcher
             {
                 try
                 {
-                    Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
+                    
                     if (process is null || process?.HasExited == true)
                     {
-                        Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
+                        RegistryEvent();
+                        void RegistryEvent()
                         {
-                            CreateNoWindow = true,
-                            UseShellExecute = false
-                        });
+                            process = Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
+                            {
+                                CreateNoWindow = !true,
+                                UseShellExecute = false
+                            });
+                            process.EnableRaisingEvents = true;
+                            process.Exited += (s, e) => App.Current.Dispatcher.Invoke(async () =>
+                            {
+                                await Task.Delay(1500);
+                                var wind = ((WpfSurface)App.Current.MainWindow);
+                                if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
+                                {
+                                    RegistryEvent();
+                                    wind.LauncherModel.PipeRunningState = false;
+                                    wind.ClientPipeWorker(true);
+                                }
+                            });
+                        }
                     }
                 }
                 catch { }
@@ -97,7 +115,8 @@ namespace OpenFrp.Launcher
         protected override async void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            
+            if (process is not null)
+            process.EnableRaisingEvents = false;
             OfSettings.Instance.AutoRunTunnel = OfAppHelper.RunningIds;
             await OfSettings.Instance.WriteConfig();
         }

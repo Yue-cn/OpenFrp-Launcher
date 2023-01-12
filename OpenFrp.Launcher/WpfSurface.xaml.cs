@@ -36,7 +36,8 @@ namespace OpenFrp.Launcher
         {
             InitializeComponent();
         }
-        private LauncherModel LauncherModel
+
+        internal LauncherModel LauncherModel
         {
             get => (LauncherModel)DataContext;
             set => DataContext = value;
@@ -135,15 +136,20 @@ namespace OpenFrp.Launcher
                 }
                 else { e.Cancel = true; }
             };
-
+            
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
+
             ClientPipeWorker();
+            await OfAppHelper.RequestLogin();
+
             // 启动器更新逻辑
             CheckUpdate();
             // 启动器 自动登录逻辑
-            await OfAppHelper.RequestLogin();
+            
+
+            await Task.Delay(1500);
             // 自动启动 FRPC
             AutoStartup();
 
@@ -154,39 +160,45 @@ namespace OpenFrp.Launcher
         
         private async void AutoStartup()
         {
-            if (OfSettings.Instance.AutoRunTunnel.Count == 0 || OfSettings.Instance.WorkMode == WorkMode.DeamonService) return;
+            if (OfSettings.Instance.AutoRunTunnel.Count == 0 || 
+                OfSettings.Instance.WorkMode == WorkMode.DeamonService) 
+                return;
+
             var resp = await OfApi.GetUserProxies();
             if (resp.Flag)
             {
                 foreach (var tunnel in resp.Data.List)
                 {
-                    OfSettings.Instance.AutoRunTunnel.ForEach(async (tunnelId) =>
+                    // 已经开启的隧道 就不需要再次开启了
+                    if (!OfAppHelper.RunningIds.Contains(tunnel.TunnelId))
                     {
-                        if (tunnelId == tunnel.TunnelId)
+                        OfSettings.Instance.AutoRunTunnel.ForEach(async (tunnelId) =>
                         {
-                            if (!OfAppHelper.RunningIds.Contains(tunnelId))
-                                OfAppHelper.RunningIds.Add(tunnelId);
-                            var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                            if (tunnelId == tunnel.TunnelId)
                             {
-                                Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
-                                FrpMessage = new()
+                                if (!OfAppHelper.RunningIds.Contains(tunnelId))
+                                    OfAppHelper.RunningIds.Add(tunnelId);
+                                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
                                 {
-                                    Tunnel = tunnel
-                                }
-                            });
-                            if (!resp.Flag)
-                            {
-                                // $"由于以下原因,FRPC无法开机自启: {resp.Message}"
-                                await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
-                                {
-                                    Action = Core.Pipe.PipeModel.OfAction.Push_Logs,
-                                    PushLog = $"由于以下原因,FRPC无法开机自启: {resp.Message}"
+                                    Action = Core.Pipe.PipeModel.OfAction.Start_Frpc,
+                                    FrpMessage = new()
+                                    {
+                                        Tunnel = tunnel
+                                    }
                                 });
+                                if (!resp.Flag)
+                                {
+                                    // $"由于以下原因,FRPC无法开机自启: {resp.Message}"
+                                    await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                                    {
+                                        Action = Core.Pipe.PipeModel.OfAction.Push_Logs,
+                                        PushLog = $"由于以下原因,FRPC无法开机自启: {resp.Message}"
+                                    });
+                                }
+                                return;
                             }
-                            return;
-                        }
-                    });
-                    
+                        });
+                    }
                 }
             }
         }
@@ -368,7 +380,7 @@ namespace OpenFrp.Launcher
             if (restart && OfApi.LoginState)
             {
                 // 发送账户凭证
-                await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
+                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new()
                 {
                     Action = Core.Pipe.PipeModel.OfAction.LoginState_Push,
                     AuthMessage = new()
@@ -378,6 +390,7 @@ namespace OpenFrp.Launcher
                         UserDataModel = OfApi.UserInfoDataModel
                     }
                 });
+                if (!resp.Flag) { OfApi.ClearAccount(); }
             }
 
         }

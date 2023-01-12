@@ -36,7 +36,7 @@ namespace OpenFrp.Core.App
                     return new UpdateInfo(UpdateFor.FRPC, updateInfo.LatestVersion!.Substring(1, updateInfo.LatestVersion.Length - 2), $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient{updateInfo.LatestVersion}/{Utils.FrpcPlatForm}.zip");
                 }
             }
-            return new UpdateInfo(UpdateFor.None);
+            return new UpdateInfo(UpdateFor.None,"请求失败啦啦啦啦API - OpenFrp");
         }
 
         public static async ValueTask<bool> DownloadWithProgress(string url,string file,DownloadProgressChangedEventHandler onChanged)

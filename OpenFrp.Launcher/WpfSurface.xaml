@@ -16,7 +16,7 @@
     MinHeight="490"
     d:DesignHeight="732.24"
     d:DesignWidth="1290.557"
-    ui:ThemeManager.RequestedTheme="Light"
+    ui:Design.RequestedTheme="Light"
     ui:TitleBar.ExtendViewIntoTitleBar="True"
     ui:WindowHelper.UseModernWindowStyle="True"
     mc:Ignorable="d">
@@ -40,6 +40,7 @@
                 <ui:NavigationViewItem
                     Content="隧道"
                     Icon="&#xe71d;"
+                    IsEnabled="{Binding PipeRunningState}"
                     Tag="Tunnels" />
                 <ui:NavigationViewItem
                     Content="日志"

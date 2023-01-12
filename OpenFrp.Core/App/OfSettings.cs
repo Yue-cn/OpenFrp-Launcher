@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.System;
+
 
 namespace OpenFrp.Core.App
 {
@@ -109,27 +110,39 @@ namespace OpenFrp.Core.App
             public string? User { get; set; }
 
             [JsonProperty("password")]
-            private List<int> _Password { get; set; } = new();
+            private string? _Password { get; set; }
+
+
+            private byte[] Entropy = new byte[20];
 
             [JsonIgnore]
             public string? Password
             {
                 get
                 {
-                    if (_Password is null) return "";
-                    var builder = new List<byte>();
-                    foreach (var item in _Password)
+                    try
                     {
-                        builder.Add((byte)(item - 12));
+                        if (!string.IsNullOrEmpty(_Password))
+                        {
+                            Entropy = ((User?.GetMD5() + Utils.PipeRouteName).GetBytes() ?? new byte[0]);
+                            List<byte> _ = new();
+                            var sb = _Password?.Split(','); sb.ToList().ForEach(x =>
+                            {
+                                _.Add(byte.Parse(x));
+                            });
+                            return (ProtectedData.Unprotect(_.ToArray(), Entropy, DataProtectionScope.CurrentUser)).GetString(false);
+                        }
                     }
-                    return Encoding.UTF8.GetString(builder.ToArray());
+                    catch { }
+                    return "";
                 }
                 set
                 {
-                    foreach (var inchar in value?.GetBytes() ?? new byte[0])
-                    {
-                        _Password?.Add((byte)(inchar + 12));
-                    }
+                    Entropy = ((User?.GetMD5() + Utils.PipeRouteName).GetBytes() ?? new byte[0]);
+                    var _ = new StringBuilder();
+                    ProtectedData.Protect(value?.GetBytes(), Entropy, DataProtectionScope.CurrentUser)
+                        .ToList<byte>().ForEach(x => _.Append("," + (int)x));
+                    _Password = _.ToString().Remove(0,1);
                 }
             }
         }

@@ -51,7 +51,14 @@ namespace OpenFrp.Core
                 {
                     if (!Utils.ServicesMode)
                     {
-                        MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
+                        //MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
+                    }
+                    if (ConsoleHelper.ConsoleWrappers.Count > 0)
+                    {
+                        ConsoleHelper.ConsoleWrappers.Keys.ToList().ForEach(id =>
+                        {
+                            ConsoleHelper.Stop(id);
+                        });
                     }
                     if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
                 };
@@ -129,6 +136,7 @@ namespace OpenFrp.Core
                 catch (Exception ex)
                 {
                     Utils.Debug(ex.ToString());
+                    //Console.WriteLine("");
                 }
 
             }
@@ -180,12 +188,13 @@ namespace OpenFrp.Core
         /// </summary>
         private static async ValueTask LocalPipeWorker()
         {
+            
             // 服务端
             var appServer = new Pipe.PipeServer();
             appServer.Start();
 
-            
-            
+            // Debugger.Launch();
+
             // 连接启动器用的。
             // 既然这里连接成功了，那么下方的可以与前台交互了。
 
@@ -255,7 +264,7 @@ namespace OpenFrp.Core
             var updater = await Update.CheckUpdate();
             if (string.IsNullOrEmpty(updater.DownloadUrl) || updater.UpdateFor != Update.UpdateFor.FRPC)
             {
-                Console.WriteLine($"API 请求失败,请将截图发送到用户交流群内:::");
+                Console.WriteLine($"API 请求失败,请将截图发送到用户交流群内::: {updater.Content},{updater.DownloadUrl},{updater.UpdateFor}");
                 Console.ReadKey();
                 Environment.Exit(0);
             }

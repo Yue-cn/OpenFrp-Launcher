@@ -50,7 +50,9 @@ namespace OpenFrp.Core.Pipe
         }
         public async ValueTask<PipeModel.RequestModel?> RevicedWithPrase()
         {
-            var request = JsonConvert.DeserializeObject<PipeModel.RequestModel>((await Reviced()).GetString(true));
+            var sbbb = (await Reviced()).GetString(true);
+            Debug.WriteLine("接受" + sbbb + "\n");
+            var request = JsonConvert.DeserializeObject<PipeModel.RequestModel>(sbbb);
             return request;
         }
         public async ValueTask PushMessageAsync(PipeModel.BaseModel message)

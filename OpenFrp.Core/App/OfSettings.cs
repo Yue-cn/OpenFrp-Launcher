@@ -15,7 +15,7 @@ namespace OpenFrp.Core.App
     /// <summary>
     /// OpenFrp Launcher - 启动器设置
     /// </summary>
-    public class OfSettings
+    public partial class OfSettings
     {
         /// <summary>
         /// 设置实例
@@ -91,7 +91,7 @@ namespace OpenFrp.Core.App
         /// <summary>
         /// 账户模型
         /// </summary>
-        public class AccountModel
+        public partial class AccountModel
         {
             public AccountModel() { }
 
@@ -115,7 +115,7 @@ namespace OpenFrp.Core.App
 
             private byte[] Entropy = new byte[20];
 
-
+           
         }
         /// <summary>
         /// 操控台模型

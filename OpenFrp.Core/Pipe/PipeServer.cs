@@ -7,7 +7,8 @@ using System.IO.Pipes;
 using System.Security.AccessControl;
 using OpenFrp.Core.Api;
 using OpenFrp.Core.App;
-
+using System.Diagnostics;
+using OpenFrp.Core.Pipe.PipeModel;
 
 namespace OpenFrp.Core.Pipe
 {
@@ -209,7 +210,11 @@ namespace OpenFrp.Core.Pipe
                             });
                             return new(PipeModel.OfAction.Start_Frpc, true, "");
                         }
-                        return ConsoleHelper.Launch(request.FrpMessage!.Tunnel!);
+                        if (request.FrpMessage?.Tunnel is not null)
+                        {
+                            return ConsoleHelper.Launch(request.FrpMessage.Tunnel);
+                        }
+                        return new(OfAction.Start_Frpc, true, "无开启。");
                     }
                 // 关闭 FRPC
                 case PipeModel.OfAction.Close_Frpc:

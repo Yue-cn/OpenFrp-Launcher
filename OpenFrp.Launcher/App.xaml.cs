@@ -29,7 +29,6 @@ namespace OpenFrp.Launcher
         /// </summary>
         protected override async void OnStartup(StartupEventArgs e)
         {
-            
             if (isSupportDarkMode)
             {
                 Launcher.Properties.UxTheme.AllowDarkModeForApp(true);
@@ -50,6 +49,11 @@ namespace OpenFrp.Launcher
             }
 
             await OfSettings.ReadConfig();
+
+            Microsoft.Win32.SystemEvents.SessionEnding += async (se, ev) =>
+            {
+                await OfSettings.Instance.WriteConfig();
+            };
 
             if (!Utils.IsServiceInstalled() && OfSettings.Instance.WorkMode == WorkMode.DeamonService)
             {
@@ -77,32 +81,39 @@ namespace OpenFrp.Launcher
                                 UseShellExecute = false
                             });
                             process.EnableRaisingEvents = true;
-                            process.Exited += (s, e) => App.Current.Dispatcher.Invoke(async () =>
+                            process.Exited += (s, e) =>
                             {
-                                await Task.Delay(1500);
-                                var wind = ((WpfSurface)App.Current.MainWindow);
-                                if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
+                                try
                                 {
-                                    RegistryEvent();
-                                    wind.LauncherModel.PipeRunningState = false;
-                                    wind.ClientPipeWorker(true);
+                                    App.Current.Dispatcher.Invoke(async () =>
+                                    {
+                                        await Task.Delay(1500);
+                                        var wind = ((WpfSurface)App.Current.MainWindow);
+                                        if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
+                                        {
+                                            RegistryEvent();
+                                            wind.LauncherModel.PipeRunningState = false;
+                                            wind.ClientPipeWorker(true);
+                                        }
+                                    });
                                 }
-                            });
+                                catch { }
+                            };
                         }
                     }
                 }
                 catch { }
             }
+            // 系统服务模式
             else
             {
                 if (!Utils.CheckService()) await Task.Delay(3250);  
             }
+
+
             var wind = new WpfSurface();
-
             wind.ShowActivated = true;
-
             wind.Show();
-
             if (e.Args.FirstOrDefault() is "--minimize")
             {
                 wind.Visibility = Visibility.Collapsed;

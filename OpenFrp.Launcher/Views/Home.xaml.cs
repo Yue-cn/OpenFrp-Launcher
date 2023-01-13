@@ -92,17 +92,74 @@ namespace OpenFrp.Launcher.Views
                 }
                 else
                 {
-                    Of_Home_UserInfoLoader.ShowError();
-                    Of_Home_UserInfoLoader.PushMessage(async () =>
+                    var resq =  await OfAppHelper.LoginAndUserInfo(OfSettings.Instance.Account.User, OfSettings.Instance.Account.Password);
+                    if (resq.Flag)
                     {
-                        await OfAppHelper.RequestLogin();
-                        RefreshUserInfo();
-                    }, "登录请求失败，请稍后重试 (可能是密码错误)", "重试");
+                        HomeModel.UserInfoViewModels = new()
+                        {
+                            new()
+                            {
+                                IconElement = "\xe715",
+                                Title = "邮箱",
+                                Content = HomeModel.UserInfoData.Email,
+                            },
+                            new()
+                            {
+                                IconElement = $"\xe77b",
+                                Title = "昵称",
+                                Content = HomeModel.UserInfoData.UserName,
+                            },
+                            new()
+                            {
+                                IconElement = "\xe8a4",
+                                Title = "隧道数",
+                                Content = $"{HomeModel.UserInfoData.UsedProxies} / {HomeModel.UserInfoData.MaxProxies}",
+                            },
+                            new()
+                            {
+                                IconElement = "\xeafc",
+                                Title = "可用流量",
+                                Content = $"{Math.Round(HomeModel.UserInfoData.Traffic / (double)1024,2)} Gib",
+                            },
+                            new()
+                            {
+                                IconElement = "\xe780",
+                                Title = "实名状态",
+                                Content = $"{(HomeModel.UserInfoData.isRealname ? "已": "未")}实名"
+                            },
+                            new()
+                            {
+                                IconElement = "\xe902",
+                                Title = "所在组",
+                                Content = HomeModel.UserInfoData.GroupCName,
+                            },
+                            new()
+                            {
+                                IconElement = "\xec05",
+                                Title = "带宽速率 (Mbps)",
+                                Content = $"{(HomeModel.UserInfoData.InputLimit / 1024) * 8} / {(HomeModel.UserInfoData.OutputLimit / 1024) * 8}"
+                            },
+                        };
+
+                        Of_Home_UserInfoLoader.ShowContent();
+                    }
+                    else
+                    {
+                        Of_Home_UserInfoLoader.ShowError();
+                        Of_Home_UserInfoLoader.PushMessage(async () =>
+                        {
+                            await OfAppHelper.RequestLogin();
+                            RefreshUserInfo();
+                        }, $"登录请求失败: {resq.Message}", "重试");
+                    }
                 }
             }
             else
             {
-                while(HomeModel.UserInfoData is null) { await Task.Delay(250); }
+                while(HomeModel.UserInfoData is null) 
+                { 
+                    await Task.Delay(250); 
+                }
 
                 HomeModel.UserInfoViewModels = new()
                 {

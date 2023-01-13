@@ -9,7 +9,6 @@
     xmlns:of="clr-namespace:OpenFrp.Launcher.Controls"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -17,7 +16,7 @@
         <model:LogModel />
     </ui:Page.DataContext>
     <ui:Page.Resources>
-        <model:FontFamilyConvert x:Key="FontFamilyConvert"/>
+        <model:FontFamilyConvert x:Key="FontFamilyConvert" />
     </ui:Page.Resources>
 
     <of:BaseView Title="日志" ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -27,11 +26,36 @@
                 <RowDefinition Height="8" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <ui:SimpleStackPanel
-                HorizontalAlignment="Left"
-                Orientation="Horizontal"
-                Spacing="8">
-                <ui:CommandBar VerticalAlignment="Center">
+            <Grid HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ComboBox
+                    x:Name="selectBox"
+                    Grid.Column="0"
+                    MinWidth="200"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding ConsoleWrappers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedIndex="{Binding SelectedIndex}"
+                    SelectionChanged="ComboBox_SelectionChanged">
+                    <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ComboBox.ItemsPanel>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding UserTunnelModel.TunnelName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ui:CommandBar Grid.Column="2" VerticalAlignment="Center">
                     <ui:AppBarButton
                         Command="{Binding RefreshListCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=ui:Page}}"
@@ -68,30 +92,14 @@
                         </ui:AppBarButton.Style>
                     </ui:AppBarButton>
                 </ui:CommandBar>
-                <ComboBox
-                    x:Name="selectBox"
-                    MinWidth="200"
-                    VerticalAlignment="Center"
-                    ItemsSource="{Binding ConsoleWrappers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                    SelectedIndex="{Binding SelectedIndex}"
-                    SelectionChanged="ComboBox_SelectionChanged">
-                    <ComboBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ComboBox.ItemsPanel>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding UserTunnelModel.TunnelName}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-            </ui:SimpleStackPanel>
+                <Grid Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0">
+                    <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="本页面由于刷新问题,您无法选择文本。"/>
+                </Grid>
+            </Grid>
             <Border Grid.Row="2" BorderThickness="1">
                 <ui:ScrollViewerEx
                     HorizontalScrollBarVisibility="Disabled"
-                    TextElement.FontFamily="{Binding ConsoleModel.FontName,Converter={StaticResource FontFamilyConvert}}"
+                    TextElement.FontFamily="{Binding ConsoleModel.FontName, Converter={StaticResource FontFamilyConvert}}"
                     TextElement.FontSize="{Binding ConsoleModel.FontSize}"
                     VerticalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="Items" ItemsSource="{Binding WrapperValue, Mode=OneWay}">

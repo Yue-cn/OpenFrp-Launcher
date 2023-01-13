@@ -71,6 +71,17 @@ namespace OpenFrp.Launcher.ViewModels
                 {
                     var resp = await OfApi.UserSignin();
                     var resp1 = await OfApi.GetUserInfo();
+
+                    if (!resp.Flag || !resp1.Flag)
+                    {
+                        if (resp.Message.Contains("token已过期") || resp1.Message.Contains("token已过期"))
+                        {
+                            if (!await OfAppHelper.RequestLogin(false))
+                            {
+                                loader.Content = $"Token失效后重请求失败,请尝试重新登录账户";
+                            }
+                        }
+                    }
                     loader.Content = $"{(string.IsNullOrEmpty(resp.Data) ? resp1.Message : resp.Data)}";
                     if (resp1.Flag) { OfApi.UserInfoDataModel = resp1.Data; }
                     loader.ShowContent();

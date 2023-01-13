@@ -113,12 +113,12 @@ namespace OpenFrp.Launcher
 
         }
 
-        internal static async ValueTask<bool> RequestLogin()
+        internal static async ValueTask<bool> RequestLogin(bool isTokenUnavaliable = true)
         {
             // 有账户 走下面逻辑
             if (OfSettings.Instance.Account.HasAccount)
             {
-                if (OfSettings.Instance.WorkMode is WorkMode.DeamonService)
+                if (OfSettings.Instance.WorkMode is WorkMode.DeamonService && isTokenUnavaliable)
                 {
                     // 服务模式
                     var result = await PipeClient.PushMessageWithRequestAsync(new()

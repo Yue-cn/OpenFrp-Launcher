@@ -51,7 +51,7 @@ namespace OpenFrp.Core
                 {
                     if (!Utils.ServicesMode)
                     {
-                        //MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
+                        MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
                     }
                     if (ConsoleHelper.ConsoleWrappers.Count > 0)
                     {
@@ -60,6 +60,13 @@ namespace OpenFrp.Core
                             ConsoleHelper.Stop(id);
                         });
                     }
+                    Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                    {
+                        if (process.MainModule.FileName == Utils.Frpc)
+                        {
+                            process.Kill();
+                        }
+                    });
                     if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
                 };
 
@@ -88,6 +95,25 @@ namespace OpenFrp.Core
                     case "--force-uninstall":ForceUninstallService();break;
                     case "--ws":await LocalPipeWorker();break;
                     case "--frpcp":await InstallFrpc();break;
+                    case "--ins":
+                        {
+                            try { Process.Start(new ProcessStartInfo("certutil",$"-addStore root \"{AppDomain.CurrentDomain.BaseDirectory}\\5c5a2d56dc3359a84ad0fd928ba33ccb.cer\"")
+                            {
+                                Verb = "runas"
+                            }); }
+                            catch { }
+                        };break;
+                    case "--uins":
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo("certutil", $"-delStore root \"ZGIT Network\"")
+                                {
+                                    Verb = "runas"
+                                });
+                            }
+                            catch { }
+                        }; break;
                 }
                 if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
             }

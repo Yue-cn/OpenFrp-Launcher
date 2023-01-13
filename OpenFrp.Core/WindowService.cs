@@ -41,7 +41,10 @@ namespace OpenFrp.Core
                 else Utils.Log("登录成功!!!");
             }
 
-
+            Microsoft.Win32.SystemEvents.SessionEnding += async (se, ev) =>
+            {
+                await OfSettings.Instance.WriteConfig();
+            };
 
             // 更改部分请求
             appServer.RequestFunction = (request, model) =>

@@ -47,6 +47,15 @@ namespace OpenFrp.Launcher.Views
             if (!lp.Flag)
             {
                 Of_Tunnels_ListLoader.ShowError();
+                if (lp.Message.Contains("token已过期"))
+                {   
+                    if (!await OfAppHelper.RequestLogin(false))
+                    {
+                        Of_Tunnels_ListLoader.ShowError();
+                        Of_Tunnels_ListLoader.PushMessage(RefreshUserTunnels, $"Token失效后重请求失败,请尝试重新登录账户", "重试");
+                    }
+                    else Of_Tunnels_ListLoader.ShowLoader();
+                }
                 if (!OfApi.LoginState)
                 {
                     Of_Tunnels_ListLoader.PushMessage(() =>
@@ -58,6 +67,7 @@ namespace OpenFrp.Launcher.Views
                 }
                 else
                 {
+                    
                     Of_Tunnels_ListLoader.PushMessage(RefreshUserTunnels, lp.Message, "重试");
                 }
 

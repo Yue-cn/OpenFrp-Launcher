@@ -115,36 +115,7 @@ namespace OpenFrp.Core.App
 
             private byte[] Entropy = new byte[20];
 
-            [JsonIgnore]
-            public string? Password
-            {
-                get
-                {
-                    try
-                    {
-                        if (!string.IsNullOrEmpty(_Password))
-                        {
-                            Entropy = ((User?.GetMD5() + Utils.PipeRouteName).GetBytes() ?? new byte[0]);
-                            List<byte> _ = new();
-                            var sb = _Password?.Split(','); sb.ToList().ForEach(x =>
-                            {
-                                _.Add(byte.Parse(x));
-                            });
-                            return (ProtectedData.Unprotect(_.ToArray(), Entropy, DataProtectionScope.CurrentUser)).GetString(false);
-                        }
-                    }
-                    catch { }
-                    return "";
-                }
-                set
-                {
-                    Entropy = ((User?.GetMD5() + Utils.PipeRouteName).GetBytes() ?? new byte[0]);
-                    var _ = new StringBuilder();
-                    ProtectedData.Protect(value?.GetBytes(), Entropy, DataProtectionScope.CurrentUser)
-                        .ToList<byte>().ForEach(x => _.Append("," + (int)x));
-                    _Password = _.ToString().Remove(0,1);
-                }
-            }
+
         }
         /// <summary>
         /// 操控台模型

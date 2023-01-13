@@ -52,25 +52,11 @@ namespace OpenFrp.Launcher
             Directory.CreateDirectory(Utils.AppTempleFilesPath);
             Directory.CreateDirectory(Path.Combine(Utils.AppTempleFilesPath, "static"));
             ShowActivated = true;
-            if (!File.Exists(Utils.Frpc))
-            {
-                await OfAppHelper.PipeClient.PushMessageAsync(new()
-                {
-                    Action = Core.Pipe.PipeModel.OfAction.Close_Server,
-                });
+            // 启动器更新逻辑
+            CheckUpdate();
 
-                Process.Start(new ProcessStartInfo(Utils.CorePath, "--frpcp")
-                {
-                    UseShellExecute = false,
-                    Verb = "runas"
-                });
 
-                Application.Current.Shutdown();
 
-                return;
-            }
-
-            
             OfAppHelper.TaskbarIcon.ContextMenu = new()
             {
                 Items =
@@ -79,13 +65,29 @@ namespace OpenFrp.Launcher
                     {
                         Visibility = Visibility.Visible;
                         WindowState = WindowState.Normal;
-                        
+
                         if (this.IsLoaded)Activate();
                         else Show();
 
-                        
+
                     },new FontIcon(){Glyph = $"\ue73f"}),
                     new Separator(),
+                    CreateItemWithAction("强制退出", () =>
+                    {
+                        if (Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault() is Process process && process.HasExited)
+                        {
+                            process.Kill();
+                        }
+                        Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                        {
+                            if (process.MainModule.FileName == Utils.Frpc)
+                            {
+                                process.Kill();
+                            }
+                        });
+                        App.Current.Shutdown();
+                    },new FontIcon(){Glyph = "\ue74d"})
+                    ,
                     CreateItemWithAction("退出启动器",
                         App.Current.Shutdown,
                         new FontIcon(){Glyph = "\ue89f"}),
@@ -94,6 +96,13 @@ namespace OpenFrp.Launcher
                         await OfAppHelper.PipeClient.PushMessageAsync(new()
                         {
                             Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                        });
+                        Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                        {
+                            if (process.MainModule.FileName == Utils.Frpc)
+                            {
+                                process.Kill();
+                            }
                         });
                         App.Current.Shutdown();
                     },new FontIcon(){Glyph = "\ue8bb"})
@@ -144,8 +153,7 @@ namespace OpenFrp.Launcher
             ClientPipeWorker();
             await OfAppHelper.RequestLogin();
 
-            // 启动器更新逻辑
-            CheckUpdate();
+
             // 启动器 自动登录逻辑
             
 
@@ -175,15 +183,19 @@ namespace OpenFrp.Launcher
                         var lts = new List<Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel>();
                         OfSettings.Instance.AutoRunTunnel.ForEach((tunnelId) =>
                         {
+                            // 如果开机自启的隧道 与 foreach 中的隧道一致,那么开启
                             if (tunnelId == tunnel.TunnelId)
                             {
+                                /*
+                                    Date: 2023-1-13
+                                    逻辑问题，应是 如果RunningId列表(前提是已请求) 已有隧道，
+                                    那么不再请求自启动。()
+                                 */
                                 if (!OfAppHelper.RunningIds.Contains(tunnelId))
-                                    OfAppHelper.RunningIds.Add(tunnelId);
-                                else
                                 {
                                     lts.Add(tunnel);
+                                    OfAppHelper.RunningIds.Add(tunnelId);
                                 }
-                                
                                 return;
                             }
                         });
@@ -339,12 +351,33 @@ namespace OpenFrp.Launcher
                         return;
                     }
 
+                    return;
+
                 }
                 else
                 {
                     LauncherModel.IsFrpchasUpdate = true;
+                    // 如果没有更新，还没有FRPC文件,那么直接下载。
+                    if (!File.Exists(Utils.Frpc))
+                    {
+                        await OfAppHelper.PipeClient.PushMessageAsync(new()
+                        {
+                            Action = Core.Pipe.PipeModel.OfAction.Close_Server,
+                        });
+
+                        Process.Start(new ProcessStartInfo(Utils.CorePath, "--frpcp")
+                        {
+                            UseShellExecute = false,
+                            Verb = "runas"
+                        });
+
+                        Application.Current.Shutdown();
+
+                        return;
+                    }
                 }
             }
+
         }
         /// <summary>
         /// Pipe Service

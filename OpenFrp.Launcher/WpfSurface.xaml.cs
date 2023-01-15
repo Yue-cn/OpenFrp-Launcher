@@ -247,6 +247,7 @@ namespace OpenFrp.Launcher
                 OfSettings.Instance.HasIconTips = false;
             }
             Visibility = Visibility.Collapsed;
+            
         }
         /// <summary>
         /// 检测更新

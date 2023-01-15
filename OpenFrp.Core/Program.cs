@@ -97,20 +97,28 @@ namespace OpenFrp.Core
                     case "--frpcp":await InstallFrpc();break;
                     case "--ins":
                         {
-                            try { Process.Start(new ProcessStartInfo("certutil",$"-addStore root \"{AppDomain.CurrentDomain.BaseDirectory}\\5c5a2d56dc3359a84ad0fd928ba33ccb.cer\"")
-                            {
-                                Verb = "runas"
-                            }); }
+                            try 
+                            { 
+                                Process.Start(new ProcessStartInfo("certutil",$"-addStore root \"{AppDomain.CurrentDomain.BaseDirectory}\\5c5a2d56dc3359a84ad0fd928ba33ccb.cer\"")
+                                {
+                                    Verb = "runas"
+                                });
+                                // 等前端需要
+                                // AppURLScheme.RegistryKey();
+                            }
                             catch { }
                         };break;
                     case "--uins":
                         {
                             try
                             {
+                                // 等前端需要
+                                // AppURLScheme.UnregistryKey();
                                 Process.Start(new ProcessStartInfo("certutil", $"-delStore root \"ZGIT Network\"")
                                 {
                                     Verb = "runas"
                                 });
+                                
                             }
                             catch { }
                         }; break;
@@ -204,6 +212,8 @@ namespace OpenFrp.Core
                 if (Utils.IsServiceInstalled())
                 {
                     ManagedInstallerClass.InstallHelper(new string[] { "-u", Utils.CorePath });
+                    File.Delete(Utils.ApplicationConfigPath);
+                    File.Delete(Utils.Frpc);
                     Directory.Delete(Utils.AppTempleFilesPath, true);
                 }
             }
@@ -291,6 +301,7 @@ namespace OpenFrp.Core
             if (string.IsNullOrEmpty(updater.DownloadUrl) || updater.UpdateFor != Update.UpdateFor.FRPC)
             {
                 Console.WriteLine($"API 请求失败,请将截图发送到用户交流群内::: {updater.Content},{updater.DownloadUrl},{updater.UpdateFor}");
+                Console.WriteLine($"{(updater.UpdateFor is Update.UpdateFor.Launcher ? "关闭该窗口后打开启动器。" : "请将此截图发送到交流群中。")}");
                 Console.ReadKey();
                 Environment.Exit(0);
             }

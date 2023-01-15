@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -40,7 +41,7 @@ namespace OpenFrp.Launcher
                 Environment.Exit(0);
             }
 
-            if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached || true)
             {
                 AppDomain.CurrentDomain.UnhandledException += (w, s) =>
                 {
@@ -63,7 +64,7 @@ namespace OpenFrp.Launcher
             {
                 OfSettings.Instance.WorkMode = WorkMode.DeamonService;
             }
-
+            
             // App 运行前 守护进程检测 未开启无法进入应用
             if (OfSettings.Instance.WorkMode == WorkMode.DeamonProcess)
             {
@@ -110,6 +111,10 @@ namespace OpenFrp.Launcher
                 if (!Utils.CheckService()) await Task.Delay(3250);  
             }
 
+            if (!File.Exists(Utils.Frpc))
+            {
+                OfSettings.Instance.FRPClientVersion = "**";
+            }
 
             var wind = new WpfSurface();
             wind.ShowActivated = true;

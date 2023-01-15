@@ -480,6 +480,11 @@ namespace OpenFrp.Core.Api
                     [JsonProperty("classify")]
                     public NodeClassify NodeClassify { get; set; }
                     /// <summary>
+                    /// 节点绑定域名
+                    /// </summary>
+                    [JsonProperty("hostname")]
+                    public string? HostName { get; set; }
+                    /// <summary>
                     /// 支持的协议
                     /// </summary>
                     [JsonProperty("protocolSupport")]
@@ -646,6 +651,8 @@ namespace OpenFrp.Core.Api
                     public string? Link { get; set; } = "https://www.openfrp.net";
                 }
             }
+
+
             /// <summary>
             /// 更新信息
             /// </summary>

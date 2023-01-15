@@ -180,6 +180,7 @@
                                             <Run Text="{Binding NetworkSpeed, StringFormat={}{0}Mbps}" />
                                             <Run Text="{Binding SppedMagnification, StringFormat=x {0}}" />
                                         </TextBlock>
+                                        <!--<TextBlock Text="{Binding PingMills,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" />-->
                                     </ui:SimpleStackPanel>
                                     <ui:SimpleStackPanel />
                                 </Grid>

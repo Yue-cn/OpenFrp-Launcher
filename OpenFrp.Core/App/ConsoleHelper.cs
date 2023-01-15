@@ -22,7 +22,12 @@ namespace OpenFrp.Core.App
         {
             if (!ConsoleWrappers.ContainsKey(tunnel.TunnelId))
             {
-                if (!File.Exists(Utils.Frpc) || !OfApi.LoginState)
+                if (!OfApi.LoginState)
+                {
+                    Utils.Log($"找不到文件,{OfApi.UserInfoDataModel}");
+                    return new(OfAction.Start_Frpc, false, "用户未登录。");
+                }
+                if (!File.Exists(Utils.Frpc))
                 {
                     Utils.Log($"找不到文件,{Utils.Frpc}");
                     return new(OfAction.Start_Frpc,false,"找不到 FRPC 文件");

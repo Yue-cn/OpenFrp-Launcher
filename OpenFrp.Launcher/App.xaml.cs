@@ -38,6 +38,9 @@ namespace OpenFrp.Launcher
 
             if (Process.GetProcessesByName("OpenFrp.Launcher").Length > 1)
             {
+                IntPtr hwnd = Launcher.Properties.Win32Helper.FindWindowA(null, "OpenFrp Launcher");
+                Launcher.Properties.Win32Helper.ShowWindow(hwnd,9);
+                Launcher.Properties.Win32Helper.SetForegroundWindow(hwnd);
                 Environment.Exit(0);
             }
 

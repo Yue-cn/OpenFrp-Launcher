@@ -247,7 +247,7 @@ namespace OpenFrp.Launcher
                 OfSettings.Instance.HasIconTips = false;
             }
             Visibility = Visibility.Collapsed;
-            
+            //OfApp_NavigationView.DisplayMode == NavigationViewDisplayMode.
         }
         /// <summary>
         /// 检测更新
@@ -385,8 +385,6 @@ namespace OpenFrp.Launcher
         /// </summary>
         internal async void ClientPipeWorker(bool restart = false)
         {
-            
-
             await OfAppHelper.PipeClient.Start();
             
             if (OfSettings.Instance.WorkMode is WorkMode.DeamonProcess)
@@ -471,8 +469,11 @@ namespace OpenFrp.Launcher
                 return new();
             };
         }
-        
 
-
+        protected override void OnActivated(EventArgs e)
+        {
+            Visibility = Visibility.Visible;
+            base.OnActivated(e);
+        }
     }
 }

@@ -121,7 +121,7 @@ namespace OpenFrp.Launcher.Views
                     }
                 });
 
-                if (resp.Message.IndexOf("Unlogin") != -1)
+                if (resp.Message.Contains("Unlogin") || resp.Message.Contains("后台"))
                 {
                     OfAppHelper.RestartProcess();
                 }

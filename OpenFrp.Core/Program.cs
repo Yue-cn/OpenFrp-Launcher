@@ -79,7 +79,14 @@ namespace OpenFrp.Core
                         {
                             var thread = new Thread(() =>
                             {
-                                Clipboard.SetText(args.Argument.Split(' ')[1]);
+                                try
+                                {
+                                    Clipboard.SetText(args.Argument.Split(' ')[1]);
+                                }
+                                catch
+                                {
+                                    
+                                }
                             });
                             thread.SetApartmentState(ApartmentState.STA);
                             thread.IsBackground = true;

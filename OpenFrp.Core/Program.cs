@@ -319,7 +319,7 @@ namespace OpenFrp.Core
             });
             if (!flag)
             {
-                Console.WriteLine("下载失败,是否已联网？？？");
+                Console.WriteLine($"下载失败,是否已联网？？？,URL: {updater.DownloadUrl}");
                 Console.ReadKey();
                 return;
             }

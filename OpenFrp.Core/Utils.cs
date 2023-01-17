@@ -110,7 +110,7 @@ namespace OpenFrp.Core
             }
         }
 
-        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].10w03c";
+        public static string ApplicationVersions { get; } = "OpenFrp.Launcher.[v2.0.0].10w04b";
 
         public static string FrpcPlatForm { get; } = Environment.Is64BitOperatingSystem ? "frpc_windows_amd64" : "frpc_windows_386";
 

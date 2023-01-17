@@ -30,7 +30,7 @@ namespace OpenFrp.Core.App
                 else if (resp.Data.LatestVersion.GetMD5() != OfSettings.Instance.FRPClientVersion.GetMD5())
                 {
                     // FRPC 有更新
-                    return new UpdateInfo(UpdateFor.FRPC, resp.Data.LatestVersion!.Substring(1, resp.Data.LatestVersion.Length - 2), $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient{resp.Data.LatestVersion}/{Utils.FrpcPlatForm}.zip");
+                    return new UpdateInfo(UpdateFor.FRPC, resp.Data.LatestVersion, $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient/{resp.Data.LatestVersion}/{Utils.FrpcPlatForm}.zip");
                 }
             }
             return new UpdateInfo(UpdateFor.None,"请求失败啦啦啦啦API - OpenFrp");

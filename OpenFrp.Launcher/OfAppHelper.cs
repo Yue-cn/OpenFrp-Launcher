@@ -14,6 +14,8 @@ namespace OpenFrp.Launcher
 {
     public class OfAppHelper
     {
+
+        public static bool HasDialog { get; set; }
         /// <summary>
         /// 启动器 - 主模型
         /// </summary>

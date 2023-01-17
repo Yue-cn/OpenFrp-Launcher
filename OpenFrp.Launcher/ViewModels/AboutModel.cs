@@ -32,6 +32,11 @@ namespace OpenFrp.Launcher.ViewModels
                 Title = "注明",
                 Content = "本软件为 GPL3 协议，您可以修改且分发，但不得删除原作品的标记，且同样需要把修改过的源代码放出来。"
             });
+            aboutDatas.Add(new()
+            {
+                Title = "版权所有",
+                Content = "ZGIT Network, 2023。"
+            });
         }
 
         [ObservableProperty]

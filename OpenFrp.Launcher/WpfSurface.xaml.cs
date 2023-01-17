@@ -263,6 +263,12 @@ namespace OpenFrp.Launcher
                     {
                         App.Current.MainWindow.Visibility = Visibility.Visible;
                     }
+                    if (OfAppHelper.HasDialog)
+                    {
+                        OfAppHelper.TaskbarIcon.ShowBalloonTip("OpenFrp.Launcher", "应用有更新，请打开关于选项卡,点击\"检查更新\"", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                        return;
+                    }
+                    OfAppHelper.HasDialog = true;
                     var dialog = new ContentDialog()
                     {
                         DefaultButton = ContentDialogButton.Primary,
@@ -317,6 +323,8 @@ namespace OpenFrp.Launcher
                         if (isSuccess)
                         {
                             Install();
+                            Hide();
+                            OfAppHelper.HasDialog = false;
                         }
    
                         dialog.Content = "下载失败。";

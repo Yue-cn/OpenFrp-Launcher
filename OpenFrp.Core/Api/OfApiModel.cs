@@ -656,34 +656,40 @@ namespace OpenFrp.Core.Api
             /// <summary>
             /// 更新信息
             /// </summary>
-            public class UpdateInfo
+            public class UpdateModel : BaseModel
             {
-                /// <summary>
-                /// FRPC - 最新版本
-                /// </summary>
-                [JsonProperty("latest")]
-                public string? LatestVersion { get; set; }
+                [JsonProperty("data")]
+                public new UpdateDataModel? Data { get; set; }
 
-                [JsonProperty("launcher")]
-                public LauncherData LauncherInfo { get; set; } = new();
-
-                public class LauncherData
+                public class UpdateDataModel
                 {
                     /// <summary>
-                    /// 启动器 - 最新版本
+                    /// FRPC - 最新版本
                     /// </summary>
-                    [JsonProperty("latest")]
+                    [JsonProperty("latest_full")]
                     public string? LatestVersion { get; set; }
-                    /// <summary>
-                    /// 更新内容
-                    /// </summary>
-                    [JsonProperty("content")]
-                    public string? Content { get; set; }
-                    /// <summary>
-                    /// 下载链接
-                    /// </summary>
-                    [JsonProperty("download_url")]
-                    public string? DownloadUrl { get; set; }
+
+                    [JsonProperty("launcher")]
+                    public LauncherData LauncherInfo { get; set; } = new();
+
+                    public class LauncherData
+                    {
+                        /// <summary>
+                        /// 启动器 - 最新版本
+                        /// </summary>
+                        [JsonProperty("latest")]
+                        public string? LatestVersion { get; set; }
+                        /// <summary>
+                        /// 更新内容
+                        /// </summary>
+                        [JsonProperty("content")]
+                        public string? Content { get; set; }
+                        /// <summary>
+                        /// 下载链接
+                        /// </summary>
+                        [JsonProperty("download_url")]
+                        public string? DownloadUrl { get; set; }
+                    }
                 }
             }
 

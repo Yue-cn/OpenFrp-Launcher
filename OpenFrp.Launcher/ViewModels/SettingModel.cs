@@ -85,7 +85,7 @@ namespace OpenFrp.Launcher.ViewModels
 
         public string AppVersion => Utils.ApplicationVersions;
 
-        private bool _hasDialog { get; set; }
+
 
         private Flyout? _flyout { get; set; }
 
@@ -117,15 +117,15 @@ namespace OpenFrp.Launcher.ViewModels
         {
             if (!LoginState)
             {
-                if (!_hasDialog)
+                if (!OfAppHelper.HasDialog)
                 {
-                    _hasDialog = true;
+                    OfAppHelper.HasDialog = true;
                     // 弹出登录窗口。
                     var dialog = new Controls.LoginDialog();
                     await dialog.ShowAsync();
                     // 请求用户个人信息已移动到内部逻辑。
+                    OfAppHelper.HasDialog = false;
                 }
-                _hasDialog = false;
             }
             else
             {

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using OpenFrp.Launcher.Controls;
+using Windows.Web.Syndication;
 
 namespace OpenFrp.Launcher.ViewModels
 {
@@ -71,9 +72,9 @@ namespace OpenFrp.Launcher.ViewModels
         [RelayCommand]
         private async void RemoveTunnel(object inter)
         {
-            if (!hasDialog)
+            if (!OfAppHelper.HasDialog)
             {
-                hasDialog = true;
+                OfAppHelper.HasDialog = true;
                 int id = Convert.ToInt32(inter);
                 var dialog = new ContentDialog()
                 {
@@ -100,35 +101,34 @@ namespace OpenFrp.Launcher.ViewModels
                         }
                     }
                 }
-                hasDialog = false;
+                OfAppHelper.HasDialog = false;
             }
         }
 
         [RelayCommand]
         private async void EditTunnel(Core.Api.OfApiModel.Response.UserTunnelModel.UserTunnel proxy)
         {
-            var config = new Core.Api.OfApiModel.Request.EditTunnelData()
+            if (!OfAppHelper.HasDialog)
             {
-                BindDomain = proxy.Domains,
-                CustomArgs = proxy.CustomArgs ?? "",
-                EncryptMode = proxy.EncryptionMode,
-                GZipMode = proxy.ComperssionMode,
-                HostRewrite = proxy.HostRewrite,
-                LocalAddress = proxy.LocalAddress,
-                LocalPort = proxy.LocalPort,
-                NodeID = proxy.NodeID,
-                TunnelName = proxy.TunnelName,
-                TunnelType = proxy.TunnelType,
-                RemotePort = proxy.RemotePort,
-                URLRoute = proxy.URLRoute,
-                RequestFrom = proxy.RequestFrom,
-                RequestPass = proxy.RequestPassword,
-            };
-            if (!hasDialog)
-            {
-                hasDialog = true;
+                OfAppHelper.HasDialog = true;
 
-
+                var config = new Core.Api.OfApiModel.Request.EditTunnelData()
+                {
+                    BindDomain = proxy.Domains,
+                    CustomArgs = proxy.CustomArgs ?? "",
+                    EncryptMode = proxy.EncryptionMode,
+                    GZipMode = proxy.ComperssionMode,
+                    HostRewrite = proxy.HostRewrite,
+                    LocalAddress = proxy.LocalAddress,
+                    LocalPort = proxy.LocalPort,
+                    NodeID = proxy.NodeID,
+                    TunnelName = proxy.TunnelName,
+                    TunnelType = proxy.TunnelType,
+                    RemotePort = proxy.RemotePort,
+                    URLRoute = proxy.URLRoute,
+                    RequestFrom = proxy.RequestFrom,
+                    RequestPass = proxy.RequestPassword,
+                };
                 var configControl = new TunnelConfig()
                 {
                     isCreating = false,
@@ -183,11 +183,10 @@ namespace OpenFrp.Launcher.ViewModels
                 };
                 await dialog.ShowAsync();
 
-                hasDialog = false;
+                OfAppHelper.HasDialog = false;
             }
         }
 
-        private bool hasDialog = false;
 
 
 

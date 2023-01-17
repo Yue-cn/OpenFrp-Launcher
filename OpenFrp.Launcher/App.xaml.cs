@@ -25,6 +25,8 @@ namespace OpenFrp.Launcher
        
         private Process? process = Process.GetProcessesByName("OpenFrp.Core").FirstOrDefault();
 
+        private bool _isExiting { get; set; }
+
         /// <summary>
         /// 应用启动时
         /// </summary>
@@ -87,21 +89,18 @@ namespace OpenFrp.Launcher
                             process.EnableRaisingEvents = true;
                             process.Exited += (s, e) =>
                             {
-                                try
+                                if (!_isExiting)
+                                App.Current.Dispatcher.Invoke(async () =>
                                 {
-                                    App.Current.Dispatcher.Invoke(async () =>
+                                    await Task.Delay(1500);
+                                    var wind = ((WpfSurface)App.Current.MainWindow);
+                                    if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
                                     {
-                                        await Task.Delay(1500);
-                                        var wind = ((WpfSurface)App.Current.MainWindow);
-                                        if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
-                                        {
-                                            RegistryEvent();
-                                            wind.LauncherModel.PipeRunningState = false;
-                                            wind.ClientPipeWorker(true);
-                                        }
-                                    });
-                                }
-                                catch { }
+                                        RegistryEvent();
+                                        wind.LauncherModel.PipeRunningState = false;
+                                        wind.ClientPipeWorker(true);
+                                    }
+                                });
                             };
                         }
                     }
@@ -133,6 +132,7 @@ namespace OpenFrp.Launcher
 
         protected override async void OnExit(ExitEventArgs e)
         {
+            _isExiting = true;
             base.OnExit(e);
             if (process is not null)
             process.EnableRaisingEvents = false;

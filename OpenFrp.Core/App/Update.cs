@@ -15,23 +15,22 @@ namespace OpenFrp.Core.App
     {
         public static async ValueTask<UpdateInfo> CheckUpdate()
         {
-            var resp = await OfApi.GET<Response.BaseModel>("https://of-dev-api.bfsea.xyz/commonQuery/get?key=software") ?? new();
+            var resp = await OfApi.GET<Response.UpdateModel>("https://of-dev-api.bfsea.xyz/commonQuery/get?key=software") ?? new();
             if (resp.Flag && resp.Data is not null)
             {
-                var launcherinfo = JsonConvert.DeserializeObject<Response.UpdateInfo>(resp.Data);
-                if (launcherinfo?.LatestVersion is null)
+                if (resp.Data?.LatestVersion is null)
                 {
                     return new UpdateInfo(UpdateFor.None);
                 }
-                else if (launcherinfo.LauncherInfo.LatestVersion?.GetMD5() != Utils.ApplicationVersions.GetMD5())
+                else if (resp.Data.LauncherInfo.LatestVersion?.GetMD5() != Utils.ApplicationVersions.GetMD5())
                 {
                     // 启动器有新版本
-                    return new UpdateInfo(UpdateFor.Launcher,launcherinfo.LauncherInfo.Content, launcherinfo.LauncherInfo.DownloadUrl);
+                    return new UpdateInfo(UpdateFor.Launcher, resp.Data.LauncherInfo.Content, resp.Data.LauncherInfo.DownloadUrl);
                 }
-                else if (launcherinfo.LatestVersion.Substring(1, launcherinfo.LatestVersion.Length - 2).GetMD5() != OfSettings.Instance.FRPClientVersion.GetMD5())
+                else if (resp.Data.LatestVersion.GetMD5() != OfSettings.Instance.FRPClientVersion.GetMD5())
                 {
                     // FRPC 有更新
-                    return new UpdateInfo(UpdateFor.FRPC, launcherinfo.LatestVersion!.Substring(1, launcherinfo.LatestVersion.Length - 2), $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient{launcherinfo.LatestVersion}/{Utils.FrpcPlatForm}.zip");
+                    return new UpdateInfo(UpdateFor.FRPC, resp.Data.LatestVersion!.Substring(1, resp.Data.LatestVersion.Length - 2), $"https://obs.cstcloud.cn/share/obs/zgitnetwork/ofclient{resp.Data.LatestVersion}/{Utils.FrpcPlatForm}.zip");
                 }
             }
             return new UpdateInfo(UpdateFor.None,"请求失败啦啦啦啦API - OpenFrp");

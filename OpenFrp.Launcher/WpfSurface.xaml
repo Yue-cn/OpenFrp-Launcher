@@ -91,6 +91,14 @@
                     Content="日志"
                     Icon="&#xe8a4;"
                     Tag="Logs" />
+                <ui:NavigationViewItem
+                    Content="小工具  (你们想要"
+                    Icon="&#xE15E;"
+                    IsEnabled="False" />
+                <ui:NavigationViewItem
+                    Content="可以去QQ群讨论)"
+                    Icon="&#xE15E;"
+                    IsEnabled="False" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem

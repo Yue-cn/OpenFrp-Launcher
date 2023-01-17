@@ -51,9 +51,9 @@ namespace OpenFrp.Launcher.ViewModels
         [RelayCommand]
         async void Signin(Views.Home page)
         {
-            if (!_hasDialog)
+            if (!OfAppHelper.HasDialog)
             {
-                _hasDialog = true;
+                OfAppHelper.HasDialog = true;
                 var loader = new Controls.ElementLoader()
                 {
                     IsLoading = true,
@@ -93,9 +93,8 @@ namespace OpenFrp.Launcher.ViewModels
                 page.Of_Home_UserInfoLoader.ShowLoader();
                 await Task.Delay(500);
                 page.RefreshUserInfo();
+                OfAppHelper.HasDialog = false;
             }
-            _hasDialog = false;
-
         }
         /// <summary>
         /// 打开官网

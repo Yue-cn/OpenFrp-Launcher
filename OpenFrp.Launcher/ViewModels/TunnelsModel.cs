@@ -50,12 +50,20 @@ namespace OpenFrp.Launcher.ViewModels
         internal bool isRefreshing = false;
 
         [RelayCommand]
-        void Refresh()
+        async void Refresh()
         {
             if (!isRefreshing)
             {
                 isRefreshing = true;
                 IsEnableTool = false;
+                var resp = await OfAppHelper.PipeClient.PushMessageWithRequestAsync(new Core.Pipe.PipeModel.RequestModel()
+                {
+                    Action = Core.Pipe.PipeModel.OfAction.Get_State,
+                });
+                if (resp.Flag)
+                {
+                    OfAppHelper.RunningIds = resp.FrpMessage!.RunningId?.ToList() ?? new List<int>();
+                }
                 MainPage?.RefreshUserTunnels();
             }
 

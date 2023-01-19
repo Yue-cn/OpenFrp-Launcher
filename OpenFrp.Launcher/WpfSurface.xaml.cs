@@ -78,13 +78,16 @@ namespace OpenFrp.Launcher
                         {
                             process.Kill();
                         }
-                        Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                        try
                         {
-                            if (process.MainModule.FileName == Utils.Frpc)
+                            Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
                             {
-                                process.Kill();
-                            }
-                        });
+                                if (process.MainModule.FileName == Utils.Frpc)
+                                {
+                                    process.Kill();
+                                }
+                            });
+                        } catch {}
                         App.Current.Shutdown();
                     },new FontIcon(){Glyph = "\ue74d"})
                     ,
@@ -97,13 +100,17 @@ namespace OpenFrp.Launcher
                         {
                             Action = Core.Pipe.PipeModel.OfAction.Close_Server,
                         });
-                        Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                        try
                         {
-                            if (process.MainModule.FileName == Utils.Frpc)
+                            Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
                             {
-                                process.Kill();
-                            }
-                        });
+                                if (process.MainModule.FileName == Utils.Frpc)
+                                {
+                                    process.Kill();
+                                }
+                            });
+                        }
+                        catch {}
                         App.Current.Shutdown();
                     },new FontIcon(){Glyph = "\ue8bb"})
                 },
@@ -131,6 +138,7 @@ namespace OpenFrp.Launcher
                         "About" => typeof(Views.About),
                         "Tunnels" => typeof(Views.Tunnels),
                         "Logs" => typeof(Views.Logs),
+                        "Toolkit" => typeof(Views.Toolkit),
                         _ => null
                     };
                 }
@@ -149,7 +157,6 @@ namespace OpenFrp.Launcher
             // Defualt Pipe Server 
             // 服务端 单独发给 客户端，不需要客户端先发送请求。
             ServerPipeWorker();
-
             ClientPipeWorker();
             await OfAppHelper.RequestLogin();
 
@@ -444,8 +451,11 @@ namespace OpenFrp.Launcher
                         case Core.Pipe.PipeModel.OfAction.Server_Closed:
                             {
                                 LauncherModel.PipeRunningState = false;
-                                await Task.Delay(1500);
-                                ClientPipeWorker(true);
+                                if (OfSettings.Instance.WorkMode == WorkMode.DeamonService)
+                                {
+                                    Utils.CheckService();
+                                    ClientPipeWorker(true);
+                                }
                             }
                             break;
                         case Core.Pipe.PipeModel.OfAction.Frpc_Closed:

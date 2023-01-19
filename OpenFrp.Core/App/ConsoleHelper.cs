@@ -73,7 +73,6 @@ namespace OpenFrp.Core.App
                         {
                             ConsoleWrappers.Remove(tunnel.TunnelId);
                         }
-                            
                         Launch(tunnel);
                     };
 
@@ -81,6 +80,7 @@ namespace OpenFrp.Core.App
                 }
                 catch (Exception ex)
                 {
+                    Stop(tunnel.TunnelId);
                     return new(OfAction.Start_Frpc, false, ex.ToString());
                 }
 
@@ -137,6 +137,8 @@ namespace OpenFrp.Core.App
                                 .AddAttributionText($"远程端口: {ConsoleWrappers[tunnelId].UserTunnelModel?.RemotePort}")
                                 .AddButton("确定", ToastActivationType.Foreground, "")
                                 .Show();
+                            Stop(tunnelId);
+
                         }
                     }
                     else if (OfSettings.Instance.NotifiyMode is NotifiyMode.NotifiyIcon)

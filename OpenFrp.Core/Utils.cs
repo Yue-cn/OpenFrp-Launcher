@@ -128,7 +128,7 @@ namespace OpenFrp.Core
         {
             if (!Utils.ServicesMode)
             {
-                Console.WriteLine("ww" + s);
+                Console.WriteLine($"[{DateTimeOffset.Now}] " + s);
             }
         }
         /// <summary>
@@ -222,6 +222,28 @@ namespace OpenFrp.Core
             }
             catch { }
             return false;
+        }
+
+        /// <summary>
+        /// 杀死所有FRPC进程（仅自家FRPC）
+        /// </summary>
+        public static void KillAllFrpc()
+        {
+            try
+            {
+                Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
+                {
+                    try
+                    {
+                        if (process.MainModule.FileName == Utils.Frpc)
+                        {
+                            process.Kill();
+                        }
+                    }
+                    catch { }
+                });
+            }
+            catch { }
         }
         /// <summary>
         /// 列出所有网络连接

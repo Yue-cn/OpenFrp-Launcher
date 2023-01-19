@@ -102,7 +102,7 @@
                     TextElement.FontFamily="{Binding ConsoleModel.FontName, Converter={StaticResource FontFamilyConvert}}"
                     TextElement.FontSize="{Binding ConsoleModel.FontSize}"
                     VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="Items" ItemsSource="{Binding WrapperValue, Mode=OneWay}">
+                    <ItemsControl x:Name="Items" ItemsSource="{Binding WrapperValue, Mode=OneWay,UpdateSourceTrigger=PropertyChanged}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
 

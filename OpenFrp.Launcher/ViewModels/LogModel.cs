@@ -32,7 +32,7 @@ namespace OpenFrp.Launcher.ViewModels
             });
             consoleWrappers = resp.Logs?.ConsoleWrappers ?? new ConsoleWrapper[] {};
 
-            page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+            //page.Items.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
 
             //var item = ((ConsoleWrapper)page.selectBox.SelectedValue);
 
@@ -40,7 +40,7 @@ namespace OpenFrp.Launcher.ViewModels
             int num = int.Parse(SelectedIndex.ToString());
             page.selectBox.GetBindingExpression(ComboBox.ItemsSourceProperty)?.UpdateTarget();
 
-            SelectedIndex = page.selectBox.SelectedIndex = num;
+            /*SelectedIndex =*/ page.selectBox.SelectedIndex = num;
         }
 
         [RelayCommand]

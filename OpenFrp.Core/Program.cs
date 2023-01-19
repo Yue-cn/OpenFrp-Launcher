@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using System.Security.Principal;
 using System.ServiceProcess;
+using System.Text;
 using System.Windows;
 using static OpenFrp.Core.Api.OfApiModel.Response;
 
@@ -47,11 +48,26 @@ namespace OpenFrp.Core
 
             if (args.Length is 1)
             {
-                AppDomain.CurrentDomain.UnhandledException += (se, c) =>
+                AppDomain.CurrentDomain.UnhandledException += async (se, c) =>
                 {
                     if (!Utils.ServicesMode)
                     {
                         MessageBox.Show(c.ExceptionObject.ToString(),"Core Exception (您需要重新打开启动器才可使用。)");
+                    }
+                    else
+                    {
+                        string file = Path.Combine(Utils.AppTempleFilesPath, "error.log");
+                        try
+                        {
+
+                            if (File.Exists(file)) File.Delete(file);
+                            await new StreamWriter(file,false,Encoding.UTF8,4096).WriteAsync(c.ExceptionObject.ToString());
+                        }
+                        catch
+                        {
+                            // 没救了
+                        }
+
                     }
                     if (ConsoleHelper.ConsoleWrappers.Count > 0)
                     {
@@ -60,13 +76,7 @@ namespace OpenFrp.Core
                             ConsoleHelper.Stop(id);
                         });
                     }
-                    Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
-                    {
-                        if (process.MainModule.FileName == Utils.Frpc)
-                        {
-                            process.Kill();
-                        }
-                    });
+                    Utils.KillAllFrpc();
                     if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
                 };
 
@@ -130,7 +140,11 @@ namespace OpenFrp.Core
                             catch { }
                         }; break;
                 }
-                if (Utils.isSupportToast) ToastNotificationManagerCompat.Uninstall();
+                if (Utils.isSupportToast)
+                {
+                    ToastNotificationManagerCompat.History.Clear();
+                    ToastNotificationManagerCompat.Uninstall();
+                };
             }
             else if (Utils.ServicesMode)
             {
@@ -248,6 +262,11 @@ namespace OpenFrp.Core
                 // 退出事件
                 SetConsoleCtrlHandler((ctrl) =>
                 {
+                    if (Utils.isSupportToast)
+                    {
+                        ToastNotificationManagerCompat.History.Clear();
+                        ToastNotificationManagerCompat.Uninstall();
+                    };
                     // 如果有客户端连接，那么这里需要推送。
                     Utils.ClientWorker.PushMessageAsync(new Pipe.PipeModel.RequestModel()
                     {

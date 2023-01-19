@@ -46,7 +46,7 @@ namespace OpenFrp.Launcher
                 Environment.Exit(0);
             }
 
-            if (!Debugger.IsAttached || true)
+            if (!Debugger.IsAttached)
             {
                 AppDomain.CurrentDomain.UnhandledException += (w, s) =>
                 {
@@ -83,7 +83,7 @@ namespace OpenFrp.Launcher
                         {
                             process = Process.Start(new ProcessStartInfo(Utils.CorePath, "--ws")
                             {
-                                CreateNoWindow = true,
+                                CreateNoWindow = !Debugger.IsAttached && false,
                                 UseShellExecute = false
                             });
                             process.EnableRaisingEvents = true;
@@ -94,7 +94,7 @@ namespace OpenFrp.Launcher
                                 {
                                     await Task.Delay(1500);
                                     var wind = ((WpfSurface)App.Current.MainWindow);
-                                    if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == false)
+                                    if (wind is not null && wind.Visibility != Visibility.Collapsed && wind.IsLoaded == true)
                                     {
                                         RegistryEvent();
                                         wind.LauncherModel.PipeRunningState = false;

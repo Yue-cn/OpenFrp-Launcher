@@ -78,39 +78,17 @@ namespace OpenFrp.Launcher
                         {
                             process.Kill();
                         }
-                        try
-                        {
-                            Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
-                            {
-                                if (process.MainModule.FileName == Utils.Frpc)
-                                {
-                                    process.Kill();
-                                }
-                            });
-                        } catch {}
+                        Utils.KillAllFrpc();
                         App.Current.Shutdown();
-                    },new FontIcon(){Glyph = "\ue74d"})
-                    ,
-                    CreateItemWithAction("退出启动器",
-                        App.Current.Shutdown,
-                        new FontIcon(){Glyph = "\ue89f"}),
+                    },new FontIcon(){Glyph = "\ue74d"}),
+                    CreateItemWithAction("退出启动器",App.Current.Shutdown,new FontIcon(){Glyph = "\ue89f"}),
                     CreateItemWithAction("彻底退出", async () =>
                     {
                         await OfAppHelper.PipeClient.PushMessageAsync(new()
                         {
                             Action = Core.Pipe.PipeModel.OfAction.Close_Server,
                         });
-                        try
-                        {
-                            Process.GetProcessesByName(Utils.FrpcPlatForm).ToList().ForEach(process =>
-                            {
-                                if (process.MainModule.FileName == Utils.Frpc)
-                                {
-                                    process.Kill();
-                                }
-                            });
-                        }
-                        catch {}
+                        Utils.KillAllFrpc();
                         App.Current.Shutdown();
                     },new FontIcon(){Glyph = "\ue8bb"})
                 },

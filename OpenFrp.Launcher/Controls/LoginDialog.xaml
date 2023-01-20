@@ -79,7 +79,7 @@
                 <ui:SimpleStackPanel Spacing="8">
                     <TextBox
                         x:Name="Of_Ld_Username"
-                        ui:ControlHelper.Header="邮箱"
+                        ui:ControlHelper.Header="账户"
                         ui:TextBoxHelper.IsDeleteButtonVisible="True" />
                     <PasswordBox
                         x:Name="Of_Ld_Password"
@@ -104,6 +104,7 @@
                 </TextBlock>
                 <Border
                     Height="150"
+                    Visibility="Collapsed"
                     Background="#0A8CEE"
                     CornerRadius="4">
                     <TextBlock

@@ -110,7 +110,7 @@ namespace OpenFrp.Core.App
             public string? User { get; set; }
 
             [JsonProperty("password")]
-            private List<int>? _Password { get; set; }
+            private List<int> _Password { get; set; } = new();
 
 
             private byte[] Entropy = new byte[20];
